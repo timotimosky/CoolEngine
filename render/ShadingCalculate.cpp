@@ -118,16 +118,6 @@ float calculateGroudShader(const point_t *v1, const point_t *v2, const point_t *
 
 float Lambert(transform_t* mainTrans,  vector_t *v_Obj, vector_t* normal, vector_t* lightPos,color_t diffuseColor, color_t ambientColor)
 {
-
-	//将顶点变换到相机透视空间 
-	//Output.position = mul(Input.position, matWorldViewProjection);
-
-	//将法线变换到视图空间
-	//	Output.normalInView = mul(Input.normal, matWorldView);
-
-	//	// 计算视图空间的灯光方向
-	//	Output.lightDirInView = lightPos - mul(Input.position, matWorldView);
-
 	//将顶点变换到视图空间  
 	vector_t*  ObjInView;
 	transform_apply(mainTrans, v_Obj, ObjInView);
@@ -168,7 +158,151 @@ float Lambert(transform_t* mainTrans,  vector_t *v_Obj, vector_t* normal, vector
 
 	//TODO:以后重载操作符
 	diffuse = ambientColor + diffuseColor * diffuse;
+	return diffuse;
 }
 
 
-//2.带镜面高光的漫反射
+//2.带镜面高光的漫反射 也就是Phong反射模型
+float Phong(transform_t* mainTrans,  vector_t *posInObj, vector_t *normal, vector_t* lightPos, vector_t* cameraPos, color_t diffuseColor, color_t ambientColor, color_t specularColor)
+{
+
+	vector_t* posInCvv, *normalInView, *posInView;
+
+	//	Output.position = mul(Input.position, matWorldViewProjection);
+	//	Output.normalInView = normalize(mul(Input.normal, matWorldView));
+	//	Output.lightDirInView = normalize(lightPos - mul(Input.position, matWorldView));
+	//	float3 position = mul(Input.position, matWorldView);
+	//	Output.viewDirInView = normalize(matView[3].xyz - position);
+	//	return Output;
+
+	//将顶点变换到视图空间  
+	transform_apply(mainTrans, posInObj, posInView);
+
+
+	//将顶点变换到相机透视空间  
+	transform_apply(mainTrans, posInObj, posInCvv);
+
+	vector_t* normalInView;
+	//将法线变换到视图空间
+	matrix_apply(normalInView, normal, &mainTrans->mv);
+
+	// 计算视图空间的灯光方向
+	vector_t* lightDirInView;
+
+	vector_sub(lightDirInView, lightPos, posInView);
+
+	//计算视图控件里摄像机到顶点的方向
+	vector_t* cameraDirInView;
+
+	vector_sub(cameraDirInView,cameraPos, posInView);
+
+	vector_normalize(cameraDirInView);
+
+	//----------------pix shader-----------------------------------//
+	//	float4 diffuse = max(0, dot(In.normalInView, In.lightDirInView));
+	//	diffuse = diffuse * diffuseColor;
+	//
+	//	float3 vReflect = normalize(2 * dot(In.normalInView, In.lightDirInView) * In.normalInView - In.lightDirInView);
+	//
+	//	float4 specular = specularColor * pow(max(0, dot(vReflect, In.viewDirInView)), 2);
+	//
+	//	Out.color = ambientColor + diffuse + specular;
+
+	float diffuse = max(0, vector_dotproduct(normalInView, lightDirInView));
+	diffuseColor =  diffuseColor* diffuse;
+
+	//反射向量
+	vector_t*  vReflect = *normalInView * (2 * vector_dotproduct(normalInView, lightDirInView)) - lightDirInView;
+	vector_normalize(vReflect);
+	//再通过反射计算高光
+	float specular = specularColor * pow(max(0, vector_dotproduct(vReflect, cameraDirInView)), 2);
+
+	return  ambientColor + diffuseColor + specular;
+}
+
+//TODO: 插值以后进入
+float PixShader_Phong()
+{
+	return 0;
+}
+
+//Lambert模型能很好的表示粗糙表面的光照，但不能表现出镜面反射高光。1975年Phong Bui Tong发明的Phong模型，提出了计算镜面高光的经验模型，镜面反射光强与反射光线和视线的夹角a相关：
+//
+//Ispecular = Ks * Is*(cos a) n
+//
+//其中Ks为物体表面的高光系数，Is为光强，a是反射光与视线的夹角，n为高光指数，n越大，则表面越光滑，反射光越集中，高光范围越小。如果V表示顶点到视点的单位向量，R表示反射光反向，则cos a可表示为V和R的点积。模型可表示为：
+//
+//Ispecular = Ks * Is*(V●R)n
+//
+//反射光放向R可由入射光放向L（顶点指向光源）和物体法向量N求出。
+//
+//R = (2N●L)N – L
+//
+//1) VertexShader
+//float4x4 matWorldViewProjection;
+//float4x4 matWorldView;
+//float4x4 matView;
+//float3 lightPos;
+//
+//struct VS_INPUT
+//{
+//	float4 position : POSITION0;
+//	float3 normal : NORMAL;
+//};
+//
+//struct VS_OUTPUT
+//{
+//	float4 position : POSITION0;
+//	float3 normalInView : TEXCOORD0;
+//	float3 lightDirInView : TEXCOORD1;
+//	float3 viewDirInView : TEXCOORD2;
+//};
+//
+//VS_OUTPUT vs_main(VS_INPUT Input)
+//{
+//	VS_OUTPUT Output;
+//
+//	Output.position = mul(Input.position, matWorldViewProjection);
+//	Output.normalInView = normalize(mul(Input.normal, matWorldView));
+//	Output.lightDirInView = normalize(lightPos - mul(Input.position, matWorldView));
+//	float3 position = mul(Input.position, matWorldView);
+//	Output.viewDirInView = normalize(matView[3].xyz - position);
+//	return Output;
+//}
+//
+//
+//
+//2)	PixelShader
+//
+//float4 ambientColor;
+//float4 diffuseColor;
+//float4 specularColor;
+//
+//struct PS_INPUT
+//{
+//	float3 normalInView : TEXCOORD0;
+//	float3 lightDirInView : TEXCOORD1;
+//	float3 viewDirInView : TEXCOORD2;
+//};
+//
+//struct PS_OUTPUT
+//{
+//	float4 color : COLOR0;
+//};
+//
+//
+//PS_OUTPUT ps_main(PS_INPUT In)
+//{
+//	PS_OUTPUT Out;
+//
+//	float4 diffuse = max(0, dot(In.normalInView, In.lightDirInView));
+//	diffuse = diffuse * diffuseColor;
+//
+//	float3 vReflect = normalize(2 * dot(In.normalInView, In.lightDirInView) * In.normalInView - In.lightDirInView);
+//
+//	float4 specular = specularColor * pow(max(0, dot(vReflect, In.viewDirInView)), 2);
+//
+//	Out.color = ambientColor + diffuse + specular;
+//
+//	return Out;
+//}

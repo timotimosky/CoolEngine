@@ -17,7 +17,31 @@
 
 typedef unsigned int IUINT32;
 typedef struct { float m[4][4]; } matrix_t;
-typedef struct { float x, y, z, w; } vector_t; //使用的3D齐次坐标  其常规坐标为 {x/w, y/w, z/w; }
+typedef struct { float x, y, z, w;
+
+vector_t operator*(float value)
+{
+	vector_t ncolor_t;
+	ncolor_t.x = x * value;
+	ncolor_t.y = y * value;
+	ncolor_t.z = z * value;
+
+	return ncolor_t;
+}
+
+
+vector_t operator+(vector_t* value)
+{
+	vector_t ncolor_t;
+	ncolor_t.x = x + value->x;
+	ncolor_t.y = y + value->y;
+	ncolor_t.z = z + value->z;
+
+	return ncolor_t;
+}
+
+
+} vector_t; //使用的3D齐次坐标  其常规坐标为 {x/w, y/w, z/w; }
 typedef vector_t point_t;
 
 //rgb   和 强度 用于环境光

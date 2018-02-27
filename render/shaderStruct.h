@@ -24,6 +24,17 @@ typedef struct { float r, g, b, a;
 	ncolor_t.a = a*value; //TODO:透明值考虑这里以后不计算
 	return ncolor_t;
 	}
+
+
+	color_t operator+(color_t value)
+	{
+		color_t ncolor_t;
+		ncolor_t.r = r + value.r;
+		ncolor_t.g = g + value.g;
+		ncolor_t.b = b + value.b;
+		ncolor_t.a = a + value.a;
+		return ncolor_t;
+	}
 } color_t; //颜色
 
 
