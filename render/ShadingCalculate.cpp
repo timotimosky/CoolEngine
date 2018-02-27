@@ -114,70 +114,61 @@ float calculateGroudShader(const point_t *v1, const point_t *v2, const point_t *
 }
 
 
+//1.理想漫反射
+
+float Lambert(transform_t* mainTrans,  vector_t *v_Obj, vector_t* normal, vector_t* lightPos,color_t diffuseColor, color_t ambientColor)
+{
+
+	//将顶点变换到相机透视空间 
+	//Output.position = mul(Input.position, matWorldViewProjection);
+
+	//将法线变换到视图空间
+	//	Output.normalInView = mul(Input.normal, matWorldView);
+
+	//	// 计算视图空间的灯光方向
+	//	Output.lightDirInView = lightPos - mul(Input.position, matWorldView);
+
+	//将顶点变换到视图空间  
+	vector_t*  ObjInView;
+	transform_apply(mainTrans, v_Obj, ObjInView);
 
 
-//float4x4 matWorldViewProjection;
-//float4x4 matWorldView;
-//float3 lightPos;
-//
-//struct VS_INPUT
-//{
-//	float4 position : POSITION0;
-//	float3 normal : NORMAL;
-//};
-//
-//struct VS_OUTPUT
-//{
-//	float4 position : POSITION0;
-//	float3 normalInView : TEXCOORD0;
-//	float3 lightDirInView : TEXCOORD1;
-//
-//};
-//
-//VS_OUTPUT vs_main(VS_INPUT Input)
-//{
-//	VS_OUTPUT Output;
-//	//将顶点变换到相机透视空间 
-//	Output.position = mul(Input.position, matWorldViewProjection);
-//	//将法线变换到视图空间
-//	Output.normalInView = mul(Input.normal, matWorldView);
-//	// 计算视图空间的灯光方向
-//	Output.lightDirInView = lightPos - mul(Input.position, matWorldView);
-//
-//	return Output;
-//
-//}
+	//将顶点变换到相机透视空间  
+	vector_t*  ObjInCVV;
+	transform_apply(mainTrans, v_Obj, ObjInCVV);
+
+	vector_t* normalInView;
+	//将法线变换到视图空间
+	matrix_apply(normalInView, normal, &mainTrans->mv);
 
 
+	//TODO:这里把灯光转到视图空间
 
-//float4 ambientColor;
-//float4 diffuseColor;
-//
-//struct PS_INPUT
-//{
-//	float3 normalInView : TEXCOORD0;
-//	float3 lightDirInView : TEXCOORD1;
-//};
-//
-//struct PS_OUTPUT
-//{
-//	float4 color : COLOR0;
-//};
-//
-//
-//PS_OUTPUT ps_main(PS_INPUT In)
-//{
-//	PS_OUTPUT Out;
-//
-//	// 归一化
-//	In.normalInView = normalize(In.normalInView);
-//	In.lightDirInView = normalize(In.lightDirInView);
-//
-//	// 根据Lambert模型，法线点乘入射光方向计算漫反射
-//	float4 diffuse = max(0, dot(In.normalInView, In.lightDirInView));
-//	diffuse = diffuse * diffuseColor;
-//
-//	Out.color = ambientColor + diffuse;
-//
-//	return Out;
-//}
+	// 计算视图空间的灯光方向
+	vector_t* lightDirInView;
+
+	vector_sub(lightDirInView,lightPos, ObjInView);
+
+	//-----------------像素阶段------------
+
+	//	// 归一化
+	//	In.normalInView = normalize(In.normalInView);
+	//	In.lightDirInView = normalize(In.lightDirInView);
+	//
+	//	// 根据Lambert模型，法线点乘入射光方向计算漫反射
+	//	float4 diffuse = max(0, dot(In.normalInView, In.lightDirInView));
+	//	diffuse = diffuse * diffuseColor;
+	//
+	//	Out.color = ambientColor + diffuse;
+
+
+	//根据Lambert模型，法线点乘入射光方向计算漫反射
+	float diffuse = max(0,vector_dotproduct(normalInView, lightDirInView));
+
+
+	//TODO:以后重载操作符
+	diffuse = ambientColor + diffuseColor * diffuse;
+}
+
+
+//2.带镜面高光的漫反射
