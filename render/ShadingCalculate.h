@@ -1,13 +1,8 @@
 #pragma once
 #include "objectManager.h"
-//多种着色方式
 
-//Phong shading
-//blinn shading
 
-//Groud Shader
-
-//VertexLight
+//导入模型解析
 
 
 //计算法线余弦
@@ -16,11 +11,22 @@ float ComputeNDotL(const point_t* vertex, const vector_t* normal, const point_t*
 //计算顶点到灯光的距离,用于产生阴影
 //float DisVertexToLight(const point_t *Light, vector_t* VertertPosInWorld);
 
-//顶点
-float calculateVertexLight(const point_t *v1,  vector_t* normal);
-//平面
-float calculateGroudShader(const point_t *v1, const point_t *v2, const point_t *v3);
 
 float ComputeCameraToVertor(point_t* vertex, const vector_t* normal, const point_t* BBBCameraToVertor);
 
 float CullCalcutate(const point_t *v1, const point_t *v2, const point_t *v3, const point_t *camera_pos);
+
+
+//1.顶点Shader
+float calculateVertexLight(const point_t *v1, vector_t* normal);
+//2.平面Shader
+float calculateGroudShader(const point_t *v1, const point_t *v2, const point_t *v3);
+
+//3.理想漫反射
+float Lambert(transform_t* mainTrans, vector_t *v_Obj, vector_t* normal, vector_t* lightPos, color_t diffuseColor, color_t ambientColor);
+
+//4.带镜面高光的漫反射 也就是Phong反射模型
+float Phong(transform_t* mainTrans, vector_t *posInObj, vector_t *normal, vector_t* lightPos, vector_t* cameraPos, color_t diffuseColor, color_t ambientColor, color_t specularColor);
+
+
+//5. blinn shading
