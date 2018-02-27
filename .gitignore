@@ -1,0 +1,62 @@
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+*.vs
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+Debug/
+# Debug files
+*.dSYM/
+Debug/vc141.pdb
+*.pdb
+*.idb
+*.ipch
+*.pdb
+*.log
+*.log
+/Debug/
+*.pdb
+*.ilk
+*.opendb
+.vs/Mini3D/v15/.suo
+..sln
+.VC
+.vs/Mini3D/v15/ipch/AutoPCH/b81b6066aac8ae0e/OBJECTMANAGER.ipch
+.vs/Mini3D/v15/ipch/AutoPCH/5f423c503d811c04/MINI3D.ipch
+*.ipch
+*.ipch
+.vs/Mini3D/v14/.suo
+.vs/Mini3D/v15/ipch/AutoPCH/5f423c503d811c04/MINI3D.ipch
+.vs/Mini3D/v15/.suo
+*.db
+Debug/Mini3D.tlog/CL.command.1.tlog
+Debug/Mini3D.tlog/CL.read.1.tlog
+*.tlog
+/Debug
+*.idb
+*.pdb
+*.idb
+*.pdb
