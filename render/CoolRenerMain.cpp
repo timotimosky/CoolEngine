@@ -224,7 +224,7 @@ void draw_box(device_t *device, float theta)
 	matrix_t m;
 	//这里传递的是 (-1, -0.5, 1)这个指定向量
 	matrix_set_rotate(&m, -3, -0.5, 1, theta,-3,0,5); 
-	matrix_set_rotate(&m, -3, -0.5, 1, theta,0,0,0); 
+	//matrix_set_rotate(&m, -3, -0.5, 1, theta,0,0,0); 
 
 	device->transform.model = m;
 	transform_update(&device->transform);
@@ -279,8 +279,6 @@ float Get_FPS()
 	return fps;
 }
 
-camera* shadowCamera;
-
 
 int main(void)
 {
@@ -304,14 +302,14 @@ int main(void)
 	camera_main.front =  { 0, 0, 0, 1 };
 	camera_main.worldup ={ 0, 1, 0, 1 };//{ 0, 0, 1, 1 };
 
-	//初始化阴影摄像机
-	shadowCamera = &cameras[0];
-	shadowCamera->pos = lightPosition;
-	shadowCamera->front =  { 0, 0, 0, 1 };
-	shadowCamera->worldup = { 0, 1, 0, 1 };
-
-
-
+	if(dirLight.shadow == true)
+	{
+		//初始化阴影摄像机 采用深度测试，然后将设定的阴影颜色跟当前像素颜色混合。在像素阶段执行
+		camera* shadowCamera = &cameras[0];
+		shadowCamera->pos = { 0.0f, 3.0f, -3.0f, 1.0f }; //设定到产生阴影的那个灯光位置
+		shadowCamera->front = dirLight.dir;
+		shadowCamera->worldup = { 0, 1, 0, 1 };
+    }
 
 	init_texture(&device); //纹理初始化
 
@@ -330,10 +328,13 @@ int main(void)
 	
 	//初始化一个地板
 	object_simple ground;
+
 	ground.pos =  { 0, -2, 3,1 };
 	Cube.axis = { -1, -0.5, 1, 0 };
-	ground.pos =  { -2, -2, 1,1 };
-	Cube.axis =  { -1, -0.5, 1, 0 };
+
+	//ground.pos =  { -2, -2, 1,1 };
+	//Cube.axis =  { -1, -0.5, 1, 0 };
+
 	ground.mesh = ground_mesh;
 	ground.mesh_num = 4;
 	ground.scale = 6;
@@ -344,6 +345,9 @@ int main(void)
 	char out[200];
 	while (screen_exit == 0 && screen_keys[VK_ESCAPE] == 0)
 	{
+
+		//device_clear(&device); //合并设备清理
+
 		fps = Get_FPS();
 
 		screen_dispatch(); //分发msg
@@ -352,7 +356,10 @@ int main(void)
 		camera_main.pos = { 0, 0, pos, 1 }; //{ pos, 0, 0, 1 };
 		camera_update(&device, &camera_main); //摄像机不断更新矩阵，因为pos一直变化
 
-		camera_updateShadow(&device, shadowCamera);
+		//动态灯光 阴影
+		camera_updateShadow(&device, &cameras[0]);
+
+		//camera_updateShadow(&device, &shadowCamera);
 
 		if (screen_keys[VK_UP]) pos += 0.01f; //摄像机前进  pos -= 0.01f;
 		if (screen_keys[VK_DOWN]) pos -= 0.01f; //摄像机后退

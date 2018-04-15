@@ -20,12 +20,12 @@ float ComputeNDotL(const point_t* vertex, const vector_t* normal, const point_t*
 	return CMIDFloat(dot, 0, 1);
 }
 
-//计算摄像机到面中心
+//计算面中心到摄像机
 float ComputeCameraToVertor(point_t* vertex, const vector_t* normal, const point_t *camera_pos)
 {
 	vector_t  CameraToVertor;
 
-	vector_sub(&CameraToVertor, vertex, camera_pos);
+	vector_sub(&CameraToVertor, camera_pos, vertex);
 
 	vector_normalize(&CameraToVertor);
 
@@ -49,13 +49,12 @@ float calculateVertexLight(const point_t *v1, vector_t* normal)
 {
 	vector_normalize(normal);
 	//灯光参数，用于乘基本颜色     (0-1)之间 被用作颜色的亮度
-	float surfaceLight = ComputeNDotL(v1, normal, &lightPosition); //表面灯光
+	float surfaceLight = ComputeNDotL(v1, normal, &dirLight.dir); //表面灯光
 
 	return surfaceLight;
 
 }
 
-//三角形是逆时针
 //背面剔除 以摄像机为起点
 float CullCalcutate(const point_t *v1, const point_t *v2, const point_t *v3, const point_t *camera_pos)
 {
@@ -73,7 +72,7 @@ float CullCalcutate(const point_t *v1, const point_t *v2, const point_t *v3, con
 	vector_normalize(&surfaceNormal);
 
 	//剔除参数 
-	float cull = ComputeCameraToVertor(&center, &surfaceNormal, camera_pos); //表面灯光
+	float cull = ComputeCameraToVertor(&center, &surfaceNormal, camera_pos); 
 
 	return cull;
 
@@ -106,28 +105,27 @@ float calculateGroudShader(const point_t *v1, const point_t *v2, const point_t *
 	vector_normalize(&surfaceNormal);
 
 	//灯光参数，用于乘基本颜色     (0-1)之间 被用作颜色的亮度 
-	float surfaceLight = ComputeNDotL(&center, &surfaceNormal, &lightPosition); //表面灯光
+	float surfaceLight = ComputeNDotL(&center, &surfaceNormal, &dirLight.dir); //表面灯光
 	//printf("surfaceLight当前%f", surfaceLight);
-	//printf("surfaceLight当前");
 	return surfaceLight;
 
 }
 
 
-//1.理想漫反射
+//1.理想漫反射:返回该顶点的颜色
 
-float Lambert(transform_t* mainTrans,  vector_t *v_Obj, vector_t* normal, vector_t* lightPos,color_t diffuseColor, color_t ambientColor)
+color_t Lambert(transform_t* mainTrans, vector_t *v_Obj, vector_t* normal, vector_t* lightPos, color_t diffuseColor, color_t ambientColor)
 {
 	//将顶点变换到视图空间  
-	vector_t*  ObjInView;
-	transform_apply(mainTrans, v_Obj, ObjInView);
+	vector_t*  ObjInView = NULL;
+	transform_apply(mainTrans, ObjInView, v_Obj);
 
 
 	//将顶点变换到相机透视空间  
-	vector_t*  ObjInCVV;
-	transform_apply(mainTrans, v_Obj, ObjInCVV);
+	vector_t*  ObjInCVV = NULL;
+	transform_apply(mainTrans, ObjInCVV, v_Obj);
 
-	vector_t* normalInView;
+	vector_t* normalInView = NULL;
 	//将法线变换到视图空间
 	matrix_apply(normalInView, normal, &mainTrans->mv);
 
@@ -135,9 +133,9 @@ float Lambert(transform_t* mainTrans,  vector_t *v_Obj, vector_t* normal, vector
 	//TODO:这里把灯光转到视图空间
 
 	// 计算视图空间的灯光方向
-	vector_t* lightDirInView;
+	vector_t* lightDirInView = NULL;
 
-	vector_sub(lightDirInView,lightPos, ObjInView);
+	vector_sub(lightDirInView, lightPos, ObjInView);
 
 	//-----------------像素阶段------------
 
@@ -153,20 +151,17 @@ float Lambert(transform_t* mainTrans,  vector_t *v_Obj, vector_t* normal, vector
 
 
 	//根据Lambert模型，法线点乘入射光方向计算漫反射
-	float diffuse = max(0,vector_dotproduct(normalInView, lightDirInView));
+	float diffuse = max(0, vector_dotproduct(normalInView, lightDirInView));
 
-
-	//TODO:以后重载操作符
-	diffuse = ambientColor + diffuseColor * diffuse;
-	return diffuse;
+	return ambientColor + diffuseColor * diffuse;
 }
 
 
 //2.带镜面高光的漫反射 也就是Phong反射模型
-float Phong(transform_t* mainTrans,  vector_t *posInObj, vector_t *normal, vector_t* lightPos, vector_t* cameraPos, color_t diffuseColor, color_t ambientColor, color_t specularColor)
+color_t Phong(transform_t* mainTrans, vector_t *posInObj, vector_t *normal, vector_t* lightPos, vector_t* cameraPos, color_t diffuseColor, color_t ambientColor, color_t specularColor)
 {
 
-	vector_t* posInCvv, *normalInView, *posInView;
+	vector_t* posInCvv = NULL, *normalInView = NULL, *posInView = NULL;
 
 	//	Output.position = mul(Input.position, matWorldViewProjection);
 	//	Output.normalInView = normalize(mul(Input.normal, matWorldView));
@@ -182,19 +177,18 @@ float Phong(transform_t* mainTrans,  vector_t *posInObj, vector_t *normal, vecto
 	//将顶点变换到相机透视空间  
 	transform_apply(mainTrans, posInObj, posInCvv);
 
-	vector_t* normalInView;
 	//将法线变换到视图空间
 	matrix_apply(normalInView, normal, &mainTrans->mv);
 
 	// 计算视图空间的灯光方向
-	vector_t* lightDirInView;
+	vector_t* lightDirInView = NULL;
 
 	vector_sub(lightDirInView, lightPos, posInView);
 
 	//计算视图控件里摄像机到顶点的方向
-	vector_t* cameraDirInView;
+	vector_t* cameraDirInView = NULL;
 
-	vector_sub(cameraDirInView,cameraPos, posInView);
+	vector_sub(cameraDirInView, cameraPos, posInView);
 
 	vector_normalize(cameraDirInView);
 
@@ -209,15 +203,14 @@ float Phong(transform_t* mainTrans,  vector_t *posInObj, vector_t *normal, vecto
 	//	Out.color = ambientColor + diffuse + specular;
 
 	float diffuse = max(0, vector_dotproduct(normalInView, lightDirInView));
-	diffuseColor =  diffuseColor* diffuse;
+	diffuseColor = diffuseColor* diffuse;
 
 	//反射向量
-	vector_t*  vReflect = *normalInView * (2 * vector_dotproduct(normalInView, lightDirInView)) - lightDirInView;
-	vector_normalize(vReflect);
+	vector_t  vReflect = (*normalInView) * (2 * vector_dotproduct(normalInView, lightDirInView)) - lightDirInView;
+	vector_normalize(&vReflect);
 	//再通过反射计算高光
-	float specular = specularColor * pow(max(0, vector_dotproduct(vReflect, cameraDirInView)), 2);
 
-	return  ambientColor + diffuseColor + specular;
+	return  ambientColor + diffuseColor + specularColor * pow(max(0, vector_dotproduct(&vReflect, cameraDirInView)), 2);
 }
 
 //TODO: 插值以后进入
@@ -306,3 +299,4 @@ float PixShader_Phong()
 //
 //	return Out;
 //}
+

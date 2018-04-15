@@ -34,6 +34,8 @@ int transform_check_cvv(const vector_t *v)
 	return check;
 }
 
+
+//TODO:以后传入摄像机宽度，因为rendering textrue 和阴影投影是使用其他摄像机的近截面的长宽
 // 归一化，然后光栅化，得到屏幕坐标 
 void transform_homogenize(const transform_t *ts, point_t *y, const point_t *x)   //因为参数是const修饰的，所以x不会被改变
 {
@@ -44,7 +46,7 @@ void transform_homogenize(const transform_t *ts, point_t *y, const point_t *x)  
 							  //这条代码分几步
 							  // x->x * rhw  实现了梯形的CVV空间转到矩形空间。   x取值范围在-1到1之间
 							  // (x->x * rhw + 1.0f)* 0.5f;  实现了 从-1到1转到 0-1取值
-							  // 最后 * ts->w  按屏幕的分辨率的宽度放大到合适的位置。
+							  // 最后 * ts->screen_width  按屏幕的分辨率的宽度放大到合适的位置。
 
 							  // 变换后的坐标起始点是坐标系的中心点    
 							  // 但是，在屏幕上，我们以左上角为起始点    
@@ -55,9 +57,7 @@ void transform_homogenize(const transform_t *ts, point_t *y, const point_t *x)  
 	y->y = (1.0f - x->y * rhw) * ts->screen_height * 0.5f;  //同上
 
 	y->z = x->z * rhw;  //得到在矩形空间的Z深度
-
 						//y->w = 1.0f;  //这里 因为 是 (x,y,z,w) /w  所以 w直接赋值为1了
-
 						//优化:这里w用来保存rhw
 	y->w = rhw;
 }
@@ -130,7 +130,6 @@ int trapezoid_init_triangle(trapezoid_t *trap, const vertex_t *p1, const vertex_
 		//X轴相同
 		if (p1->pos.x == p2->pos.x && p1->pos.x == p3->pos.x)
 			return 0;
-
 
 	// P1- - P2  
 	// -  -  
@@ -236,16 +235,22 @@ int trapezoid_init_triangle(trapezoid_t *trap, const vertex_t *p1, const vertex_
 
 //提前求出斜率，优化
 //按照Y坐标计算出左右两条边纵坐标等于Y的顶点
-void trapezoid_edge_interp(device_t *device, trapezoid_t *trap, float y) {
+void trapezoid_edge_interp(device_t *device, trapezoid_t *trap, float y ) {
 
 	//梯度
 	float t1 = (y - trap->left.v1.pos.y) / (trap->left.v2.pos.y - trap->left.v1.pos.y);
-	float worldti = (y - trap->left.v1.worldPos.y) / (trap->left.v2.worldPos.y - trap->left.v1.pos.y);
+	//float worldti = (y - trap->left.v1.worldPos.y) / (trap->left.v2.worldPos.y - trap->left.v1.pos.y);
 
 	vertex_interp(&trap->left.v, &trap->left.v1, &trap->left.v2, t1); //三角形左边的斜线 决定扫描线左边起点
 																  //梯度
-	float t2 = (y - trap->right.v1.pos.y) / (trap->right.v2.pos.y - trap->right.v1.pos.y);
+	//float t2 = (y - trap->right.v1.pos.y) / (trap->right.v2.pos.y - trap->right.v1.pos.y);
 
+	//vertex_interp(&trap->right.v, &trap->right.v1, &trap->right.v2, t2);//三角形右边的斜线 决定扫描线右边终点
+																	//梯度
+	//float t1 = (y - trap->left.v1.worldPos.y) / (trap->left.v2.worldPos.y - trap->left.v1.worldPos.y);
+//	vertex_interp(&trap->left.v, &trap->left.v1, &trap->left.v2, t1); //三角形左边的斜线 决定扫描线左边起点
+																	  //梯度
+	float t2 = (y - trap->right.v1.pos.y) / (trap->right.v2.pos.y - trap->right.v1.pos.y);
 	vertex_interp(&trap->right.v, &trap->right.v1, &trap->right.v2, t2);//三角形右边的斜线 决定扫描线右边终点
 
 }
@@ -366,34 +371,72 @@ IUINT32 device_texture_read(const device_t *device, float u, float v) {
 // 绘制扫描线
 void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceLight)
 {
-	IUINT32 *framebuffer = device->framebuffer[scanline->y]; //拿到当前这一行的扫描线 帧缓冲
-	float *zbuffer = device->zbuffer[scanline->y]; //拿到当前这一行的扫描线  Zbuffer
-	int x = scanline->x;
+	int scanlineY = scanline->y;
+
+	IUINT32 *framebuffer = device->framebuffer[scanlineY]; //拿到当前这一行的扫描线 帧缓冲
+	float *zbuffer = device->zbuffer[scanlineY]; //拿到当前这一行的扫描线  Zbuffer
+	int scanlineX = scanline->x;
 	int lineWidth = scanline->width;
 	int width = device->width; //显示器范围  TODO：以后要加上摄像机范围
 	int render_state = device->render_state;
 
-	point_t scanlineBeginPos = scanline->v.pos;
-
 	//逐个拿到当前扫描线的像素
-	for (; lineWidth > 0; x++, lineWidth--)
+	for (; lineWidth > 0; scanlineX++, lineWidth--)
 	{
 		// 从0-w递增的x ，只要小于设备宽度，就渲染。
-		if (x >= 0 && x < width)
+		if (scanlineX >= 0 && scanlineX < width)
 		{
-			float rhw = scanlineBeginPos.w; //前期用于坐标转换，后期用于存储深度
+			//每次for循环后要后移，注意不要缓存他
+			float rhw = scanline->v.pos.w; //前期用于坐标转换，后期用于存储深度
 
-			if (rhw >= zbuffer[x]) //判断深度是否大于缓存中Zbuffer  默认深度为0  //这里深度测试，是判断的扫描线的深度，按理说，应该在后面，判断像素深度
+
+			//TODO:深度判断有误
+			if (rhw >= zbuffer[scanlineX]) //判断深度是否大于缓存中Zbuffer  默认深度为0  //这里深度测试，是判断的扫描线的起点的深度，按理说，应该在后面，判断像素深度
 			{
-				zbuffer[x] = rhw;
 
+#pragma region 计算阴影颜色 DJLTODO：没转换
+
+				//根据深度图，计算深度，是否要产生阴影
+				if (device->shadowbuffer != NULL) 
+				{
+					float z = scanline->v.pos.z;
+
+					//这个点有阴影
+					if (z <= device->shadowbuffer[scanlineY*width + scanlineX]) {
+						device->shadowbuffer[scanlineY*width + scanlineX] = z;
+
+
+						//TODO：暂时直接处理
+					}
+				}
+#pragma endregion
+
+				//准备像素阶段的数据   将用于模型的顶点结构转换为用于像素阶段的v2f结构
+				v2f vf;
+				vf.color = scanline->v.color;
+				vf.pos = scanline->v.pos;
+				vf.normal = scanline->v.normal;
+
+				//point_t pos;//位置
+
+				//texcoord_t tc; //纹理坐标
+				//color_t color; //颜色       
+				//vector_t normal; //给寄存器增加法线    将这个合并 float rhw 合并到;  //该顶点的之前的w的倒数， 也就是缩放大小
+				//point_t worldPos;  //之前在世界坐标的位置
+				//float vertexLight; //顶点灯光的强度
+				//point_t shadowPos; //投影摄像机的光栅化位置
+
+				//frag_shader(device, &vf, &vf.color);
+
+				//像素颜色
+				zbuffer[scanlineX] = rhw;
 
 				if (render_state & RENDER_STATE_COLOR) //使用位运算判断  //颜色模式是通过 顶点的W值来插值，但平面着色模式不是
 				{
 					//获取颜色 0-1
-					float r = scanline->v.color.r; //*pixRhw;   //插值回来
-					float g = scanline->v.color.g; //*pixRhw;
-					float b = scanline->v.color.b; //*pixRhw;
+					float r = vf.color.r; //*pixRhw;   //插值回来
+					float g = vf.color.g; //*pixRhw;
+					float b = vf.color.b; //*pixRhw;
 
 					//转为255
 					int R = (int)(r * 255.0f);
@@ -406,7 +449,7 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 					B = CMID(B, 0, 255);
 
 					//位运算 
-					framebuffer[x] = (R << 16) | (G << 8) | (B);  //<<是左移运算符    RGB 每个占8位.  或运算，恰好保留有1的位。 就合并RGB为一个int了
+					framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);  //<<是左移运算符    RGB 每个占8位.  或运算，恰好保留有1的位。 就合并RGB为一个int了
 				}
 
 				if (render_state & RENDER_STATE_TEXTURE)
@@ -414,7 +457,7 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 					float u = scanline->v.tc.u;//* pixRhw;
 					float v = scanline->v.tc.v;//* pixRhw;
 					IUINT32 cc = device_texture_read(device, u, v);
-					framebuffer[x] = cc;
+					framebuffer[scanlineX] = cc;
 				}
 
 				//顶点插值
@@ -422,9 +465,9 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 				{
 					//asset(v.color.r<0.2f);
 					//获取颜色 0-1
-					float r = scanline->v.color.r + AmbientLight.r; //* pixRhw; 
-					float g = scanline->v.color.g + AmbientLight.g;//* pixRhw;
-					float b = scanline->v.color.b + AmbientLight.b;//* pixRhw;
+					float r = vf.color.r + AmbientLight.r; //* pixRhw; 
+					float g = vf.color.g + AmbientLight.g;//* pixRhw;
+					float b = vf.color.b + AmbientLight.b;//* pixRhw;
 
 					
 					float verterLight = scanline->v.vertexLight + scanline->step.vertexLight;
@@ -440,16 +483,16 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 					B = CMID(B, 0, 255);
 
 					//位运算 
-					framebuffer[x] = (R << 16) | (G << 8) | (B);  //<<是左移运算符    RGB 每个占8位.  或运算，恰好保留有1的位。 就合并RGB为一个int了
+					framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);  //<<是左移运算符    RGB 每个占8位.  或运算，恰好保留有1的位。 就合并RGB为一个int了
 
 				}
 
 				if (render_state &(RENDER_STATE_surfaceNormal_color))
 				{
 					//获取颜色 0-1
-					float r = scanline->v.color.r;// *pixRhw; 
-					float g = scanline->v.color.g;// *pixRhw;
-					float b = scanline->v.color.b;// *pixRhw;
+					float r = vf.color.r;// *pixRhw; 
+					float g = vf.color.g;// *pixRhw;
+					float b = vf.color.b;// *pixRhw;
 
 					//转为255
 					int R = (int)(r * 255.0f*surfaceLight);
@@ -462,13 +505,13 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 					B = CMID(B, 0, 255);
 
 					//位运算 
-					framebuffer[x] = (R << 16) | (G << 8) | (B);  //<<是左移运算符    RGB 每个占8位.  或运算，恰好保留有1的位。 就合并RGB为一个int了
+					framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);  //<<是左移运算符    RGB 每个占8位.  或运算，恰好保留有1的位。 就合并RGB为一个int了
 
 				}
 			}
 		}
 
-		if (x >= width)
+		if (scanlineX >= width)
 			break;
 		vertex_add(&scanline->v, &scanline->step); //根据之前计算出来的插值，增加插值生成下一个点的数据,用于下一个点
 	}
@@ -482,23 +525,17 @@ void device_render_trap(device_t *device, trapezoid_t *trap, float surfaceLight)
 	top = (int)(trap->top + 0.5f);
 	bottom = (int)(trap->bottom + 0.5f);
 
-
-
 	for (j = top; j < bottom; j++)  //从top到bottom 每一个y轴像素一个扫描线
 	{
 		if (j >= 0 && j < device->height)
 		{
-			//TODO：增加阴影
-
 			// 按照Y坐标计算出当前扫描线的X坐标，并且插值 颜色、深度
-			//trapezoid_edge_interp(device, trap, (float)j + 0.5f, &raster_pos1_shadow);
 			trapezoid_edge_interp(device, trap, (float)j + 0.5f);
 
 			// 根据左右两边的端点，初始化计算出扫描线的起点和步长   包括扫描线的x y  z  w的步长 
 			trapezoid_init_scan_line(trap, &scanline, j);
 
 			//绘制扫描线，通过步长得到最终值
-			//device_draw_scanline(device, &scanline, surfaceLight, shadow_points);
 			device_draw_scanline(device, &scanline, surfaceLight);
 		}
 		if (j >= device->height)
@@ -614,7 +651,7 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 	transform_homogenize(&device->transform, &raster_pos3, &project_pos3);
 
 
-	//---------TODO：生成投影摄像机的深度图
+	//---------TODO：生成阴影摄像机的深度图
 	//如果阴影,插值
 	point_t shadow_raster_pos1, shadow_raster_pos2, shadow_raster_pos3,
 		shadow_project_pos1, shadow_project_pos2, shadow_project_pos3;
@@ -674,5 +711,57 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 		device_draw_line(device, (int)raster_pos1.x, (int)raster_pos1.y, (int)raster_pos2.x, (int)raster_pos2.y, device->foreground);
 		device_draw_line(device, (int)raster_pos1.x, (int)raster_pos1.y, (int)raster_pos3.x, (int)raster_pos3.y, device->foreground);
 		device_draw_line(device, (int)raster_pos3.x, (int)raster_pos3.y, (int)raster_pos2.x, (int)raster_pos2.y, device->foreground);
+	}
+}
+
+//顶点数据
+void frag_shader(device_t *device, v2f *vf, color_t *color) {
+
+	//如果开启阴影
+	if(dirLight.shadow)
+	{
+		// fragPos -> 灯的坐标系 -> 灯的透视矩阵 -> 求得z坐标比较
+
+		point_t tempPos = vf->pos; //这是像素坐标 还是世界坐标？
+		
+		matrix_apply(&tempPos, &tempPos, &device->transform_shadow.mvp);
+		transform_homogenize(&device->transform_shadow, &tempPos, &tempPos);
+		int y = (int)(tempPos.y + 0.5); //?
+		int x = (int)(tempPos.x + 0.5);//?
+
+		//只计算正面像素的阴影（以灯光视角）
+		vector_t tempNormal = vf->normal;
+		matrix_apply(&tempNormal, &tempNormal, &(device->transform_shadow.mv));
+		float dot = vector_dotproduct(&tempNormal, &cameras[0].front);
+
+		if (dot>0)
+		{
+			float bias = 0.015 * (1.0 - dot);
+			if (bias < 0.002f) bias = 0.001;
+			if (y >= 0 && x >= 0 && y < camera_main.height && x < camera_main.width) {
+				float shadow = 0.0;
+				for (int i = -1; i <= 1; ++i)
+				{
+					for (int j = -1; j <= 1; ++j)
+					{
+						if (y + j < 0 || y + j >= camera_main.height || x + i < 0 || x + i >= camera_main.width)
+							continue;
+						float pcfDepth = device->shadowbuffer[(y + j)*camera_main.width + (x + i)];
+						shadow += tempPos.z - bias > pcfDepth ? 1.0 : 0.0;
+					}
+				}
+				shadow /= 9.0;
+
+				color_t temp = { 0.3f,0.3f,0.3f,0.3f }; //阴影颜色
+
+				temp = temp * shadow;
+				color = &((*color) + temp);
+				//color_scale(&temp, shadow);  //阴影浓度
+				//color_sub(color, color, &temp); //混合阴影到当前颜色
+			}
+			
+		}
+
+
 	}
 }

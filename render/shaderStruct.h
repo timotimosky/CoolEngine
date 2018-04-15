@@ -13,32 +13,39 @@
 #define RENDER_STATE_surfaceNormal_color         8		//面法线的颜色显示   也就是所谓的平面着色：每个图元的像素都被一致的赋予该图元的第一个顶点的颜色。
 #define RENDER_STATE_verterNormal_color         16		//顶点法线的颜色显示   也就是所谓的顶点着色（高氏着色法）：：Gouraud着色：图元中的各像素的颜色值由顶点的颜色经线性插值得到。
 
-typedef struct { float r, g, b, a;
+ struct color_t { float r, g, b, a;
 
-	color_t operator*(float value)
-	{
+ color_t operator*(float value)
+ {
+	 color_t ncolor_t;
+	 ncolor_t.r = r*value;
+	 ncolor_t.g = g*value;
+	 ncolor_t.b = b*value;
+	 ncolor_t.a = a*value; //TODO:透明值考虑这里以后不计算
+	 return ncolor_t;
+ }
+
+
+color_t operator+(color_t value)
+{
 	color_t ncolor_t;
-	ncolor_t.r = r*value;
-	ncolor_t.g = g*value;
-	ncolor_t.b = b*value;
-	ncolor_t.a = a*value; //TODO:透明值考虑这里以后不计算
+	ncolor_t.r = r + value.r;
+	ncolor_t.g = g + value.g;
+	ncolor_t.b = b + value.b;
+	ncolor_t.a = a + value.a;
 	return ncolor_t;
-	}
+}
 
-
-	color_t operator+(color_t value)
-	{
-		color_t ncolor_t;
-		ncolor_t.r = r + value.r;
-		ncolor_t.g = g + value.g;
-		ncolor_t.b = b + value.b;
-		ncolor_t.a = a + value.a;
-		return ncolor_t;
-	}
-} color_t; //颜色
-
-
-
+//color_t operator-(color_t* value)
+//{
+//	color_t ncolor_t;
+//	ncolor_t.r = r - value->r;
+//	ncolor_t.g = g - value->g;
+//	ncolor_t.b = b - value->b;
+//	ncolor_t.a = a - value->a;
+//	return ncolor_t;
+//}
+} ; //颜色
 
 typedef struct { float u, v; } texcoord_t; //纹理
 
@@ -118,9 +125,9 @@ void transform_apply(const transform_t *ts, vector_t *posInCVV, const vector_t *
 
 //void vert_shader(device_t *device, a2v *av, v2f *vf);
 
-//void frag_shader(device_t *device, v2f *vf, color_t *color);
+void frag_shader(device_t *device, v2f *vf, color_t *color);
 
 void transform_applyVP(const transform_t *ts, vector_t *posInCVV, const vector_t *posInWorld);
 
-
+void device_clear(device_t *device);
 #endif

@@ -11,18 +11,20 @@
 //=====================================================================
 
 
+
 //这里重点说下 pos的W值， 跟color_t的W值的区别
 //pos在坐标系转换中为了统一转换，扩展到了四维。 pos的W值是用于坐标从4维到3维的还原，也就是CVV到光栅化的阶段
 //color_t的W值，是用于记录该顶点/像素点的深度，用于深度剔除
 
 typedef struct {
 	point_t pos;//位置
+
 	texcoord_t tc; //纹理坐标
 	color_t color; //颜色       
 	vector_t normal; //给寄存器增加法线    将这个合并 float rhw 合并到;  //该顶点的之前的w的倒数， 也就是缩放大小
 	point_t worldPos;  //之前在世界坐标的位置
-	point_t shadowPos; //投影摄像机的光栅化位置
 	float vertexLight; //顶点灯光的强度
+	point_t shadowPos; //投影摄像机的光栅化位置
 } vertex_t; //顶点
 
 
@@ -101,7 +103,7 @@ typedef struct {
 typedef struct {
 	unsigned long mesh_num;
 	point_t pos; //位置
-	vector_t axis;
+	vector_t axis;//欧拉角
 	float theta;
 	float scale;
 	vertex_t* mesh;
@@ -111,7 +113,7 @@ typedef struct {
 void vertex_add(vertex_t *y, const vertex_t *x);
 
 //灯光  点光源  现在计算的是静态光源
-extern vector_t lightPosition;
+extern dirlight_t dirLight;
 
 //环境光，暂时只给一个环境光的强度和颜色
 extern Light_t AmbientLight;

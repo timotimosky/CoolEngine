@@ -6,10 +6,6 @@
 #include <windows.h>
 #include <tchar.h>
 #include <stdbool.h>
-//#include  <vector>
-
-//基础的数学操作类，基本上其他类都要include
-
 
 #define PI 3.141592653
 #define angle_to_radian(X) ((X)/180*PI)  //角度转弧度
@@ -17,8 +13,7 @@
 
 typedef unsigned int IUINT32;
 typedef struct { float m[4][4]; } matrix_t;
-typedef struct { float x, y, z, w;
-
+struct vector_t  { float x, y, z, w;
 vector_t operator*(float value)
 {
 	vector_t ncolor_t;
@@ -30,7 +25,7 @@ vector_t operator*(float value)
 }
 
 
-vector_t operator+(vector_t* value)
+vector_t operator+(const vector_t* value)
 {
 	vector_t ncolor_t;
 	ncolor_t.x = x + value->x;
@@ -40,15 +35,37 @@ vector_t operator+(vector_t* value)
 	return ncolor_t;
 }
 
+vector_t operator-(const vector_t* value)
+{
+	vector_t ncolor_t;
+	ncolor_t.x = x - value->x;
+	ncolor_t.y = y - value->y;
+	ncolor_t.z = z - value->z;
 
-} vector_t; //使用的3D齐次坐标  其常规坐标为 {x/w, y/w, z/w; }
+	return ncolor_t;
+}
+
+
+} ; //使用的3D齐次坐标  其常规坐标为 {x/w, y/w, z/w; }
 typedef vector_t point_t;
 
 //rgb   和 强度 用于环境光
 typedef struct { 
 	float r, g, b, intension; 
-	bool shadow;  
+	bool shadow;   //是否产生阴影
 } Light_t;
+
+
+//方向光 位置无所谓
+typedef struct {
+	vector_t dir;
+	vector_t ambi;
+	//color_t ambi;
+	//color_t diff;
+	//color_t spec;
+	bool shadow;
+} dirlight_t;
+
 
 //不允许超过上下限 
 float CMIDFloat(float x, float min, float max);

@@ -1,6 +1,5 @@
 #include "objectManager.h"
 
-
 void vertex_add(vertex_t *y, const vertex_t *x) {
 	y->pos.x += x->pos.x;
 	y->pos.y += x->pos.y;
@@ -14,23 +13,27 @@ void vertex_add(vertex_t *y, const vertex_t *x) {
 	y->color.b += x->color.b;
 }
 
-//点光源
-vector_t lightPosition =
+//方向光
+dirlight_t dirLight =
 {
-	-10,100,-100,0,
+	{0,0,-10,0},
+	{0.3f, 0.3f, 0.3f, 0.3f},
+	true,
 };
+
+
 
 //环境光，暂时只给一个环境光的强度和颜色
 Light_t AmbientLight =
 {
-	0.3f,0.3f,0.3f,0.5f,
+	0.3f,0.3f,0.3f,0.5f,false,
 };
 
 //以后给的地面加上缩放
 //地面
 vertex_t ground_mesh[6] = {
 	// Positions            // 纹理坐标uv （Texture Coords）    //color           //rhw // Normals
-	{ { -0.5f,  0.0f, -0.5f, 1.0f },{ 0.0f,  1.0f },{ 0.2f, 1.0f },{ 0.0f, 1.0f,  0.0f,0.0f } },
+	{ { -0.5f,  0.0f, -0.5f, 1.0f },{ 0.0f,  1.0f },{ 0.2f, 1.0f, 1.0f, 1.0f },{ 0.0f, 1.0f,  0.0f,0.0f } },
 	{ { -0.5f,  0.0f,  0.5f, 1.0f },{ 0.0f,  0.0f },{ 0.2f, 1.0f, 1.0f, 1.0f },{ 0.0f, 1.0f,  0.0f,0.0f } },
 	{ { 0.5f,  0.0f,  0.5f, 1.0f },{ 1.0f,  0.0f },{ 0.2f, 1.0f, 1.0f, 1.0f },{ 0.0f,1.0f,  0.0f,0.0f } },
 	{ { 0.5f,  0.0f,  0.5f, 1.0f },{ 1.0f,  0.0f },{ 0.2f, 1.0f, 1.0f, 1.0f },{ 0.0f,1.0f,  0.0f,0.0f } },

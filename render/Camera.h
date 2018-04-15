@@ -26,7 +26,10 @@ typedef struct  camera_temp
 	int width;
 	int height;
 
-	float fovy;//
+	//Maya Camera的Angle of View是Horizontal FOV的角度
+	//Unity Camera的FOV是Vertical FOV的角度
+	float fov;  //fov缩放时，分辨率缩放，但比例不变
+
 	float zn; //近截面
 	float zf; //远截面
 
@@ -48,7 +51,7 @@ extern float Forwardoffset;
 extern camera camera_main;
 
 #define MAX_NUM_CAMERA 10
-extern camera cameras[];
+extern camera cameras[MAX_NUM_CAMERA];
 
 void CameraInit();
 

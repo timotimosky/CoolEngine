@@ -18,9 +18,6 @@
     <ClCompile Include="render\CMaterail.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="render\CoolRenerMain.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="render\objectManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -36,6 +33,7 @@
     <ClCompile Include="render\ShadingCalculate.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="render\CoolRenerMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\Camera.h">

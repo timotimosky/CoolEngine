@@ -1,9 +1,8 @@
 #include "Camera.h"
 
- camera cameras[MAX_NUM_CAMERA];
 
 float Forwardoffset = 0.01f;
-
+camera cameras[MAX_NUM_CAMERA];
 camera camera_main =  camera();
 
 //TODO：这里拿到的 貌似不是真正的世界坐标转摄像机矩阵，拿到的是它的转置矩阵
@@ -121,15 +120,16 @@ void camera_update(device_t *device, camera * caneraMain)
 }
 
 
-//摄像机位置刷新后,设备的矩阵改变
-void camera_updateShadow(device_t *device, camera * caneraMain)
+//如果是动态灯光，需要刷新
+void camera_updateShadow(device_t *device, camera * caneraShadow)
 {
 
 	//摄像机矩阵 摄像机的位移
-	matrix_set_lookat(&device->transform_shadow.view, &(caneraMain->pos), &caneraMain->front, &caneraMain->worldup);
+	matrix_set_lookat(&device->transform_shadow.view, &(caneraShadow->pos), &caneraShadow->front, &caneraShadow->worldup);
 
 	//更新矩阵，获得MVP矩阵
 	transform_update(&device->transform_shadow);
+
 }
 
 void Forward()
@@ -183,7 +183,7 @@ void device_init(device_t *device, int width, int height, void *fb)
 		device->zbuffer[j] = (float*)(zbuf + width * 4 * j);
 	}
 
-
+	//分配一个阴影缓存  即使是多灯光，也是在像素上依次叠加计算，现在暂时只计算单灯光阴影
 	float *shadowbuffer = (float*)malloc(height * width * sizeof(float));
 	device->shadowbuffer = shadowbuffer;
 

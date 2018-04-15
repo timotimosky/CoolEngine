@@ -60,3 +60,4 @@ Debug/Mini3D.tlog/CL.read.1.tlog
 *.pdb
 *.idb
 *.pdb
+render/Pipline.cpp
