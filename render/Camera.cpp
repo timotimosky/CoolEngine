@@ -248,4 +248,11 @@ void device_clear(device_t *device, int mode)
 		for (x = device->width; x > 0; dst++, x--)
 			dst[0] = 0.0f;
 	}
+
+	//清空shaderbuffer,默认深度是CVV盒子最远离摄像机的边的深度，也就是1
+	if (device->shadowbuffer != NULL) {
+		for (int y = 0; y < device->height; y++)
+			for (int x = 0; x < device->width; x++)
+				device->shadowbuffer[y * device->width + x] = 1.0f;
+	}
 }

@@ -35,9 +35,24 @@ int transform_check_cvv(const vector_t *v)
 }
 
 
+//transform_homogenize翻转的过程,用于把像素从屏幕返回到主摄像机空间，好进行灯光的深度计算。
+void transform_homogenize_reverse(const transform_t *ts, point_t *x, const point_t *y)
+{
+	float rhw = 1.0f / y->w;
+
+	x->x = (y->x * 2 / ts->screen_width - 1.0f)*rhw;
+
+	x->y = (1.0f-y->y *2 / ts->screen_height ) *rhw;
+
+	x->z = x->z *rhw;
+
+	x->w = rhw;
+}
+
+
 //TODO:以后传入摄像机宽度，因为rendering textrue 和阴影投影是使用其他摄像机的近截面的长宽
 // 归一化，然后光栅化，得到屏幕坐标 
-void transform_homogenize(const transform_t *ts, point_t *y, const point_t *x)   //因为参数是const修饰的，所以x不会被改变
+void transform_homogenize(const transform_t *ts, point_t *y, const point_t *x)   
 {
 	float rhw = 1.0f / x->w;  //这里使用坐标的W值的倒数
 
@@ -389,10 +404,11 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 			//每次for循环后要后移，注意不要缓存他
 			float rhw = scanline->v.pos.w; //前期用于坐标转换，后期用于存储深度
 
-
-			//TODO:深度判断有误
-			if (rhw >= zbuffer[scanlineX]) //判断深度是否大于缓存中Zbuffer  默认深度为0  //这里深度测试，是判断的扫描线的起点的深度，按理说，应该在后面，判断像素深度
+			//表示没有被遮挡 或者表示不进行深度测试
+			if (zbuffer == NULL || rhw >= zbuffer[scanlineX]) //判断深度是否大于缓存中Zbuffer  默认深度为0  //这里深度测试，是判断的扫描线的起点的深度，按理说，应该在后面，判断像素深度
 			{
+				if (zbuffer != NULL)
+					zbuffer[scanlineX] = rhw;//最前面的深度
 
 #pragma region 计算阴影颜色 DJLTODO：没转换
 
@@ -401,7 +417,7 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 				{
 					float z = scanline->v.pos.z;
 
-					//这个点有阴影
+					//记录最小（离）
 					if (z <= device->shadowbuffer[scanlineY*width + scanlineX]) {
 						device->shadowbuffer[scanlineY*width + scanlineX] = z;
 
@@ -410,6 +426,15 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 					}
 				}
 #pragma endregion
+
+				//计算shadow 或者是 rendertextrue
+
+				point_t interpos = scanline->v.pos;
+
+				transform_homogenize_reverse(&device->transform,&interpos, &interpos);//从CVV空间回到主摄像机空间
+
+				//使用转置矩阵 从主摄像机空间回到世界空间
+
 
 				//准备像素阶段的数据   将用于模型的顶点结构转换为用于像素阶段的v2f结构
 				v2f vf;
@@ -428,8 +453,6 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 
 				//frag_shader(device, &vf, &vf.color);
 
-				//像素颜色
-				zbuffer[scanlineX] = rhw;
 
 				if (render_state & RENDER_STATE_COLOR) //使用位运算判断  //颜色模式是通过 顶点的W值来插值，但平面着色模式不是
 				{
@@ -567,7 +590,7 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 	vertex_t *vertice[3] = { v1, v2, v3 };
 
 	point_t world_pos1, world_pos2, world_pos3, //世界坐标
-		raster_pos1, raster_pos2, raster_pos3, // 光栅化坐标，在一个2D平面上，但还未对应到屏幕上真正的像素，后续需要通过当前的采样方式来对应	
+		raster_pos1, raster_pos2, raster_pos3, // 光栅化坐标，在一个2D平面上，对应到屏幕上真正的像素了（本应该通过当前的采样方式来对应，这里直接是按屏幕像素大小缩放）	
 		project_pos1, project_pos2, project_pos3; //投影坐标 cvv空间
 
 	render_state = device->render_state;

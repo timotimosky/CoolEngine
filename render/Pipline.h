@@ -34,6 +34,8 @@ extern int render_state;
 
 int transform_check_cvv(const vector_t *v);
 
+void transform_homogenize_reverse(const transform_t *ts, point_t *x, const point_t *y);
+
 void transform_homogenize(const transform_t *ts, point_t *y, const point_t *x);
 
 void vertex_rhw_init(vertex_t *v);
