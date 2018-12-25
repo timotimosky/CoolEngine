@@ -6,12 +6,22 @@
 // 前三个模式，没有着色过程，也不需要着色器
 
 
-#define RENDER_STATE_WIREFRAME      1		// 渲染线框
-#define RENDER_STATE_TEXTURE        2		// 渲染纹理
-#define RENDER_STATE_COLOR          4		// 渲染颜色 ：这里是根据顶点深度(由Z轴生成)过渡   使用的是根据顶点索引的奇偶性随机颜色，然后顶点间随机插值。
+#define RENDER_STATE_WIREFRAME_TEXT     "渲染线框"
+#define RENDER_STATE_TEXTURE_TEXT        "渲染纹理"
+#define RENDER_STATE_COLOR_TEXT          "顶点颜色" //这里是根据顶点深度(由Z轴生成)过渡   使用的是根据顶点索引的奇偶性随机颜色，然后顶点间随机插值。
 
-#define RENDER_STATE_surfaceNormal_color         8		//面法线的颜色显示   也就是所谓的平面着色：每个图元的像素都被一致的赋予该图元的第一个顶点的颜色。
-#define RENDER_STATE_verterNormal_color         16		//顶点法线的颜色显示   也就是所谓的顶点着色（高氏着色法）：：Gouraud着色：图元中的各像素的颜色值由顶点的颜色经线性插值得到。
+#define RENDER_STATE_surfaceNormal_color_TEXT   "面法线的颜色显示"   //也就是所谓的平面着色：每个图元的像素都被一致的赋予该图元的第一个顶点的颜色。
+#define RENDER_STATE_verterNormal_color_TEXT     "顶点法线的颜色显示"   //也就是所谓的顶点着色（高氏着色法）：：Gouraud着色：图元中的各像素的颜色值由顶点的颜色经线性插值得到。
+
+enum Render_State
+{
+	RENDER_STATE_WIREFRAME = 1,
+	RENDER_STATE_TEXTURE = 2,
+	RENDER_STATE_COLOR = 4,
+	RENDER_STATE_surfaceNormal_color = 8,
+	RENDER_STATE_verterNormal_color = 16
+};
+
 
  struct color_t { float r, g, b, a;
 

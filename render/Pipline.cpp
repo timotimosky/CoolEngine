@@ -105,7 +105,7 @@ void vertex_interp(vertex_t *y, const vertex_t *x1, const vertex_t *x2, float t)
 	y->color.g = interp(x1->color.g, x2->color.g, t);
 	y->color.b = interp(x1->color.b, x2->color.b, t);
 
-	if (render_state & RENDER_STATE_verterNormal_color)
+	if (render_state & (RENDER_STATE_verterNormal_color))
 		y->vertexLight = interp(x1->vertexLight, x2->vertexLight, t);
 }
 

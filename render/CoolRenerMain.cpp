@@ -1,10 +1,18 @@
 #include <tchar.h>
 #include <time.h>  
 #include <Windows.h>
+#include<vector>
+#include<list>
 #include "Pipline.h"
 #include "CMaterail.h"
 #include "Camera.h"
 #pragma comment( lib,"winmm.lib" )
+#ifdef _MSC_VER
+#pragma comment(lib, "gdi32.lib") //gdi绘图
+#pragma comment(lib, "user32.lib")
+#endif
+using namespace std;
+
 //=====================================================================
 // Win32 窗口及图形绘制：为 device 提供一个 DibSection 的 FB
 //=====================================================================
@@ -29,29 +37,19 @@ void screen_update(LPCSTR);							// 显示FrameBuffer
 static LRESULT screen_events(HWND, UINT, WPARAM, LPARAM);
 
 //储存所有渲染物体
-
-Object_t box_obj;
-Object_t box_obj_new;
-
-#ifdef _MSC_VER
-#pragma comment(lib, "gdi32.lib") //gdi绘图
-#pragma comment(lib, "user32.lib")
-#endif
+vector<object_simple> Scene_render_Objs;
 
 //一个解析mesh网格的函数
 void GetMesh(vertex_t* meshPtr)
 {
 	//TODO:
-	
 
 }
-
-
-
 
 // 初始化窗口并设置标题
 int screen_init(int w, int h, const TCHAR *title)
 {
+	//__stdcall* WNDPROC 
 	WNDCLASS wc = { CS_BYTEALIGNCLIENT, (WNDPROC)screen_events, 0, 0, 0, NULL, NULL, NULL, NULL, _T("SCREEN3.1415926") };
 	BITMAPINFO bi = { { sizeof(BITMAPINFOHEADER), w, -h, 1, 32, BI_RGB, w * h * 4, 0, 0, 0, 0 } };
 
@@ -77,7 +75,7 @@ int screen_init(int w, int h, const TCHAR *title)
 	screen_dc = CreateCompatibleDC(hDC);
 	ReleaseDC(screen_handle, hDC);
 
-	screen_hb = CreateDIBSection(screen_dc, &bi, DIB_RGB_COLORS, &ptr, 0, 0); //创建帧缓冲ptr
+	screen_hb = CreateDIBSection(screen_dc, &bi, DIB_RGB_COLORS, &ptr, 0, 0); //创建帧缓冲Bitmap ptr
 	if (screen_hb == NULL)
 		return -3;
 
@@ -189,11 +187,11 @@ void draw_plane(device_t *device, int a, int b, int c, int d) {
 }
 
 
-void draw_Object(object_simple Cube, device_t *device, float theta)
+void draw_Object(object_simple Cube, device_t *device)
 {
 	matrix_t m;
 
-	matrix_set_rotate(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z, theta, Cube.pos.x, Cube.pos.y, Cube.pos.z); //theta  是物体本身的x,y,z轴相对的旋转
+	matrix_set_rotate(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z, Cube.theta, Cube.pos.x, Cube.pos.y, Cube.pos.z); //theta  是物体本身的x,y,z轴相对的旋转
 
 	device->transform.model = m;
 	transform_update(&device->transform);
@@ -280,15 +278,63 @@ float Get_FPS()
 }
 
 
+void Init_Obj()
+{
+	//初始化一个地板
+	object_simple ground;
+
+	ground.pos = { 0, -2, 3,1 };
+	ground.axis = { -1, -0.5, 1, 0 };
+	ground.mesh = ground_mesh;
+	ground.mesh_num = 4;
+	ground.scale = 6;
+	ground.theta = 0;
+
+	//初始化一个物体
+	object_simple Cube;
+	Cube.pos = { 0, 0, 0 ,1 };
+	Cube.axis = { -1, -0.5, 1, 0 };
+	Cube.mesh = box_mesh;
+	Cube.mesh_num = 34;
+	Cube.scale = 1;
+	Cube.theta = 1;  //当前物体的旋转弧度。  1 就是 180度
+
+	Scene_render_Objs.push_back(Cube);
+	Scene_render_Objs.push_back(ground);
+}
+
+void InitCamera()
+{
+	//初始化主摄像机
+	camera_main.pos = { 0, 0, -3.5, 1 };
+	camera_main.front = { 0, 0, 0, 1 };
+	camera_main.worldup = { 0, 1, 0, 1 };
+}
+
+void Init_ShadowCamera()
+{
+	if (dirLight.shadow == true)
+	{
+		//初始化阴影摄像机 采用深度测试，然后将设定的阴影颜色跟当前像素颜色混合。在像素阶段执行
+		camera* shadowCamera = &cameras[0];
+		shadowCamera->pos = { 0.0f, 3.0f, -3.0f, 1.0f }; //设定到产生阴影的那个灯光位置
+		shadowCamera->front = dirLight.dir;
+		shadowCamera->worldup = { 0, 1, 0, 1 };
+	}
+}
+
+
 int main(void)
 {
 	device_t device;
 	//5种模式： 线框、填充、透视顶点插值颜色、透视面法线、透视顶点法线  
 	int states[] = { RENDER_STATE_WIREFRAME,RENDER_STATE_TEXTURE, RENDER_STATE_COLOR, RENDER_STATE_surfaceNormal_color ,RENDER_STATE_verterNormal_color };
-	int indicator = 0; //三种模式的数组索引，避免越界
+
+	char * states_text[] = { RENDER_STATE_WIREFRAME_TEXT,RENDER_STATE_TEXTURE_TEXT, RENDER_STATE_COLOR_TEXT, RENDER_STATE_surfaceNormal_color_TEXT ,RENDER_STATE_verterNormal_color_TEXT };
+
+	int indicator = 0; //模式的数组索引，避免越界
 	int kbhit = 0;//一个bool值  保证每一帧只执行一次键盘输入
 	float alpha = 1; //当前物体的旋转弧度。  1 就是 180度
-	float pos = -3.5;
 
 	TCHAR *title = _T("coolRender -- ")_T("Left/Right: rotation, Up/Down: forward/backward, Space: switch state");
 
@@ -297,19 +343,11 @@ int main(void)
 
 	device_init(&device, 800, 600, screen_fb); //设备初始
 
-	//初始化主摄像机
-	camera_main.pos = { 0, 0, pos, 1 }; //(point_t) { pos, 0, 0, 1 };
-	camera_main.front =  { 0, 0, 0, 1 };
-	camera_main.worldup ={ 0, 1, 0, 1 };//{ 0, 0, 1, 1 };
+	Init_Obj();//初始化场景里的物体
 
-	if(dirLight.shadow == true)
-	{
-		//初始化阴影摄像机 采用深度测试，然后将设定的阴影颜色跟当前像素颜色混合。在像素阶段执行
-		camera* shadowCamera = &cameras[0];
-		shadowCamera->pos = { 0.0f, 3.0f, -3.0f, 1.0f }; //设定到产生阴影的那个灯光位置
-		shadowCamera->front = dirLight.dir;
-		shadowCamera->worldup = { 0, 1, 0, 1 };
-    }
+	InitCamera();//初始化主摄像机
+
+	Init_ShadowCamera();//阴影摄像机
 
 	init_texture(&device); //纹理初始化
 
@@ -317,52 +355,22 @@ int main(void)
 
 	LPCSTR type = "默认渲染模式";
 
-	//初始化一个物体
-	object_simple Cube;
-	Cube.pos =  { 0, 0, 0 ,1};
-	Cube.axis = { -1, -0.5, 1, 0 };
-	Cube.mesh = box_mesh;
-	Cube.mesh_num = 34;
-	Cube.scale = 1;
-
-	
-	//初始化一个地板
-	object_simple ground;
-
-	ground.pos =  { 0, -2, 3,1 };
-	Cube.axis = { -1, -0.5, 1, 0 };
-
-	//ground.pos =  { -2, -2, 1,1 };
-	//Cube.axis =  { -1, -0.5, 1, 0 };
-
-	ground.mesh = ground_mesh;
-	ground.mesh_num = 4;
-	ground.scale = 6;
-
-
-	char *renderType = "线框";
+	char *renderType = RENDER_STATE_WIREFRAME_TEXT;
 	float fps = 0;
 	char out[200];
 	while (screen_exit == 0 && screen_keys[VK_ESCAPE] == 0)
 	{
-
-		//device_clear(&device); //合并设备清理
-
 		fps = Get_FPS();
 
 		screen_dispatch(); //分发msg
 		device_clear(&device, 1); //清空缓存 Zbuffer frameBuffer
-
-		camera_main.pos = { 0, 0, pos, 1 }; //{ pos, 0, 0, 1 };
 		camera_update(&device, &camera_main); //摄像机不断更新矩阵，因为pos一直变化
 
 		//动态灯光 阴影
 		camera_updateShadow(&device, &cameras[0]);
 
-		//camera_updateShadow(&device, &shadowCamera);
-
-		if (screen_keys[VK_UP]) pos += 0.01f; //摄像机前进  pos -= 0.01f;
-		if (screen_keys[VK_DOWN]) pos -= 0.01f; //摄像机后退
+		if (screen_keys[VK_UP]) camera_main.pos.z += 0.01f; //摄像机前进  pos -= 0.01f;
+		if (screen_keys[VK_DOWN]) camera_main.pos.z -= 0.01f; //摄像机后退
 		if (screen_keys[VK_LEFT]) alpha += 0.01f; //物体向左旋转
 		if (screen_keys[VK_RIGHT]) alpha -= 0.01f; //物体向右旋转
 
@@ -378,38 +386,16 @@ int main(void)
 		{
 			device.cull = 2;
 		}
-
 		if (screen_keys[VK_SPACE])
 		{
-			if (kbhit == 0)  //保证每一帧只执行一次键盘输入
+			if (kbhit == 0)//保证每次按下只执行一次键盘输入
 			{
 				kbhit = 1;
 				if (++indicator >= 5)
 					indicator = 0;
 				device.render_state = states[indicator];
-
-				if (indicator==0)
-				{
-					renderType = "线框";
-				}
-				else if(indicator == 1)
-				{
-					renderType = "纹理";
-				}
-				else if (indicator == 2)
-				{
-					renderType = "颜色";
-				}
-				else if (indicator == 3)
-				{
-					renderType = "面法线";
-				}
-				else if (indicator == 4)
-				{
-					renderType = "顶点法线";
-				}
-			}
-			
+				renderType = states_text[indicator];
+			}		
 		}
 		else
 		{
@@ -422,12 +408,15 @@ int main(void)
 
 		type = (LPCSTR)out;
 
-
 		//渲染一个立方体 
 		draw_box(&device, alpha);
 
-		draw_Object(Cube, &device, alpha);
-		draw_Object(ground,&device, 0);
+		for (int i = 0; i < Scene_render_Objs.size(); i++)
+		{
+			if(i!=0)
+				Scene_render_Objs[i].theta = alpha;
+			draw_Object(Scene_render_Objs[i], &device);
+		}
 
 		//真正的渲染函数
 		screen_update(type);

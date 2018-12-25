@@ -2,7 +2,7 @@
 
 
 float Forwardoffset = 0.01f;
-camera cameras[MAX_NUM_CAMERA];
+camera cameras[MAX_NUM_CAMERA]; 
 camera camera_main =  camera();
 
 //TODO：这里拿到的 貌似不是真正的世界坐标转摄像机矩阵，拿到的是它的转置矩阵
