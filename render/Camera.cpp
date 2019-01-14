@@ -9,7 +9,7 @@ camera camera_main =  camera();
 // 设置摄像机  eye是目光看向的焦点  at是摄像机自身坐标  up是Y轴
 void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *at, const vector_t *up)
 {
-
+	//测试回滚3333333
 	//测试回滚1
 
 	vector_t xaxis, yaxis, zaxis;
