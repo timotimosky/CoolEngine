@@ -190,7 +190,7 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 
 	//欧拉角转矩阵 采用Y-X-Z轴的顺序 根据矩阵乘法可结合来叠加成一个矩阵
 	//默认的物体空间是跟世界空间一致的。所以物体到世界矩阵，就是根据物体当下的旋转和位移来反推。
-	void matrix_Obj2World(matrix_t *m, float rot_x, float rot_y, float rot_z)
+	void matrix_Obj2World(matrix_t *m, float rot_x, float rot_y, float rot_z, float xOffset, float yOffest, float zOffset)
 	{
 		float x;
 		float y;
@@ -237,9 +237,9 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 
 		m->m[0][3] = m->m[1][3] = m->m[2][3] = 0.0f;
 		//m->m[3][0] = m->m[3][1] = m->m[3][2] = 0.0f;
-		m->m[3][0] = 0;
-		m->m[3][1] = 0;
-		m->m[3][2] = 0;
+		m->m[3][0] = xOffset;
+		m->m[3][1] = yOffest;
+		m->m[3][2] = zOffset;
 
 		m->m[3][3] = 1.0f;
 

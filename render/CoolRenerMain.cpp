@@ -229,7 +229,7 @@ void draw_box(device_t *device, float theta)
 	//这里传递的是 (-1, -0.5, 1)这个指定向量
 	//matrix_set_rotate(&m, 1, 0, 0, theta,0,0,5); 
 
-	matrix_Obj2World(&m, 0, theta, 0);
+	matrix_Obj2World(&m, 0, theta, 0, 2, 0, 5);
 	//matrix_set_rotate(&m, -3, -0.5, 1, theta,0,0,0); 
 
 	device->transform.model = m;
