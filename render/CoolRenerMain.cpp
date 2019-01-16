@@ -191,13 +191,19 @@ void draw_Object(object_simple Cube, device_t *device)
 {
 	matrix_t m;
 
-	matrix_set_rotate(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z, Cube.theta, Cube.pos.x, Cube.pos.y, Cube.pos.z); //theta  是物体本身的x,y,z轴相对的旋转
+	//TODO: 计算 旋转 和位移 需要的矩阵
 
-	device->transform.model = m;
+	//输入 当前物体原点在世界坐标系中的位置和旋转，  来反推世界矩阵
+	//axis.x 绕X轴的旋转角度
+
+	//matrix_Obj2World(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z);
+	//matrix_set_rotate(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z, Cube.theta, Cube.pos.x, Cube.pos.y, Cube.pos.z); //theta  是物体本身的x,y,z轴相对的旋转
+
+	//device->transform.model = m;
 	transform_update(&device->transform);
 
 	//TODO：如果打开阴影
-	device->transform_shadow.model = m;
+	//device->transform_shadow.model = m;
 	transform_update(&device->transform_shadow);
 
 	//直接渲染三角形
@@ -221,7 +227,9 @@ void draw_box(device_t *device, float theta)
 {
 	matrix_t m;
 	//这里传递的是 (-1, -0.5, 1)这个指定向量
-	matrix_set_rotate(&m, -3, -0.5, 1, theta,-3,0,5); 
+	//matrix_set_rotate(&m, 1, 0, 0, theta,0,0,5); 
+
+	matrix_Obj2World(&m, 0, theta, 0);
 	//matrix_set_rotate(&m, -3, -0.5, 1, theta,0,0,0); 
 
 	device->transform.model = m;
@@ -415,7 +423,7 @@ int main(void)
 		{
 			if(i!=0)
 				Scene_render_Objs[i].theta = alpha;
-			draw_Object(Scene_render_Objs[i], &device);
+			//draw_Object(Scene_render_Objs[i], &device);
 		}
 
 		//真正的渲染函数

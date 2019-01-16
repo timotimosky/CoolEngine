@@ -86,7 +86,7 @@ typedef struct {
 
 	//貌似没有模型矩阵
 
-	matrix_t model;         // 物体矩阵，每个物体都有自己的物体矩阵。
+	matrix_t model;         // 物体-世界矩阵，每个物体都有自己的物体矩阵。这里要单独拿出去
 	matrix_t view;          // 摄影机坐标变换 世界到摄像机坐标变换矩阵
 	matrix_t projection;    // 投影变换 ，就是变换到摄像机的远平面-近平面空间内
 	matrix_t mvp;     // transform = world * view * projection

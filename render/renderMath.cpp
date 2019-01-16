@@ -188,7 +188,95 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 	m->m[2][2] = z;
 }
 
+	//欧拉角转矩阵 采用Y-X-Z轴的顺序 根据矩阵乘法可结合来叠加成一个矩阵
+	//默认的物体空间是跟世界空间一致的。所以物体到世界矩阵，就是根据物体当下的旋转和位移来反推。
+	void matrix_Obj2World(matrix_t *m, float rot_x, float rot_y, float rot_z)
+	{
+		float x;
+		float y;
+		float z;
+		float a;
+		float b;
+		float c;
+		x = (float)sin(rot_x); //(x,y,z)是一个向量 
+		y = (float)sin(rot_y);
+		z = (float)sin(rot_z);
 
+		a = (float)cos(rot_x); //(x,y,z)是一个向量
+		b = (float)cos(rot_y);
+		c = (float)cos(rot_z);
+
+		//因为其他地方用的行向量 * 列矩阵 所以这里矩阵也按列写
+
+		//旋转顺序为Z-Y-X
+		//m->m[0][0] = b * c;
+		//m->m[0][1] = -z*b;
+		//m->m[0][2] = y;
+
+		//m->m[1][0] = z*a-x*y*c;
+		//m->m[1][1] = a*c+x*y*z;
+		//m->m[1][2] = -x*b;
+
+		//m->m[2][0] = x*z + y*c*b;
+		//m->m[2][1] = x*c - a*y*z;
+		//m->m[2][2] = a*b;
+
+		//旋转顺序为Y-Z-X
+		m->m[0][0] = b * c + x*y*z;
+		m->m[0][1] = -z * b +x*y*c;
+		m->m[0][2] = y*a;
+
+		m->m[1][0] = z * a;
+		m->m[1][1] = a*c;
+		m->m[1][2] = -x;
+
+		m->m[2][0] = -y * c + z * x*b;
+		m->m[2][1] = z * y + b*x*c;
+		m->m[2][2] = a * b;
+
+
+		m->m[0][3] = m->m[1][3] = m->m[2][3] = 0.0f;
+		//m->m[3][0] = m->m[3][1] = m->m[3][2] = 0.0f;
+		m->m[3][0] = 0;
+		m->m[3][1] = 0;
+		m->m[3][2] = 0;
+
+		m->m[3][3] = 1.0f;
+
+
+		//m->m[0][0] = b * c;
+		//m->m[1][0] = -z*b;
+		//m->m[2][0] = y;
+
+		//m->m[0][1] = z*a-x*y*c;
+		//m->m[1][1] = a*c+x*y*z;
+		//m->m[2][1] = -x*b;
+
+		//m->m[0][2] = x*z + y*c*b;
+		//m->m[1][2] = x*c - a*y*z;
+		//m->m[2][2] = a*b;
+
+
+
+
+
+		//m->m[0][0] = b * c + x * y*z;
+		//m->m[1][0] = -z*b;
+		//m->m[2][0] = y;
+
+		//m->m[0][1] = z*a-x*y*c;
+		//m->m[1][1] = a*c+x*y*z;
+		//m->m[2][1] = -x*b;
+
+		//m->m[0][2] = x*z + y*c*b;
+		//m->m[1][2] = x*c - a*y*z;
+		//m->m[2][2] = a*b;
+	
+	}
+
+
+	//四元数转矩阵
+	// 这是指定轴旋转
 //TODO：加上物体坐标
 
 //坐标系的变化 = 基坐标的位移+坐标系的旋转   坐标系的旋转 跟 这里坐标系内部向量的旋转是一样的
