@@ -1,6 +1,6 @@
 #include "Pipline.h"
 #include "Camera.h"
-
+#include "UObject.h"
 
 int render_state;
 //Î»ÔËËã£º

@@ -5,16 +5,10 @@ float Forwardoffset = 0.01f;
 camera cameras[MAX_NUM_CAMERA]; 
 camera camera_main =  camera();
 
-//TODO：这里拿到的 貌似不是真正的世界坐标转摄像机矩阵，拿到的是它的转置矩阵
+//TODO：这里拿到的 貌似不是真正的世界坐标转摄像机矩阵，拿到的是 此刻 转置矩阵 =逆矩阵
 // 设置摄像机  eye是目光看向的焦点  at是摄像机自身坐标  up是Y轴
 void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *at, const vector_t *up)
 {
-	//测试回滚6666
-	//测试回滚5555
-	//测试回滚4444444444
-	//测试回滚1
-
-
 	vector_t xaxis, yaxis, zaxis;
 
 	//根据摄像机的自身坐标和朝向，算出摄像机的X Y Z
@@ -33,7 +27,7 @@ void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *at, con
 
 //TODO：这里没有标准化基坐标
 
-//摄像机坐标系的原点不一定与世界坐标系重合，同时由于自身的旋转，坐标轴也一定不与世界坐标系的坐标轴平行。为完成工作任务，需要分为两步走1.整体平移，将摄像机平移至世界坐标系原点，2.将坐标点从世界坐标系转换至摄像机坐标系。
+//摄像机坐标系 1.整体平移，将摄像机平移至世界坐标系原点，2.将坐标点从世界坐标系转换至摄像机坐标系。
 //使用单位向量U, V, W分别代表摄像机坐标系X, Y, Z轴正向的单位向量在世界坐标系中的表示，则在摄像相机坐标系与世界坐标系原点重合的情况下，物体顶点坐标代表的向量（即从世界原点指向物体顶点的向量）
 //在U, V, W上的投影大小即是物体顶点在摄像机坐标系下的坐标值。因为U, V, W是单位向量，使用二者的点乘即可以得到顶点的投影大小。
 //P  =  (ax,by,cz)  a b c是已知数

@@ -93,6 +93,7 @@
     <ClCompile Include="render\renderMath.cpp" />
     <ClCompile Include="render\shaderStruct.cpp" />
     <ClCompile Include="render\ShadingCalculate.cpp" />
+    <ClCompile Include="render\UObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\Camera.h" />
@@ -102,6 +103,7 @@
     <ClInclude Include="render\renderMath.h" />
     <ClInclude Include="render\shaderStruct.h" />
     <ClInclude Include="render\ShadingCalculate.h" />
+    <ClInclude Include="render\UObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

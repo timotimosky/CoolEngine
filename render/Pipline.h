@@ -1,5 +1,5 @@
 #pragma once
-#include "objectManager.h"
+#include "shaderStruct.h"
 #include "ShadingCalculate.h"
 
 //在渲染中，rhw 是摄像机空间转CVV空间的时候，摄像机空间坐标w的负数的倒数。

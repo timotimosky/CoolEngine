@@ -1,5 +1,5 @@
 #pragma once
-#include "objectManager.h"
+#include "shaderStruct.h"
 
 
 typedef struct {
@@ -31,22 +31,3 @@ typedef struct {
 
 	int cull;  //剔除
 } materal;
-
-typedef struct
-{
-
-	point_t pos;
-	float theta; //暂时只给定一个旋转角度
-
-				 //分别在x,y,z轴上的弧度
-	float thetaX;
-	float thetaY;
-	float thetaZ;
-
-	vertex_t* mesh;
-	IUINT32 texture[256][256]; //纹理
-	matrix_t model;         // 物体矩阵  由三个弧度计算出来
-
-	materal m_materal; //材质
-}
-Object_t;

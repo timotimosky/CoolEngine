@@ -7,6 +7,9 @@
 #include <tchar.h>
 #include <stdbool.h>
 
+
+
+
 #define PI 3.141592653
 #define angle_to_radian(X) ((X)/180*PI)  //角度转弧度
 #define radian_to_angle(X) ((X)/PI*180)  //弧度转角度
@@ -14,6 +17,24 @@
 typedef unsigned int IUINT32;
 typedef struct { float m[4][4]; } matrix_t;
 struct vector_t  { float x, y, z, w;
+
+vector_t()
+{
+	x = 0;
+		y = 0;
+		z = 0;
+		w = 1;
+}
+
+
+vector_t(float ix, float iy, float iz, float iw)
+{
+	x = ix;
+	y = iy;
+	z = iz;
+	w = iw;
+}
+
 vector_t operator*(float value)
 {
 	vector_t ncolor_t;
@@ -131,7 +152,7 @@ void matrix_set_translate(matrix_t *m, float x, float y, float z);
 // 缩放变换
 void matrix_set_scale(matrix_t *m, float x, float y, float z);
 
-void matrix_Obj2World(matrix_t *m, float rot_x, float rot_y, float rot_z, float xOffset, float yOffest, float zOffset);
+void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos,float scale);
 
 //坐标系的变化 = 基坐标的位移+坐标系的旋转   坐标系的旋转 跟 这里坐标系内部向量的旋转是一样的
 //这个矩阵是基于指定向量旋转的旋转矩阵。 该指定向量为 (x,y,z)

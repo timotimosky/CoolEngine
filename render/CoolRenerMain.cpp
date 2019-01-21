@@ -1,17 +1,17 @@
 #include <tchar.h>
 #include <time.h>  
 #include <Windows.h>
-#include<vector>
 #include<list>
 #include "Pipline.h"
 #include "CMaterail.h"
+#include "UObject.h"
 #include "Camera.h"
+
 #pragma comment( lib,"winmm.lib" )
 #ifdef _MSC_VER
 #pragma comment(lib, "gdi32.lib") //gdi绘图
 #pragma comment(lib, "user32.lib")
 #endif
-using namespace std;
 
 //=====================================================================
 // Win32 窗口及图形绘制：为 device 提供一个 DibSection 的 FB
@@ -27,6 +27,7 @@ static HBITMAP screen_ob = NULL;		// 老的 BITMAP  位图
 //自定义的deviese 和windows 之间的关联 就在于这个 
 unsigned char *screen_fb = NULL;		// frame buffer  帧缓冲
 long screen_pitch = 0;
+float beta =  1;
 
 int screen_init(int w, int h, const TCHAR *title);	// 屏幕初始化
 int screen_close(void);								// 关闭屏幕
@@ -35,9 +36,6 @@ void screen_update(LPCSTR);							// 显示FrameBuffer
 
 													// win32 event handler
 static LRESULT screen_events(HWND, UINT, WPARAM, LPARAM);
-
-//储存所有渲染物体
-vector<object_simple> Scene_render_Objs;
 
 //一个解析mesh网格的函数
 void GetMesh(vertex_t* meshPtr)
@@ -127,11 +125,13 @@ int screen_close(void) {
 
 void Control(WPARAM wParam, LPARAM lParam);
 
+
 static LRESULT screen_events(HWND hWnd, UINT msg,
 	WPARAM wParam, LPARAM lParam) {
 	switch (msg) {
 	case WM_CLOSE: screen_exit = 1; break;
-	case WM_KEYDOWN: screen_keys[wParam & 511] = 1; break;
+	case WM_KEYDOWN: screen_keys[wParam & 511] = 1; 
+		break;
 	case WM_KEYUP: screen_keys[wParam & 511] = 0; break;
 	case WM_MOUSEMOVE:
 			Control(wParam,lParam); break;
@@ -187,7 +187,7 @@ void draw_plane(device_t *device, int a, int b, int c, int d) {
 }
 
 
-void draw_Object(object_simple Cube, device_t *device)
+void draw_Object(Object_t Cube, device_t *device)
 {
 	matrix_t m;
 
@@ -196,10 +196,10 @@ void draw_Object(object_simple Cube, device_t *device)
 	//输入 当前物体原点在世界坐标系中的位置和旋转，  来反推世界矩阵
 	//axis.x 绕X轴的旋转角度
 
-	//matrix_Obj2World(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z);
+	matrix_Obj2World(&Cube.model, Cube.axis, Cube.pos, Cube.scale);
 	//matrix_set_rotate(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z, Cube.theta, Cube.pos.x, Cube.pos.y, Cube.pos.z); //theta  是物体本身的x,y,z轴相对的旋转
 
-	//device->transform.model = m;
+	device->transform.model = Cube.model;
 	transform_update(&device->transform);
 
 	//TODO：如果打开阴影
@@ -226,10 +226,7 @@ void draw_Object(object_simple Cube, device_t *device)
 void draw_box(device_t *device, float theta)
 {
 	matrix_t m;
-	//这里传递的是 (-1, -0.5, 1)这个指定向量
-	//matrix_set_rotate(&m, 1, 0, 0, theta,0,0,5); 
-
-	matrix_Obj2World(&m, 0, theta, 0, 2, 0, 5);
+	matrix_Obj2World(&m,  vector_t(0, theta, beta,1), vector_t(2, 0, 5,1), 1);
 	//matrix_set_rotate(&m, -3, -0.5, 1, theta,0,0,0); 
 
 	device->transform.model = m;
@@ -289,23 +286,23 @@ float Get_FPS()
 void Init_Obj()
 {
 	//初始化一个地板
-	object_simple ground;
+	Object_t ground;
 
-	ground.pos = { 0, -2, 3,1 };
-	ground.axis = { -1, -0.5, 1, 0 };
+	ground.pos = { -2, -1, 2,1 };
+	ground.axis = { 0, 0, 0, 0 };
 	ground.mesh = ground_mesh;
 	ground.mesh_num = 4;
 	ground.scale = 6;
-	ground.theta = 0;
+	//ground.theta = 0;
 
 	//初始化一个物体
-	object_simple Cube;
+	Object_t Cube;
 	Cube.pos = { 0, 0, 0 ,1 };
 	Cube.axis = { -1, -0.5, 1, 0 };
 	Cube.mesh = box_mesh;
 	Cube.mesh_num = 34;
 	Cube.scale = 1;
-	Cube.theta = 1;  //当前物体的旋转弧度。  1 就是 180度
+	//Cube.theta = 1;  //当前物体的旋转弧度。  1 就是 180度
 
 	Scene_render_Objs.push_back(Cube);
 	Scene_render_Objs.push_back(ground);
@@ -382,6 +379,11 @@ int main(void)
 		if (screen_keys[VK_LEFT]) alpha += 0.01f; //物体向左旋转
 		if (screen_keys[VK_RIGHT]) alpha -= 0.01f; //物体向右旋转
 
+
+		if (screen_keys[0x41]) beta -= 0.01f; //欧拉角
+		if (screen_keys[0x42]) beta += 0.01f; //欧拉角
+
+
 		if (screen_keys[VK_F1])
 		{
 			device.cull = 0;
@@ -421,9 +423,8 @@ int main(void)
 
 		for (int i = 0; i < Scene_render_Objs.size(); i++)
 		{
-			if(i!=0)
-				Scene_render_Objs[i].theta = alpha;
-			//draw_Object(Scene_render_Objs[i], &device);
+			Scene_render_Objs[i].axis.x = alpha;
+			draw_Object(Scene_render_Objs[i], &device);
 		}
 
 		//真正的渲染函数

@@ -1,8 +1,10 @@
 #ifndef shaderBase_h
 #define shaderBase_h
-
+#include <stdbool.h>
+#include<vector>
+using namespace std;
 #include "renderMath.h"
-//#include "objectManager.h"
+
 // 前三个模式，没有着色过程，也不需要着色器
 
 
@@ -57,6 +59,27 @@ color_t operator+(color_t value)
 //}
 } ; //颜色
 
+//typedef struct {
+//	vector_t pos;
+//	color_t color;
+//	vector_t normal;
+//	vector_t tangent;
+//	vector_t binormal;
+//	texcoord_t texcoord;
+//} a2v;
+//
+//
+//typedef struct {
+//	vector_t pos;
+//	texcoord_t texcoord;
+//	color_t color;
+//	vector_t normal;
+//	vector_t storage0;
+//	vector_t storage1;
+//	vector_t storage2;
+//} v2f;
+
+
 typedef struct { float u, v; } texcoord_t; //纹理
 
 
@@ -86,9 +109,13 @@ typedef struct {
 
 	//貌似没有模型矩阵
 
-	matrix_t model;         // 物体-世界矩阵，每个物体都有自己的物体矩阵。这里要单独拿出去
-	matrix_t view;          // 摄影机坐标变换 世界到摄像机坐标变换矩阵
-	matrix_t projection;    // 投影变换 ，就是变换到摄像机的远平面-近平面空间内
+	matrix_t model;         // 物体-世界矩阵，每个物体都有自己的物体矩阵。TODO: 以后分离到每个物体管理
+
+
+	matrix_t view;          // 摄影机坐标变换 世界到摄像机坐标变换矩阵  TODO:以后分离到每个摄像机管理
+
+
+	matrix_t projection;    // 投影变换 ，就是变换到摄像机的远平面-近平面空间内  TODO:以后分离到每个摄像机管理
 	matrix_t mvp;     // transform = world * view * projection
 	float screen_width, screen_height;             // 屏幕大小
 

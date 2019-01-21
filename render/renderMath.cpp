@@ -114,21 +114,17 @@ void matrix_sub(matrix_t *c, const matrix_t *a, const matrix_t *b) {
 //矩阵乘法：   z.m[j][i] = (a->m[j][0] * b->m[0][i]) +(a->m[j][1] * b->m[1][i]) +(a->m[j][2] * b->m[2][i]) +(a->m[j][3] * b->m[3][i]);
 // c = a * b
 void matrix_mul(matrix_t *c, const matrix_t *a, const matrix_t *b) {
-	matrix_t z;
 	int i, j;
 	for (i = 0; i < 4; i++)
 	{
 		for (j = 0; j < 4; j++)
 		{
-			z.m[j][i] = (a->m[j][0] * b->m[0][i]) +
+			c->m[j][i] = (a->m[j][0] * b->m[0][i]) +
 				(a->m[j][1] * b->m[1][i]) +
 				(a->m[j][2] * b->m[2][i]) +
 				(a->m[j][3] * b->m[3][i]);
 		}
 	}
-
-	//c++赋值, 只需要拿0索引，则拿到他的指针
-	c[0] = z;
 }
 
 // c = a * f
@@ -190,8 +186,17 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 
 	//欧拉角转矩阵 采用Y-X-Z轴的顺序 根据矩阵乘法可结合来叠加成一个矩阵
 	//默认的物体空间是跟世界空间一致的。所以物体到世界矩阵，就是根据物体当下的旋转和位移来反推。
-	void matrix_Obj2World(matrix_t *m, float rot_x, float rot_y, float rot_z, float xOffset, float yOffest, float zOffset)
+	void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos,float scale)
 	{
+
+		float rot_x = rot.x;
+		float rot_y = rot.y;
+		float rot_z = rot.z;
+
+		float xOffset = pos.x;
+		float yOffest = pos.y;
+		float zOffset = pos.z;
+
 		float x;
 		float y;
 		float z;
@@ -206,7 +211,7 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 		b = (float)cos(rot_y);
 		c = (float)cos(rot_z);
 
-		//因为其他地方用的行向量 * 列矩阵 所以这里矩阵也按列写
+		//因为其他地方用的行向量 * 列矩阵 所以这里矩阵(作为行向量多项式参数)也按列写
 
 		//旋转顺序为Z-Y-X
 		//m->m[0][0] = b * c;
@@ -234,11 +239,12 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 		m->m[2][1] = z * y + b*x*c;
 		m->m[2][2] = a * b;
 
-
+		//缩放		
 		m->m[0][3] = m->m[1][3] = m->m[2][3] = 0.0f;
-		//m->m[3][0] = m->m[3][1] = m->m[3][2] = 0.0f;
+
+		//平移
 		m->m[3][0] = xOffset;
-		m->m[3][1] = yOffest;
+		m->m[3][1] = yOffest;  
 		m->m[3][2] = zOffset;
 
 		m->m[3][3] = 1.0f;
@@ -281,6 +287,9 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 
 //坐标系的变化 = 基坐标的位移+坐标系的旋转   坐标系的旋转 跟 这里坐标系内部向量的旋转是一样的
 //这个矩阵是基于指定向量旋转的旋转矩阵。 该指定向量为 (x,y,z)
+
+
+//轴角
 void matrix_set_rotate(matrix_t *m, float x, float y, float z, float theta, float xOffset,float yOffest, float zOffset)
 {
 	//三角函数用的是弧度，不是角度
