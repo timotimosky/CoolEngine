@@ -60,7 +60,6 @@ float vector_dotproduct(const vector_t *x, const vector_t *y)
 }
 
 
-
 // 矢量叉乘  如果 x y 标准化，那算出来的叉乘Z也是标准化的xy平面的法线。 否则的话，要标准化一次Z
 void vector_crossproduct(vector_t *z, const vector_t *x, const vector_t *y)
 {
@@ -111,7 +110,7 @@ void matrix_sub(matrix_t *c, const matrix_t *a, const matrix_t *b) {
 	}
 }
 
-//矩阵乘法：   z.m[j][i] = (a->m[j][0] * b->m[0][i]) +(a->m[j][1] * b->m[1][i]) +(a->m[j][2] * b->m[2][i]) +(a->m[j][3] * b->m[3][i]);
+//矩阵乘法：左乘
 // c = a * b
 void matrix_mul(matrix_t *c, const matrix_t *a, const matrix_t *b) {
 	int i, j;
@@ -119,10 +118,10 @@ void matrix_mul(matrix_t *c, const matrix_t *a, const matrix_t *b) {
 	{
 		for (j = 0; j < 4; j++)
 		{
-			c->m[j][i] = (a->m[j][0] * b->m[0][i]) +
-				(a->m[j][1] * b->m[1][i]) +
-				(a->m[j][2] * b->m[2][i]) +
-				(a->m[j][3] * b->m[3][i]);
+			c->m[j][i] = (a->m[0][j] * b->m[i][0]) +
+				(a->m[1][j] * b->m[i][1]) +
+				(a->m[2][j] * b->m[i][2]) +
+				(a->m[3][j] * b->m[i][3]);
 		}
 	}
 }
@@ -136,16 +135,13 @@ void matrix_scale(matrix_t *c, const matrix_t *a, float f) {
 	}
 }
 
-//TODO：以后改左乘
-// 矩阵乘法：   y = x * m   	//向量/点，被转为矩阵后, 矩阵 乘 矩阵.  实现坐标转换
-// 用的右乘 4-4* 4-1矩阵
+//左乘
 void matrix_apply(vector_t *y, const vector_t *x, const matrix_t *m) {
 	float X = x->x, Y = x->y, Z = x->z, W = x->w;
-	//A的第一行  乘 B第一列的相加
-	y->x = X * m->m[0][0] + Y * m->m[1][0] + Z * m->m[2][0] + W * m->m[3][0];
-	y->y = X * m->m[0][1] + Y * m->m[1][1] + Z * m->m[2][1] + W * m->m[3][1];
-	y->z = X * m->m[0][2] + Y * m->m[1][2] + Z * m->m[2][2] + W * m->m[3][2];
-	y->w = X * m->m[0][3] + Y * m->m[1][3] + Z * m->m[2][3] + W * m->m[3][3];
+	y->x = X * m->m[0][0] + Y * m->m[0][1] + Z * m->m[0][2] + W * m->m[0][3];
+	y->y = X * m->m[1][0] + Y * m->m[1][1] + Z * m->m[1][2] + W * m->m[1][3];
+	y->z = X * m->m[2][0] + Y * m->m[2][1] + Z * m->m[2][2] + W * m->m[2][3];
+	y->w = X * m->m[3][0] + Y * m->m[3][1] + Z * m->m[3][2] + W * m->m[3][3];
 }
 
 //标准矩阵 4X4 
@@ -168,12 +164,12 @@ void matrix_set_zero(matrix_t *m) {
 
 
 
-// 平移变换
+// 平移变换 左乘
 void matrix_set_translate(matrix_t *m, float x, float y, float z) {
 	matrix_set_identity(m);
-	m->m[3][0] = x;
-	m->m[3][1] = y;
-	m->m[3][2] = z;
+	m->m[0][3] = x;
+	m->m[1][3] = y;
+	m->m[2][3] = z;
 }
 
 // 缩放变换
@@ -184,6 +180,9 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 	m->m[2][2] = z;
 }
 
+
+//A坐标系转到B坐标系   任何两个矩阵之间的交换都可以
+//左乘
 	//欧拉角转矩阵 采用Y-X-Z轴的顺序 根据矩阵乘法可结合来叠加成一个矩阵
 	//默认的物体空间是跟世界空间一致的。所以物体到世界矩阵，就是根据物体当下的旋转和位移来反推。
 	void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos,float scale)
@@ -197,19 +196,13 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 		float yOffest = pos.y;
 		float zOffset = pos.z;
 
-		float x;
-		float y;
-		float z;
-		float a;
-		float b;
-		float c;
-		x = (float)sin(rot_x); //(x,y,z)是一个向量 
-		y = (float)sin(rot_y);
-		z = (float)sin(rot_z);
+		float x = (float)sin(rot_x);//(x,y,z)是一个向量 
+		float y = (float)sin(rot_y);
+		float z = (float)sin(rot_z);
 
-		a = (float)cos(rot_x); //(x,y,z)是一个向量
-		b = (float)cos(rot_y);
-		c = (float)cos(rot_z);
+		float a = (float)cos(rot_x); //(a,b,c)是一个向量
+		float b = (float)cos(rot_y);
+		float c = (float)cos(rot_z);
 
 		//因为其他地方用的行向量 * 列矩阵 所以这里矩阵(作为行向量多项式参数)也按列写
 
@@ -239,14 +232,15 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 		m->m[2][1] = z * y + b*x*c;
 		m->m[2][2] = a * b;
 
-		//缩放		
-		m->m[0][3] = m->m[1][3] = m->m[2][3] = 0.0f;
-
 		//平移
-		m->m[3][0] = xOffset;
-		m->m[3][1] = yOffest;  
-		m->m[3][2] = zOffset;
+		m->m[0][3] = xOffset;
+		m->m[1][3] = yOffest;  
+		m->m[2][3] = zOffset;
 
+
+		m->m[3][0] = 0;
+		m->m[3][1] = 0;
+		m->m[3][2] = 0;
 		m->m[3][3] = 1.0f;
 
 

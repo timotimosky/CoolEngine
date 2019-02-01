@@ -6,26 +6,32 @@ camera cameras[MAX_NUM_CAMERA];
 camera camera_main =  camera();
 
 //TODO：这里拿到的 貌似不是真正的世界坐标转摄像机矩阵，拿到的是 此刻 转置矩阵 =逆矩阵
-// 设置摄像机  eye是目光看向的焦点  at是摄像机自身坐标  up是Y轴
-void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *at, const vector_t *up)
+// 设置摄像机  eye自身坐标 front正前方  up是Y轴
+void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *front, const vector_t *up)
 {
 	vector_t xaxis, yaxis, zaxis;
 
-	//根据摄像机的自身坐标和朝向，算出摄像机的X Y Z
+	//zaxis 是摄像机Z轴   这里是跟opengl一样， Z轴正轴朝向屏幕外面
+	vector_sub(&zaxis, front, eye); //Z
 
-	//zaxis 是 目光看向焦点的矢量   这里是跟opengl一样， Z轴正轴朝向屏幕外面
-	vector_sub(&zaxis, at, eye); //Z
-
-								 //叉乘之前要归一化。 
+	//叉乘之前要归一化。 
 	vector_normalize(&zaxis);
 	vector_crossproduct(&xaxis, up, &zaxis);  //叉乘得到 X轴
 
 	vector_normalize(&xaxis);
 	vector_crossproduct(&yaxis, &zaxis, &xaxis);  //up只是单纯的设置为 朝上。与目光看向焦点 构成一个平面，来运算出X轴， 然后这里还要算出一次真正的Y轴
 
-//点积不仅能表示两个向量的角度范围 , 而且可以表示在标准化坐标系内的X , Y ,Z 轴上的对应位置 
+	//计算 摄像机相对于世界坐标系的旋转 
 
-//TODO：这里没有标准化基坐标
+	//由于是要从世界转摄像机，所以是-号
+	float cos_rot_x  = -vector_dotproduct(&xaxis, eye);
+	float cos_rot_y = -vector_dotproduct(&yaxis, eye);
+	float cos_rot_z = -vector_dotproduct(&zaxis, eye);
+
+	//matrix_Obj2World(m,  vector_t(cos_rot_x, cos_rot_y, cos_rot_z, 0), *eye, 1);
+
+	//return;
+//点积不仅能表示两个向量的角度范围 , 而且可以表示在标准化坐标系内的X , Y ,Z 轴上的对应位置 
 
 //摄像机坐标系 1.整体平移，将摄像机平移至世界坐标系原点，2.将坐标点从世界坐标系转换至摄像机坐标系。
 //使用单位向量U, V, W分别代表摄像机坐标系X, Y, Z轴正向的单位向量在世界坐标系中的表示，则在摄像相机坐标系与世界坐标系原点重合的情况下，物体顶点坐标代表的向量（即从世界原点指向物体顶点的向量）
@@ -45,7 +51,7 @@ void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *at, con
 	m->m[0][0] = xaxis.x;
 	m->m[1][0] = xaxis.y;
 	m->m[2][0] = xaxis.z;
-	m->m[3][0] = -vector_dotproduct(&xaxis, eye);  //这里是填写的 平移变化的基坐标
+	m->m[3][0] = -vector_dotproduct(&xaxis, eye);  //cos
 
 												   //这三行是 摄像机坐标系的Y轴的基向量
 												   //到时候矩阵运算会跟世界坐标的Y坐标点乘,  拿到的也就是世界坐标系里的点，在 摄像机坐标系 X轴上的投影

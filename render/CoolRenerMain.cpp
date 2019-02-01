@@ -197,7 +197,7 @@ void draw_Object(Object_t Cube, device_t *device)
 	//axis.x 绕X轴的旋转角度
 
 	matrix_Obj2World(&Cube.model, Cube.axis, Cube.pos, Cube.scale);
-	//matrix_set_rotate(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z, Cube.theta, Cube.pos.x, Cube.pos.y, Cube.pos.z); //theta  是物体本身的x,y,z轴相对的旋转
+	//matrix_set_rotate(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z, 0, Cube.pos.x, Cube.pos.y, Cube.pos.z); //theta  是物体本身的x,y,z轴相对的旋转
 
 	device->transform.model = Cube.model;
 	transform_update(&device->transform);
@@ -369,6 +369,8 @@ int main(void)
 
 		screen_dispatch(); //分发msg
 		device_clear(&device, 1); //清空缓存 Zbuffer frameBuffer
+
+
 		camera_update(&device, &camera_main); //摄像机不断更新矩阵，因为pos一直变化
 
 		//动态灯光 阴影
