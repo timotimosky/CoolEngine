@@ -118,13 +118,31 @@ void matrix_mul(matrix_t *c, const matrix_t *a, const matrix_t *b) {
 	{
 		for (j = 0; j < 4; j++)
 		{
-			c->m[j][i] = (a->m[0][j] * b->m[i][0]) +
-				(a->m[1][j] * b->m[i][1]) +
-				(a->m[2][j] * b->m[i][2]) +
-				(a->m[3][j] * b->m[i][3]);
+			c->m[i][j] =
+				(a->m[i][0] * b->m[0][j]) +
+				(a->m[i][1] * b->m[1][j]) +
+				(a->m[i][2] * b->m[2][j]) +
+				(a->m[i][3] * b->m[3][j]);
 		}
 	}
 }
+
+
+////矩阵乘法：左乘
+//// c = a * b
+//void matrix_mul(matrix_t *c, const matrix_t *a, const matrix_t *b) {
+//	int i, j;
+//	for (i = 0; i < 4; i++)
+//	{
+//		for (j = 0; j < 4; j++)
+//		{
+//			c->m[j][i] = (a->m[0][j] * b->m[i][0]) +
+//				(a->m[1][j] * b->m[i][1]) +
+//				(a->m[2][j] * b->m[i][2]) +
+//				(a->m[3][j] * b->m[i][3]);
+//		}
+//	}
+//}
 
 // c = a * f
 void matrix_scale(matrix_t *c, const matrix_t *a, float f) {
@@ -135,7 +153,7 @@ void matrix_scale(matrix_t *c, const matrix_t *a, float f) {
 	}
 }
 
-//左乘
+//向量 左乘矩阵 
 void matrix_apply(vector_t *y, const vector_t *x, const matrix_t *m) {
 	float X = x->x, Y = x->y, Z = x->z, W = x->w;
 	y->x = X * m->m[0][0] + Y * m->m[0][1] + Z * m->m[0][2] + W * m->m[0][3];
@@ -181,8 +199,9 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 }
 
 
-//A坐标系转到B坐标系   任何两个矩阵之间的交换都可以
-//左乘
+//TODO: 改左乘
+	//A坐标系转到B坐标系   任何两个矩阵之间的交换都可以
+	//左乘
 	//欧拉角转矩阵 采用Y-X-Z轴的顺序 根据矩阵乘法可结合来叠加成一个矩阵
 	//默认的物体空间是跟世界空间一致的。所以物体到世界矩阵，就是根据物体当下的旋转和位移来反推。
 	void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos,float scale)
