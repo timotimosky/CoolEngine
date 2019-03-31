@@ -107,18 +107,19 @@ typedef struct {
 //=====================================================================
 typedef struct {
 
+	float screen_width, screen_height;             // 屏幕大小
+
 	//貌似没有模型矩阵
 
 	matrix_t model;         // 物体-世界矩阵，每个物体都有自己的物体矩阵。TODO: 以后分离到每个物体管理
-
-
 	matrix_t view;          // 摄影机坐标变换 世界到摄像机坐标变换矩阵  TODO:以后分离到每个摄像机管理
-
-
 	matrix_t projection;    // 投影变换 ，就是变换到摄像机的远平面-近平面空间内  TODO:以后分离到每个摄像机管理
-	matrix_t mvp;     // transform = world * view * projection
-	float screen_width, screen_height;             // 屏幕大小
+	//物体与相机的距离（z）也是如此！对于具有相似x和y坐标的两个顶点，具有最大z坐标的顶点将比屏幕的中心更多地位于屏幕的中心。     
+	// 另外，如果是透视视图，W负责缩放物体大小，来模拟视觉。远处的物体更小
 
+
+
+	matrix_t mvp;     // transform = world * view * projection
 	matrix_t vp;           // view * projection
 	matrix_t mv;           // model * view
 }

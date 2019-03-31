@@ -11,7 +11,7 @@ void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *front, 
 {
 	vector_t xaxis, yaxis, zaxis;
 
-	//zaxis 是摄像机Z轴   这里是跟opengl一样， Z轴正轴朝向屏幕外面
+	//zaxis 摄像机Z轴
 	vector_sub(&zaxis, front, eye); //Z
 
 	//叉乘之前要归一化。 
@@ -93,20 +93,6 @@ void matrix_set_perspective(matrix_t *m, float fovy, float aspect, float zn, flo
 	m->m[2][3] = 1; //令W=1
 }
 
-// 初始化，设置屏幕长宽
-void transform_init(transform_t *ts, int width, int height) {
-	float aspect = (float)width / ((float)height);
-	matrix_set_identity(&ts->model);
-	matrix_set_identity(&ts->view);
-
-	//第二个方向是摄像机上下的夹角&  y方向的视角   cot(@/2) 也就是 near/投影面的高度的一半 当然也等于     cot(@/2)  = far/远截面高度的一半
-
-	//这里设定上下夹角为 90度  2PI=360度  PI=180度
-	matrix_set_perspective(&ts->projection, PI * 0.5f, aspect, 1.0f, 500.0f); //设定近平面为1，这样W取值为1就好了。缩放到投影面比较方便
-	ts->screen_width = (float)width;
-	ts->screen_height = (float)height;
-	transform_update(ts);
-}
 
 void CameraInit()
 {
@@ -115,32 +101,27 @@ void CameraInit()
 }
 
 //摄像机位置刷新后,设备的矩阵改变
-void camera_update(device_t *device, camera * caneraMain) 
+void camera_update(device_t *device, camera * caneraMain)  
 {
+
+	matrix_set_perspective(&(&device->transform)->projection, camera_main.fov, camera_main.aspect, camera_main.zn, camera_main.zf); //设定近平面为1，这样W取值为1就好了。缩放到投影面比较方便
+
+	//计算 view矩阵 我们计算过matrix_Obj2World,如果我们把camera当作obj， World2view 就是它的逆矩阵 TOdo:以后增加伴随矩阵求逆矩阵
+	
+	//matrix_World2Obj(&device->transform.view, caneraMain->rotation,caneraMain->pos, 1);
 
 	//摄像机矩阵 摄像机的位移
 	matrix_set_lookat(&device->transform.view, &(caneraMain->pos), &caneraMain->front, &caneraMain->worldup);
-
-	//更新矩阵，获得MVP矩阵
-	transform_update(&device->transform);
 }
 
 
 //如果是动态灯光，需要刷新
 void camera_updateShadow(device_t *device, camera * caneraShadow)
 {
+	//matrix_set_perspective(&(&device->transform)->projection, camera_main.fov, camera_main.aspect, camera_main.zn, camera_main.zf); //设定近平面为1，这样W取值为1就好了。缩放到投影面比较方便
 
 	//摄像机矩阵 摄像机的位移
 	matrix_set_lookat(&device->transform_shadow.view, &(caneraShadow->pos), &caneraShadow->front, &caneraShadow->worldup);
-
-	//更新矩阵，获得MVP矩阵
-	transform_update(&device->transform_shadow);
-
-}
-
-void Forward()
-{
-	
 }
 
 //这里有三个帧缓冲  （显存）帧缓冲 -》（内存）帧缓冲 -》（设备）帧缓冲
@@ -205,8 +186,14 @@ void device_init(device_t *device, int width, int height, void *fb)
 	device->height = height;
 	device->background = 0xc0c0c0;  //背景颜色
 	device->foreground = 0; //线框颜色
-	transform_init(&device->transform, width, height);
+
 	device->render_state = RENDER_STATE_WIREFRAME;
+
+	(&device->transform)->screen_width = (float)width;
+	(&device->transform)->screen_height = (float)height;
+
+	//matrix_set_identity(&device->model);
+	//matrix_set_identity(&device->view);
 }
 
 // 删除设备

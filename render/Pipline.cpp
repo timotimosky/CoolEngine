@@ -611,7 +611,7 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 	matrix_apply(&world_normal3, &v3->normal, &transform.model);
 
 	// 背面剔除
-	if (device->cull > 0)
+	/*if (device->cull > 0)
 	{
 		float cullValue = CullCalcutate(&world_pos1, &world_pos2, &world_pos3, &camera_main.pos);
 		if (device->cull == 1)
@@ -622,8 +622,8 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 		else if (device->cull == 2) {
 			if (cullValue> 0)
 				return;
-		}
-	}
+		} 
+	}*/ 
 
 	// 这里的裁剪不准确，只要有顶点不满足，则剔除，可以完善为具体判断几个点在 cvv内以及同cvv相交平面的坐标比例
 	// 进行进一步精细裁剪，将一个分解为几个完全处在 cvv内的三角形
@@ -634,9 +634,9 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 	transform_apply(&transform, &project_pos2, &v2->pos);
 	transform_apply(&transform, &project_pos3, &v3->pos);
 
-	if (transform_check_cvv(&project_pos1) != 0) return;
-	if (transform_check_cvv(&project_pos2) != 0) return;
-	if (transform_check_cvv(&project_pos3) != 0) return;
+	//if (transform_check_cvv(&project_pos1) != 0) return;
+	//if (transform_check_cvv(&project_pos2) != 0) return;
+	//if (transform_check_cvv(&project_pos3) != 0) return;
 
 
 
@@ -753,37 +753,37 @@ void frag_shader(device_t *device, v2f *vf, color_t *color) {
 		int x = (int)(tempPos.x + 0.5);//?
 
 		//只计算正面像素的阴影（以灯光视角）
-		vector_t tempNormal = vf->normal;
-		matrix_apply(&tempNormal, &tempNormal, &(device->transform_shadow.mv));
-		float dot = vector_dotproduct(&tempNormal, &cameras[0].front);
+		//vector_t tempNormal = vf->normal;
+		//matrix_apply(&tempNormal, &tempNormal, &(device->transform_shadow.mv));
+		//float dot = vector_dotproduct(&tempNormal, &cameras[0].front);
 
-		if (dot>0)
-		{
-			float bias = 0.015 * (1.0 - dot);
-			if (bias < 0.002f) bias = 0.001;
-			if (y >= 0 && x >= 0 && y < camera_main.height && x < camera_main.width) {
-				float shadow = 0.0;
-				for (int i = -1; i <= 1; ++i)
-				{
-					for (int j = -1; j <= 1; ++j)
-					{
-						if (y + j < 0 || y + j >= camera_main.height || x + i < 0 || x + i >= camera_main.width)
-							continue;
-						float pcfDepth = device->shadowbuffer[(y + j)*camera_main.width + (x + i)];
-						shadow += tempPos.z - bias > pcfDepth ? 1.0 : 0.0;
-					}
-				}
-				shadow /= 9.0;
+		//if (dot>0)
+		//{
+		//	float bias = 0.015 * (1.0 - dot);
+		//	if (bias < 0.002f) bias = 0.001;
+		//	if (y >= 0 && x >= 0 && y < camera_main.height && x < camera_main.width) {
+		//		float shadow = 0.0;
+		//		for (int i = -1; i <= 1; ++i)
+		//		{
+		//			for (int j = -1; j <= 1; ++j)
+		//			{
+		//				if (y + j < 0 || y + j >= camera_main.height || x + i < 0 || x + i >= camera_main.width)
+		//					continue;
+		//				float pcfDepth = device->shadowbuffer[(y + j)*camera_main.width + (x + i)];
+		//				shadow += tempPos.z - bias > pcfDepth ? 1.0 : 0.0;
+		//			}
+		//		}
+		//		shadow /= 9.0;
 
-				color_t temp = { 0.3f,0.3f,0.3f,0.3f }; //阴影颜色
+		//		color_t temp = { 0.3f,0.3f,0.3f,0.3f }; //阴影颜色
 
-				temp = temp * shadow;
-				color = &((*color) + temp);
-				//color_scale(&temp, shadow);  //阴影浓度
-				//color_sub(color, color, &temp); //混合阴影到当前颜色
-			}
-			
-		}
+		//		temp = temp * shadow;
+		//		color = &((*color) + temp);
+		//		//color_scale(&temp, shadow);  //阴影浓度
+		//		//color_sub(color, color, &temp); //混合阴影到当前颜色
+		//	}
+		//	
+		//}
 
 
 	}

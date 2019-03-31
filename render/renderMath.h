@@ -154,6 +154,8 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z);
 
 void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos,float scale);
 
+void matrix_World2Obj(matrix_t *m, vector_t rot, vector_t pos, float scale);
+
 //坐标系的变化 = 基坐标的位移+坐标系的旋转   坐标系的旋转 跟 这里坐标系内部向量的旋转是一样的
 //这个矩阵是基于指定向量旋转的旋转矩阵。 该指定向量为 (x,y,z)
 void matrix_set_rotate(matrix_t *m, float x, float y, float z, float theta, float xOffset, float yOffest, float zOffset);

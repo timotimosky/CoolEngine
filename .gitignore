@@ -61,3 +61,4 @@ Debug/Mini3D.tlog/CL.read.1.tlog
 *.idb
 *.pdb
 render/Pipline.cpp
+CoolRender.vcxproj

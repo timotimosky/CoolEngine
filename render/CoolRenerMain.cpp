@@ -204,7 +204,7 @@ void draw_Object(Object_t Cube, device_t *device)
 
 	//TODO：如果打开阴影
 	//device->transform_shadow.model = m;
-	transform_update(&device->transform_shadow);
+	//transform_update(&device->transform_shadow);
 
 	//直接渲染三角形
 	for (int i = 0; i < Cube.mesh_num; i += 3)
@@ -288,7 +288,7 @@ void Init_Obj()
 	//初始化一个地板
 	Object_t ground;
 
-	ground.pos = { -2, -1, 2,1 };
+	ground.pos = { 0, -3, 0,1 };
 	ground.axis = { 0, 0, 0, 0 };
 	ground.mesh = ground_mesh;
 	ground.mesh_num = 4;
@@ -296,7 +296,7 @@ void Init_Obj()
 	//ground.theta = 0;
 
 	//初始化一个物体
-	Object_t Cube;
+	Object_t Cube; 
 	Cube.pos = { 0, 0, 0 ,1 };
 	Cube.axis = { -1, -0.5, 1, 0 };
 	Cube.mesh = box_mesh;
@@ -308,12 +308,18 @@ void Init_Obj()
 	Scene_render_Objs.push_back(ground);
 }
 
-void InitCamera()
+void InitCamera(int width, int height)
 {
 	//初始化主摄像机
-	camera_main.pos = { 0, 0, -3.5, 1 };
+	camera_main.pos = { 0, 3, -10, 1 };
 	camera_main.front = { 0, 0, 0, 1 };
 	camera_main.worldup = { 0, 1, 0, 1 };
+
+	camera_main.fov = PI * 0.5f;
+	camera_main.zn = 1;
+	camera_main.zf = 500;
+	camera_main.aspect = (float)width / ((float)height);
+	//camera_main.rotation = { -0.15, 0, 0, 1 };
 }
 
 void Init_ShadowCamera()
@@ -346,13 +352,16 @@ int main(void)
 	if (screen_init(800, 600, title)) //初始化WINDOWS窗口并设置标题
 		return -1;
 
-	device_init(&device, 800, 600, screen_fb); //设备初始
+	int width = 800;
+	int height = 600;
+
+	device_init(&device, width, height, screen_fb); //设备初始
+
+	InitCamera(width, height);//初始化主摄像机
+
+	//Init_ShadowCamera();//阴影摄像机
 
 	Init_Obj();//初始化场景里的物体
-
-	InitCamera();//初始化主摄像机
-
-	Init_ShadowCamera();//阴影摄像机
 
 	init_texture(&device); //纹理初始化
 
@@ -370,11 +379,8 @@ int main(void)
 		screen_dispatch(); //分发msg
 		device_clear(&device, 1); //清空缓存 Zbuffer frameBuffer
 
-
-		camera_update(&device, &camera_main); //摄像机不断更新矩阵，因为pos一直变化
-
 		//动态灯光 阴影
-		camera_updateShadow(&device, &cameras[0]);
+	//	camera_updateShadow(&device, &cameras[0]);
 
 		if (screen_keys[VK_UP]) camera_main.pos.z += 0.01f; //摄像机前进  pos -= 0.01f;
 		if (screen_keys[VK_DOWN]) camera_main.pos.z -= 0.01f; //摄像机后退
@@ -385,6 +391,7 @@ int main(void)
 		if (screen_keys[0x41]) beta -= 0.01f; //欧拉角
 		if (screen_keys[0x42]) beta += 0.01f; //欧拉角
 
+		camera_update(&device, &camera_main); //摄像机不断更新矩阵
 
 		if (screen_keys[VK_F1])
 		{
@@ -398,6 +405,7 @@ int main(void)
 		{
 			device.cull = 2;
 		}
+		
 		if (screen_keys[VK_SPACE])
 		{
 			if (kbhit == 0)//保证每次按下只执行一次键盘输入
@@ -421,11 +429,11 @@ int main(void)
 		type = (LPCSTR)out;
 
 		//渲染一个立方体 
-		draw_box(&device, alpha);
+		//draw_box(&device, alpha);
 
 		for (int i = 0; i < Scene_render_Objs.size(); i++)
 		{
-			Scene_render_Objs[i].axis.x = alpha;
+			Scene_render_Objs[i].axis.y = alpha;
 			draw_Object(Scene_render_Objs[i], &device);
 		}
 

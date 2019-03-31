@@ -110,39 +110,21 @@ void matrix_sub(matrix_t *c, const matrix_t *a, const matrix_t *b) {
 	}
 }
 
-//矩阵乘法：左乘
 // c = a * b
-void matrix_mul(matrix_t *c, const matrix_t *a, const matrix_t *b) {
+void matrix_mul(matrix_t *c, const matrix_t *left , const matrix_t *right) {         
 	int i, j;
 	for (i = 0; i < 4; i++)
 	{
 		for (j = 0; j < 4; j++)
 		{
 			c->m[i][j] =
-				(a->m[i][0] * b->m[0][j]) +
-				(a->m[i][1] * b->m[1][j]) +
-				(a->m[i][2] * b->m[2][j]) +
-				(a->m[i][3] * b->m[3][j]);
+				(left->m[i][0] * right->m[0][j]) +
+				(left->m[i][1] * right->m[1][j]) +
+				(left->m[i][2] * right->m[2][j]) +
+				(left->m[i][3] * right->m[3][j]);
 		}
 	}
 }
-
-
-////矩阵乘法：左乘
-//// c = a * b
-//void matrix_mul(matrix_t *c, const matrix_t *a, const matrix_t *b) {
-//	int i, j;
-//	for (i = 0; i < 4; i++)
-//	{
-//		for (j = 0; j < 4; j++)
-//		{
-//			c->m[j][i] = (a->m[0][j] * b->m[i][0]) +
-//				(a->m[1][j] * b->m[i][1]) +
-//				(a->m[2][j] * b->m[i][2]) +
-//				(a->m[3][j] * b->m[i][3]);
-//		}
-//	}
-//}
 
 // c = a * f
 void matrix_scale(matrix_t *c, const matrix_t *a, float f) {
@@ -153,14 +135,23 @@ void matrix_scale(matrix_t *c, const matrix_t *a, float f) {
 	}
 }
 
-//向量 左乘矩阵 
+//向量 右乘矩阵 
 void matrix_apply(vector_t *y, const vector_t *x, const matrix_t *m) {
 	float X = x->x, Y = x->y, Z = x->z, W = x->w;
-	y->x = X * m->m[0][0] + Y * m->m[0][1] + Z * m->m[0][2] + W * m->m[0][3];
-	y->y = X * m->m[1][0] + Y * m->m[1][1] + Z * m->m[1][2] + W * m->m[1][3];
-	y->z = X * m->m[2][0] + Y * m->m[2][1] + Z * m->m[2][2] + W * m->m[2][3];
-	y->w = X * m->m[3][0] + Y * m->m[3][1] + Z * m->m[3][2] + W * m->m[3][3];
+	y->x = X * m->m[0][0] + Y * m->m[1][0] + Z * m->m[2][0] + W * m->m[3][0];
+	y->y = X * m->m[1][0] + Y * m->m[1][1] + Z * m->m[2][1] + W * m->m[3][1];
+	y->z = X * m->m[2][0] + Y * m->m[1][2] + Z * m->m[2][2] + W * m->m[3][2];
+	y->w = X * m->m[3][0] + Y * m->m[1][3] + Z * m->m[2][3] + W * m->m[3][3];
 }
+
+////向量 左乘矩阵 
+//void matrix_apply_left(vector_t *y, const vector_t *x, const matrix_t *m) {
+//	float X = x->x, Y = x->y, Z = x->z, W = x->w;
+//	y->x = X * m->m[0][0] + Y * m->m[0][1] + Z * m->m[0][2] + W * m->m[0][3];
+//	y->y = X * m->m[1][0] + Y * m->m[1][1] + Z * m->m[1][2] + W * m->m[1][3];
+//	y->z = X * m->m[2][0] + Y * m->m[2][1] + Z * m->m[2][2] + W * m->m[2][3];
+//	y->w = X * m->m[3][0] + Y * m->m[3][1] + Z * m->m[3][2] + W * m->m[3][3]; 
+//}
 
 //标准矩阵 4X4 
 void matrix_set_identity(matrix_t *m) {
@@ -199,11 +190,54 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 }
 
 
-//TODO: 改左乘
+//A坐标系转到B坐标系   任何两个矩阵之间的交换都可以
+//欧拉角 根据基向量 转矩阵 采用Y-X-Z轴的顺序 根据矩阵乘法可结合来叠加成一个矩阵
+void matrix_World2Obj(matrix_t *m, vector_t rot, vector_t pos, float scale)
+{
+
+	float rot_x = rot.x;
+	float rot_y = rot.y;
+	float rot_z = rot.z;
+
+	float xOffset = pos.x;
+	float yOffest = pos.y;
+	float zOffset = pos.z;
+
+	float sinX = (float)sin(-rot_x);
+	float sinY = (float)sin(-rot_y);
+	float sinZ = (float)sin(-rot_z);
+
+	float cosX = (float)cos(-rot_x);
+	float cosY = (float)cos(-rot_y);
+	float cosZ = (float)cos(-rot_z);
+
+	m->m[0][0] = cosX * cosZ;
+	m->m[0][1] = -sinZ;
+	m->m[0][2] = -sinY * cosZ;
+
+	m->m[1][0] = cosX * cosY* sinZ - sinX * sinY;
+	m->m[1][1] = cosX * cosZ;
+	m->m[1][2] = -cosX * sinY*sinZ - sinX * cosY;
+
+	m->m[2][0] = sinX * cosY* sinZ + cosX * sinY;
+	m->m[2][1] = sinX * cosZ;
+	m->m[2][2] = -sinX * sinY * sinZ + cosX * cosY;
+
+	//平移
+	m->m[0][3] = 0;
+	m->m[1][3] = 0;
+	m->m[2][3] = 0;
+
+
+	m->m[3][0] = 0;
+	m->m[3][1] = 0;
+	m->m[3][2] = 0;
+	m->m[3][3] = 1.0f;
+}
+
+
 	//A坐标系转到B坐标系   任何两个矩阵之间的交换都可以
-	//左乘
-	//欧拉角转矩阵 采用Y-X-Z轴的顺序 根据矩阵乘法可结合来叠加成一个矩阵
-	//默认的物体空间是跟世界空间一致的。所以物体到世界矩阵，就是根据物体当下的旋转和位移来反推。
+	//欧拉角 根据基向量 转矩阵 采用Y-X-Z轴的顺序 根据矩阵乘法可结合来叠加成一个矩阵
 	void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos,float scale)
 	{
 
@@ -215,82 +249,36 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 		float yOffest = pos.y;
 		float zOffset = pos.z;
 
-		float x = (float)sin(rot_x);//(x,y,z)是一个向量 
-		float y = (float)sin(rot_y);
-		float z = (float)sin(rot_z);
+		float sinX = (float)sin(rot_x);
+		float sinY = (float)sin(rot_y);
+		float sinZ = (float)sin(rot_z);
 
-		float a = (float)cos(rot_x); //(a,b,c)是一个向量
-		float b = (float)cos(rot_y);
-		float c = (float)cos(rot_z);
+		float cosX = (float)cos(rot_x);
+		float cosY = (float)cos(rot_y);
+		float cosZ = (float)cos(rot_z);
 
-		//因为其他地方用的行向量 * 列矩阵 所以这里矩阵(作为行向量多项式参数)也按列写
+		m->m[0][0] = cosX * cosZ;
+		m->m[0][1] = -sinZ;
+		m->m[0][2] = -sinY*cosZ;
 
-		//旋转顺序为Z-Y-X
-		//m->m[0][0] = b * c;
-		//m->m[0][1] = -z*b;
-		//m->m[0][2] = y;
+		m->m[1][0] = cosX * cosY* sinZ - sinX * sinY;
+		m->m[1][1] = cosX * cosZ;
+		m->m[1][2] = -cosX * sinY*sinZ - sinX * cosY;
 
-		//m->m[1][0] = z*a-x*y*c;
-		//m->m[1][1] = a*c+x*y*z;
-		//m->m[1][2] = -x*b;
-
-		//m->m[2][0] = x*z + y*c*b;
-		//m->m[2][1] = x*c - a*y*z;
-		//m->m[2][2] = a*b;
-
-		//旋转顺序为Y-Z-X
-		m->m[0][0] = b * c + x*y*z;
-		m->m[0][1] = -z * b +x*y*c;
-		m->m[0][2] = y*a;
-
-		m->m[1][0] = z * a;
-		m->m[1][1] = a*c;
-		m->m[1][2] = -x;
-
-		m->m[2][0] = -y * c + z * x*b;
-		m->m[2][1] = z * y + b*x*c;
-		m->m[2][2] = a * b;
+		m->m[2][0] = sinX * cosY* sinZ + cosX * sinY;
+		m->m[2][1] = sinX * cosZ;
+		m->m[2][2] = -sinX * sinY * sinZ + cosX * cosY;
 
 		//平移
-		m->m[0][3] = xOffset;
-		m->m[1][3] = yOffest;  
-		m->m[2][3] = zOffset;
+		m->m[0][3] = 0;
+		m->m[1][3] = 0;
+		m->m[2][3] = 0;
 
 
-		m->m[3][0] = 0;
-		m->m[3][1] = 0;
-		m->m[3][2] = 0;
-		m->m[3][3] = 1.0f;
-
-
-		//m->m[0][0] = b * c;
-		//m->m[1][0] = -z*b;
-		//m->m[2][0] = y;
-
-		//m->m[0][1] = z*a-x*y*c;
-		//m->m[1][1] = a*c+x*y*z;
-		//m->m[2][1] = -x*b;
-
-		//m->m[0][2] = x*z + y*c*b;
-		//m->m[1][2] = x*c - a*y*z;
-		//m->m[2][2] = a*b;
-
-
-
-
-
-		//m->m[0][0] = b * c + x * y*z;
-		//m->m[1][0] = -z*b;
-		//m->m[2][0] = y;
-
-		//m->m[0][1] = z*a-x*y*c;
-		//m->m[1][1] = a*c+x*y*z;
-		//m->m[2][1] = -x*b;
-
-		//m->m[0][2] = x*z + y*c*b;
-		//m->m[1][2] = x*c - a*y*z;
-		//m->m[2][2] = a*b;
-	
+		m->m[3][0] = xOffset;
+		m->m[3][1] = yOffest;
+		m->m[3][2] = zOffset;
+		m->m[3][3] = 1.0f;	
 	}
 
 
