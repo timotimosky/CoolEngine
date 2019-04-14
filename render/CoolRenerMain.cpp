@@ -189,18 +189,27 @@ void draw_plane(device_t *device, int a, int b, int c, int d) {
 
 void draw_Object(Object_t Cube, device_t *device)
 {
-	matrix_t m;
+	matrix_t s,r;
 
 	//TODO: 计算 旋转 和位移 需要的矩阵
 
 	//输入 当前物体原点在世界坐标系中的位置和旋转，  来反推世界矩阵
 	//axis.x 绕X轴的旋转角度
 
-	matrix_Obj2World(&Cube.model, Cube.axis, Cube.pos, Cube.scale);
+	matrix_set_scale(&s, Cube.scale, Cube.scale, Cube.scale);
+	matrix_Obj2World(&r, Cube.axis, Cube.pos, Cube.scale);
+
+	matrix_mul(&Cube.model, &s, &r);
+
+	//TODO : 平移 旋转 缩放 不能直接写入同一个矩阵。需要写三个矩阵，然后按  缩放 -> 旋转 -> 平移 相乘。 对于摄像机同样如此
+	(&Cube)->model.m[3][0] = Cube.pos.x;
+	(&Cube)->model.m[3][1] = Cube.pos.y;
+	(&Cube)->model.m[3][2] = Cube.pos.z;
+
 	//matrix_set_rotate(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z, 0, Cube.pos.x, Cube.pos.y, Cube.pos.z); //theta  是物体本身的x,y,z轴相对的旋转
 
-	device->transform.model = Cube.model;
-	transform_update(&device->transform);
+	device->camera_main.transform.model = Cube.model;
+	transform_update(&device->camera_main.transform);
 
 	//TODO：如果打开阴影
 	//device->transform_shadow.model = m;
@@ -213,9 +222,9 @@ void draw_Object(Object_t Cube, device_t *device)
 		vertex_t v1 = (Cube.mesh)[i];
 		vertex_t v2 = (Cube.mesh)[i+1];
 		vertex_t v3 = (Cube.mesh)[i+2];
-		vector_scale(&v1.pos, Cube.scale);
+	/*	vector_scale(&v1.pos, Cube.scale);
 		vector_scale(&v2.pos, Cube.scale);
-		vector_scale(&v3.pos, Cube.scale);
+		vector_scale(&v3.pos, Cube.scale);*/
 
 		device_draw_primitive(device, &v1, &v2, &v3);
 	}
@@ -226,11 +235,11 @@ void draw_Object(Object_t Cube, device_t *device)
 void draw_box(device_t *device, float theta)
 {
 	matrix_t m;
-	matrix_Obj2World(&m,  vector_t(0, theta, beta,1), vector_t(2, 0, 5,1), 1);
+	matrix_Obj2World(&m,  vector_t(0, theta, beta,1), vector_t(2, 4, 5,1), 1);
 	//matrix_set_rotate(&m, -3, -0.5, 1, theta,0,0,0); 
 
-	device->transform.model = m;
-	transform_update(&device->transform);
+	device->camera_main.transform.model = m;
+	transform_update(&device->camera_main.transform);
 
 
 	//四个面
@@ -298,37 +307,44 @@ void Init_Obj()
 	//初始化一个物体
 	Object_t Cube; 
 	Cube.pos = { 0, 0, 0 ,1 };
-	Cube.axis = { -1, -0.5, 1, 0 };
+	Cube.axis = { 0, 0, 0, 0 };
 	Cube.mesh = box_mesh;
 	Cube.mesh_num = 34;
-	Cube.scale = 1;
+	Cube.scale = 3;
 	//Cube.theta = 1;  //当前物体的旋转弧度。  1 就是 180度
 
 	Scene_render_Objs.push_back(Cube);
 	Scene_render_Objs.push_back(ground);
 }
 
-void InitCamera(int width, int height)
+void InitCamera(device_t* device,int width, int height)
 {
 	//初始化主摄像机
-	camera_main.pos = { 0, 3, -10, 1 };
-	camera_main.front = { 0, 0, 0, 1 };
-	camera_main.worldup = { 0, 1, 0, 1 };
+	device->camera_main.pos = { 0, 0, -10, 1 };
+	device->camera_main.front = { 0, 0, 1, 0 };
+	device->camera_main.worldup = { 0, 1, 0, 0 };
 
-	camera_main.fov = PI * 0.5f;
-	camera_main.zn = 1;
-	camera_main.zf = 500;
-	camera_main.aspect = (float)width / ((float)height);
+	device->camera_main.fov = PI * 0.5f;
+	device->camera_main.zn = 1;
+	device->camera_main.zf = 500;
+	device->camera_main.aspect = (float)width / ((float)height);
 	//camera_main.rotation = { -0.15, 0, 0, 1 };
+
+	(&device->camera_main.transform)->screen_width = (float)width;
+	(&device->camera_main.transform)->screen_height = (float)height;
+
+	//matrix_set_identity(&device->camera_main.model);
+	//matrix_set_identity(&device->camera_main.view);
 }
 
-void Init_ShadowCamera()
+//传结构体的值传递不行
+void Init_ShadowCamera(device_t* device)
 {
 	if (dirLight.shadow == true)
 	{
 		//初始化阴影摄像机 采用深度测试，然后将设定的阴影颜色跟当前像素颜色混合。在像素阶段执行
-		camera* shadowCamera = &cameras[0];
-		shadowCamera->pos = { 0.0f, 3.0f, -3.0f, 1.0f }; //设定到产生阴影的那个灯光位置
+		camera* shadowCamera = &device->cameras[0];
+		//shadowCamera->pos = { 0.0f, 3.0f, -3.0f, 1.0f }; //设定到产生阴影的那个灯光位置
 		shadowCamera->front = dirLight.dir;
 		shadowCamera->worldup = { 0, 1, 0, 1 };
 	}
@@ -357,7 +373,7 @@ int main(void)
 
 	device_init(&device, width, height, screen_fb); //设备初始
 
-	InitCamera(width, height);//初始化主摄像机
+	InitCamera(&device, width, height);//初始化主摄像机
 
 	//Init_ShadowCamera();//阴影摄像机
 
@@ -380,10 +396,10 @@ int main(void)
 		device_clear(&device, 1); //清空缓存 Zbuffer frameBuffer
 
 		//动态灯光 阴影
-	//	camera_updateShadow(&device, &cameras[0]);
+		//camera_updateShadow(&device, &cameras[0]);
 
-		if (screen_keys[VK_UP]) camera_main.pos.z += 0.01f; //摄像机前进  pos -= 0.01f;
-		if (screen_keys[VK_DOWN]) camera_main.pos.z -= 0.01f; //摄像机后退
+		if (screen_keys[VK_UP]) device.camera_main.pos.z += 0.01f; //摄像机前进  pos -= 0.01f;
+		if (screen_keys[VK_DOWN]) device.camera_main.pos.z -= 0.01f; //摄像机后退
 		if (screen_keys[VK_LEFT]) alpha += 0.01f; //物体向左旋转
 		if (screen_keys[VK_RIGHT]) alpha -= 0.01f; //物体向右旋转
 
@@ -391,19 +407,19 @@ int main(void)
 		if (screen_keys[0x41]) beta -= 0.01f; //欧拉角
 		if (screen_keys[0x42]) beta += 0.01f; //欧拉角
 
-		camera_update(&device, &camera_main); //摄像机不断更新矩阵
+		camera_update(&device.camera_main); //摄像机不断更新矩阵
 
 		if (screen_keys[VK_F1])
 		{
-			device.cull = 0;
+			device.camera_main.cull = 0;
 		}
 		else if (screen_keys[VK_F2])
 		{
-			device.cull = 1;
+			device.camera_main.cull = 1;
 		}
 		else if (screen_keys[VK_F3])
 		{
-			device.cull = 2;
+			device.camera_main.cull = 2;
 		}
 		
 		if (screen_keys[VK_SPACE])
@@ -429,7 +445,7 @@ int main(void)
 		type = (LPCSTR)out;
 
 		//渲染一个立方体 
-		//draw_box(&device, alpha);
+	//	draw_box(&device, alpha);
 
 		for (int i = 0; i < Scene_render_Objs.size(); i++)
 		{
@@ -443,6 +459,7 @@ int main(void)
 		Sleep(1);
 	}
 	device_destroy(&device);
+	//static_device_t = nullptr;
 	return 0;
 }
 

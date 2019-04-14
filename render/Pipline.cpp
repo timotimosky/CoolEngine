@@ -2,7 +2,7 @@
 #include "Camera.h"
 #include "UObject.h"
 
-int render_state;
+
 //位运算：
 //  a != b----->a = a | b, a 或者 b 只要有一个为 1, 那么，a 的最终结果就为 1
 //  a &= b----->a = a & b, a 和 b 二者必须都为 1, 那么，a 的最终结果才为 1
@@ -79,21 +79,21 @@ void transform_homogenize(const transform_t *ts, point_t *y, const point_t *x)
 
 
 void vertex_rhw_init(vertex_t *v) {
-	//float rhw = v->pos.w;
+	float rhw = v->pos.w;
 
-	////根据齐次坐标的W来缩放u v
-	//v->tc.u *= rhw;
-	//v->tc.v *= rhw;
+	//根据齐次坐标的W来缩放u v
+	v->tc.u *= rhw;
+	v->tc.v *= rhw;
 
-	////新增：不再缩放颜色
-	////这里缩放颜色，只是用来做效果，Z轴越远，颜色越小 越黑
-	//v->color.r *= rhw;
-	//v->color.g *= rhw;
-	//v->color.b *= rhw;
+	//新增：不再缩放颜色
+	//这里缩放颜色，只是用来做效果，Z轴越远，颜色越小 越黑
+	v->color.r *= rhw;
+	v->color.g *= rhw;
+	v->color.b *= rhw;
 }
 
 //这里是顶点插值
-void vertex_interp(vertex_t *y, const vertex_t *x1, const vertex_t *x2, float t)
+void vertex_interp(int render_state,  vertex_t *y, const vertex_t *x1, const vertex_t *x2, float t)
 {
 	//顶点位置插值，通过相似三角形 获得目前扫描线左右的起始点的结束点。
 	vector_interp(&y->pos, &x1->pos, &x2->pos, t);
@@ -110,7 +110,7 @@ void vertex_interp(vertex_t *y, const vertex_t *x1, const vertex_t *x2, float t)
 }
 
 //这是扫描线的像素插值  计算每个像素点的过渡的差值  包括坐标x,y,z,w 颜色rpg
-void vertex_division(vertex_t *y, const vertex_t *x1, const vertex_t *x2, float width) {
+void vertex_division(int render_state, vertex_t *y, const vertex_t *x1, const vertex_t *x2, float width) {
 
 	float inv = 1.0f / width; //使用扫描线的宽度来插值， 扫描线长度/它的宽度，就等于这个扫描线拥有的像素数量
 	y->pos.x = (x2->pos.x - x1->pos.x) * inv;
@@ -256,7 +256,7 @@ void trapezoid_edge_interp(device_t *device, trapezoid_t *trap, float y ) {
 	float t1 = (y - trap->left.v1.pos.y) / (trap->left.v2.pos.y - trap->left.v1.pos.y);
 	//float worldti = (y - trap->left.v1.worldPos.y) / (trap->left.v2.worldPos.y - trap->left.v1.pos.y);
 
-	vertex_interp(&trap->left.v, &trap->left.v1, &trap->left.v2, t1); //三角形左边的斜线 决定扫描线左边起点
+	vertex_interp(device->render_state, &trap->left.v, &trap->left.v1, &trap->left.v2, t1); //三角形左边的斜线 决定扫描线左边起点
 																  //梯度
 	//float t2 = (y - trap->right.v1.pos.y) / (trap->right.v2.pos.y - trap->right.v1.pos.y);
 
@@ -266,12 +266,12 @@ void trapezoid_edge_interp(device_t *device, trapezoid_t *trap, float y ) {
 //	vertex_interp(&trap->left.v, &trap->left.v1, &trap->left.v2, t1); //三角形左边的斜线 决定扫描线左边起点
 																	  //梯度
 	float t2 = (y - trap->right.v1.pos.y) / (trap->right.v2.pos.y - trap->right.v1.pos.y);
-	vertex_interp(&trap->right.v, &trap->right.v1, &trap->right.v2, t2);//三角形右边的斜线 决定扫描线右边终点
+	vertex_interp(device->render_state,&trap->right.v, &trap->right.v1, &trap->right.v2, t2);//三角形右边的斜线 决定扫描线右边终点
 
 }
 
 // 根据左右两边的端点，初始化计算出扫描线的起点和步长
-void trapezoid_init_scan_line(const trapezoid_t *trap, scanline_t *scanline, int y) {
+void trapezoid_init_scan_line(int  renderState,const trapezoid_t *trap, scanline_t *scanline, int y) {
 
 	float width = trap->right.v.pos.x - trap->left.v.pos.x; //扫描线宽度
 	scanline->x = (int)(trap->left.v.pos.x + 0.5f); //扫描线起点   +0.5 四舍五入
@@ -284,9 +284,25 @@ void trapezoid_init_scan_line(const trapezoid_t *trap, scanline_t *scanline, int
 		scanline->width = 0;
 
 	//计算扫描线的步长  也就是扫描线内部，每一个像素到下一个像素，所需要的插值
-	vertex_division(&scanline->step, &trap->left.v, &trap->right.v, width);
+	vertex_division(renderState,&scanline->step, &trap->left.v, &trap->right.v, width);
 }
 
+
+// 设置当前纹理
+void device_set_texture(device_t *device, void *bits, long pitch, int w, int h) {
+
+
+	char *ptr = (char*)bits; //
+	int j;
+	assert(w <= 1024 && h <= 1024); //不能超过1024
+
+	for (j = 0; j < h; ptr += pitch, j++) 	//重新计算每行纹理的指针    device->texture的行数 是纹理的高度 
+		device->texture[j] = (IUINT32*)ptr;
+	device->tex_width = w;
+	device->tex_height = h;
+	device->max_u = (float)(w - 1);
+	device->max_v = (float)(h - 1);
+}
 
 // 画点 1.光栅化2D点（就是在二维数组上画点，了解色彩基本原理，并解决影像输出问题）
 void device_pixel(device_t *device, int x, int y, IUINT32 color) {
@@ -426,12 +442,12 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 					}
 				}
 #pragma endregion
-
+				
 				//计算shadow 或者是 rendertextrue
 
 				point_t interpos = scanline->v.pos;
 
-				transform_homogenize_reverse(&device->transform,&interpos, &interpos);//从CVV空间回到主摄像机空间
+				transform_homogenize_reverse(&device->camera_main.transform,&interpos, &interpos);//从CVV空间回到主摄像机空间
 
 				//使用转置矩阵 从主摄像机空间回到世界空间
 
@@ -556,7 +572,7 @@ void device_render_trap(device_t *device, trapezoid_t *trap, float surfaceLight)
 			trapezoid_edge_interp(device, trap, (float)j + 0.5f);
 
 			// 根据左右两边的端点，初始化计算出扫描线的起点和步长   包括扫描线的x y  z  w的步长 
-			trapezoid_init_scan_line(trap, &scanline, j);
+			trapezoid_init_scan_line(device->render_state,trap, &scanline, j);
 
 			//绘制扫描线，通过步长得到最终值
 			device_draw_scanline(device, &scanline, surfaceLight);
@@ -577,7 +593,8 @@ void device_render_trap(device_t *device, trapezoid_t *trap, float surfaceLight)
 规范立方体(Canonical view volume, CVV，规范利于图元裁剪)------------立方体空间的w=1的投影空间（矩形，CVV 的近平面(梯形体较小的矩形面)）
 
 
-确定只有当图元完全或部分的存在于视锥内部时,才需要将其光栅化。当一 个图元完全位于视体(此时视体以及变换为 CVV)内部时,它可以直接进入下 一个阶段;完全在视体外部的图元,将被剔除;
+确定只有当图元完全或部分的存在于视锥内部时,才需要将其光栅化。当一 个图元完全位于视体(此时视体以及变换为 CVV)内部时,
+它可以直接进入下一个阶段;完全在视体外部的图元,将被剔除;
 5. 光栅化..开始----------根据分辨率形成对应的像素，给定颜色、深度，放大到符合分辨率的屏幕空间
 
 */
@@ -593,9 +610,9 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 		raster_pos1, raster_pos2, raster_pos3, // 光栅化坐标，在一个2D平面上，对应到屏幕上真正的像素了（本应该通过当前的采样方式来对应，这里直接是按屏幕像素大小缩放）	
 		project_pos1, project_pos2, project_pos3; //投影坐标 cvv空间
 
-	render_state = device->render_state;
+	int render_state = device->render_state;
 
-	transform_t transform = device->transform;
+	transform_t transform = device->camera_main.transform;
 
 	//2--------世界空间----------计算光照---------------------------------如果是烘焙 没法考虑摄像机遮挡，所以在这里直接计算---//
 
@@ -611,9 +628,9 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 	matrix_apply(&world_normal3, &v3->normal, &transform.model);
 
 	// 背面剔除
-	/*if (device->cull > 0)
+	if (device->cull > 0)
 	{
-		float cullValue = CullCalcutate(&world_pos1, &world_pos2, &world_pos3, &camera_main.pos);
+		float cullValue = CullCalcutate(&world_pos1, &world_pos2, &world_pos3, &device->camera_main.pos);
 		if (device->cull == 1)
 		{
 			if (cullValue <= 0)
@@ -623,7 +640,7 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 			if (cullValue> 0)
 				return;
 		} 
-	}*/ 
+	} 
 
 	// 这里的裁剪不准确，只要有顶点不满足，则剔除，可以完善为具体判断几个点在 cvv内以及同cvv相交平面的坐标比例
 	// 进行进一步精细裁剪，将一个分解为几个完全处在 cvv内的三角形
@@ -669,9 +686,9 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 
 	//避免重复计算rhw. 在光栅化初期计算完了就保存
 	//2.------------------光栅化空间--------------5.光栅化过程：先归一化，从CVV空间到矩形空间，然后从 -1到1变换到0到1的取值范围，然后 拿到屏幕的长宽，取得屏幕坐标-------------
-	transform_homogenize(&device->transform, &raster_pos1, &project_pos1);
-	transform_homogenize(&device->transform, &raster_pos2, &project_pos2);
-	transform_homogenize(&device->transform, &raster_pos3, &project_pos3);
+	transform_homogenize(&device->camera_main.transform, &raster_pos1, &project_pos1);
+	transform_homogenize(&device->camera_main.transform, &raster_pos2, &project_pos2);
+	transform_homogenize(&device->camera_main.transform, &raster_pos3, &project_pos3);
 
 
 	//---------TODO：生成阴影摄像机的深度图
@@ -681,13 +698,13 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 
 	//切换到光源视点，渲染一张图（平行光是正交投影,点光源是透视投影）
 
-	transform_apply(&device->transform_shadow, &shadow_project_pos1, &world_pos1);
-	transform_apply(&device->transform_shadow, &shadow_project_pos2, &world_pos2);
-	transform_apply(&device->transform_shadow, &shadow_project_pos3, &world_pos3);
+	//transform_apply(&device->transform_shadow, &shadow_project_pos1, &world_pos1);
+	//transform_apply(&device->transform_shadow, &shadow_project_pos2, &world_pos2);
+	//transform_apply(&device->transform_shadow, &shadow_project_pos3, &world_pos3);
 
-	transform_homogenize(&device->transform_shadow, &shadow_raster_pos1, &shadow_project_pos1);  //TODO：这里以后要改为投影摄像机的成像大小 不用屏幕大小
-	transform_homogenize(&device->transform_shadow, &shadow_raster_pos2, &shadow_project_pos2);
-	transform_homogenize(&device->transform_shadow, &shadow_raster_pos3, &shadow_project_pos3);
+	//transform_homogenize(&device->transform_shadow, &shadow_raster_pos1, &shadow_project_pos1);  //TODO：这里以后要改为投影摄像机的成像大小 不用屏幕大小
+	//transform_homogenize(&device->transform_shadow, &shadow_raster_pos2, &shadow_project_pos2);
+	//transform_homogenize(&device->transform_shadow, &shadow_raster_pos3, &shadow_project_pos3);
 	//point_t shadow_points[3] = (raster_pos1_shadow, raster_pos2_shadow, raster_pos3_shadow);
 
 
@@ -747,8 +764,8 @@ void frag_shader(device_t *device, v2f *vf, color_t *color) {
 
 		point_t tempPos = vf->pos; //这是像素坐标 还是世界坐标？
 		
-		matrix_apply(&tempPos, &tempPos, &device->transform_shadow.mvp);
-		transform_homogenize(&device->transform_shadow, &tempPos, &tempPos);
+		//matrix_apply(&tempPos, &tempPos, &device->transform_shadow.mvp);
+		//transform_homogenize(&device->transform_shadow, &tempPos, &tempPos);
 		int y = (int)(tempPos.y + 0.5); //?
 		int x = (int)(tempPos.x + 0.5);//?
 
@@ -786,5 +803,129 @@ void frag_shader(device_t *device, v2f *vf, color_t *color) {
 		//}
 
 
+	}
+}
+
+//这里有三个帧缓冲  （显存）帧缓冲 -》（内存）帧缓冲 -》（设备）帧缓冲
+// 设备初始化，fb为外部帧缓存，非 NULL 将引用外部帧缓存（每行 4字节对齐）
+void device_init(device_t *device, int width, int height, void *fb)
+{
+
+	int lengthVoid = sizeof(void*);//sizeof(void*)是取决于这个整形量有多少个字节而不是取决于其指向了啥。x86通常4bytes.  x64通常8bytes.
+
+	int need = lengthVoid * (height * 2 + 1024) + width * height * 8;
+
+	//ptr是二级指针。  内存帧缓冲指向ptr，ptr再指向
+	char *ptr = (char*)malloc(need + 64); //为什么是 char*
+
+	char *nativeFramebuf, *zbuf;
+	int j;
+	assert(ptr); //断言
+
+
+	device->framebuffer = (IUINT32**)ptr; 	//1.（显存）帧缓冲跟渲染像素完全相同 需要的是 lengthVoid * height 也就是 height这么多的指针，用于指向 （内存）帧缓冲
+	ptr += lengthVoid * height; // 2. 指针后移lengthVoid * height 指向下一个区域
+
+
+	device->zbuffer = (float**)ptr;  // 2.深度缓冲需要的是 lengthVoid * height  因为是扫描线，所以按高度来记录
+	ptr += lengthVoid * height;
+
+	device->texture = (IUINT32**)ptr;   //3. 转纹理空间 纹理：同样是每行索引， 1024个指针，来指向真正的纹理
+	ptr += lengthVoid * 1024;
+
+	//	nativeFramebuf = (char*)ptr; //4.（内存）帧缓冲  width * height * 4 这里是防止没有拿到windows的帧缓冲
+	ptr += width * height * 4;
+
+	zbuf = (char*)ptr;	//5.zbuffer里的 每一个点真正的Zbuf  width * height * 4;
+	ptr += width * height * 4;
+
+	// device->framebuffer 填充了ptr地址
+	//同时device->framebuffer[j] 填充了 nativeFramebuf  也就是 fb这个地址
+	//所以 相当于 ptr前面一段内存填充的是一个指针， 指向fb的指针
+	if (fb != NULL)
+		nativeFramebuf = (char*)fb; //拿到windows的帧缓冲
+
+									//赋值 设备里的 帧缓冲 和 Z深度缓冲
+	for (j = 0; j < height; j++)  // 高度这么多的扫描线
+	{
+		device->framebuffer[j] = (IUINT32*)(nativeFramebuf + width * 4 * j); //将本地帧缓冲赋值给指向的设备帧缓冲,每一行帧缓冲是 width * 4 宽度  framebuffer直接指向他
+		device->zbuffer[j] = (float*)(zbuf + width * 4 * j);
+	}
+
+	//分配一个阴影缓存  即使是多灯光，也是在像素上依次叠加计算，现在暂时只计算单灯光阴影
+	float *shadowbuffer = (float*)malloc(height * width * sizeof(float));
+	device->shadowbuffer = shadowbuffer;
+
+	device->texture[0] = (IUINT32*)ptr;  //？ 这里指针长度貌似不对
+	device->texture[1] = (IUINT32*)(ptr + 16);
+
+	memset(device->texture[0], 0, 64);
+	device->tex_width = 2;
+	device->tex_height = 2;
+	device->max_u = 1.0f;
+	device->max_v = 1.0f;
+	device->width = width;
+	device->height = height;
+	device->background = 0xc0c0c0;  //背景颜色
+	device->foreground = 0; //线框颜色
+
+	device->render_state = RENDER_STATE_WIREFRAME;
+}
+
+// 删除设备
+void device_destroy(device_t *device) {
+	if (device->framebuffer)
+		free(device->framebuffer);
+	device->framebuffer = NULL;
+	device->zbuffer = NULL;
+	device->texture = NULL;
+}
+
+
+
+// 清空 framebuffer 和 zbuffer
+void device_clear(device_t *device, int mode)
+{
+	int y, x, height = device->height;
+	for (y = 0; y < device->height; y++)
+	{
+		IUINT32 *dst = device->framebuffer[y];
+		IUINT32 cc = (height - 1 - y) * 230 / (height - 1);
+		cc = (cc << 16) | (cc << 8) | cc;
+		if (mode == 0)
+			cc = device->background;
+		for (x = device->width; x > 0; dst++, x--)
+			dst[0] = cc;
+	}
+	for (y = 0; y < device->height; y++)
+	{
+		float *dst = device->zbuffer[y];
+		for (x = device->width; x > 0; dst++, x--)
+			dst[0] = 0.0f;
+	}
+
+	//清空shaderbuffer,默认深度是CVV盒子最远离摄像机的边的深度，也就是1
+	if (device->shadowbuffer != NULL) {
+		for (int y = 0; y < device->height; y++)
+			for (int x = 0; x < device->width; x++)
+				device->shadowbuffer[y * device->width + x] = 1.0f;
+	}
+}
+
+
+void device_clear(device_t *device) {
+	if (device->framebuffer != NULL) {
+		for (int y = 0; y < device->height; y++)
+			for (int x = 0; x < device->width; x++)
+				//device->framebuffer[y * device->width + x] = device->background;
+				device->framebuffer[y][x] = device->background;
+	}
+	// memset(device->framebuffer, 0xff, device->camera->width * device->camera->height * sizeof(IUINT32));
+	if (device->zbuffer != NULL)
+		memset(device->zbuffer, 0, device->width * device->height * sizeof(float));
+	if (device->shadowbuffer != NULL) {
+		for (int y = 0; y < device->height; y++)
+			for (int x = 0; x < device->width; x++)
+				device->shadowbuffer[y * device->width + x] = 1.0f;
 	}
 }

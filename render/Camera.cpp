@@ -1,18 +1,13 @@
 #include "Camera.h"
 
-
-float Forwardoffset = 0.01f;
-camera cameras[MAX_NUM_CAMERA]; 
-camera camera_main =  camera();
-
 //TODO：这里拿到的 貌似不是真正的世界坐标转摄像机矩阵，拿到的是 此刻 转置矩阵 =逆矩阵
 // 设置摄像机  eye自身坐标 front正前方  up是Y轴
-void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *front, const vector_t *up)
+void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *at, const vector_t *up)
 {
 	vector_t xaxis, yaxis, zaxis;
 
 	//zaxis 摄像机Z轴
-	vector_sub(&zaxis, front, eye); //Z
+	vector_sub(&zaxis, at, eye); //Z
 
 	//叉乘之前要归一化。 
 	vector_normalize(&zaxis);
@@ -101,151 +96,29 @@ void CameraInit()
 }
 
 //摄像机位置刷新后,设备的矩阵改变
-void camera_update(device_t *device, camera * caneraMain)  
+void camera_update(camera* caneraMain)
 {
 
-	matrix_set_perspective(&(&device->transform)->projection, camera_main.fov, camera_main.aspect, camera_main.zn, camera_main.zf); //设定近平面为1，这样W取值为1就好了。缩放到投影面比较方便
+	matrix_set_perspective(&(&caneraMain->transform)->projection, caneraMain->fov, caneraMain->aspect, caneraMain->zn, caneraMain->zf); //设定近平面为1，这样W取值为1就好了。缩放到投影面比较方便
 
 	//计算 view矩阵 我们计算过matrix_Obj2World,如果我们把camera当作obj， World2view 就是它的逆矩阵 TOdo:以后增加伴随矩阵求逆矩阵
 	
 	//matrix_World2Obj(&device->transform.view, caneraMain->rotation,caneraMain->pos, 1);
 
+	vector_t right, at, up, front;
+	vector_add(&at, &caneraMain->pos, &caneraMain->front);
 	//摄像机矩阵 摄像机的位移
-	matrix_set_lookat(&device->transform.view, &(caneraMain->pos), &caneraMain->front, &caneraMain->worldup);
+	matrix_set_lookat(&(&caneraMain->transform)->view, &(caneraMain->pos), &at, &caneraMain->worldup);
+
 }
 
 
 //如果是动态灯光，需要刷新
-void camera_updateShadow(device_t *device, camera * caneraShadow)
+void camera_updateShadow(camera * caneraShadow)
 {
 	//matrix_set_perspective(&(&device->transform)->projection, camera_main.fov, camera_main.aspect, camera_main.zn, camera_main.zf); //设定近平面为1，这样W取值为1就好了。缩放到投影面比较方便
 
 	//摄像机矩阵 摄像机的位移
-	matrix_set_lookat(&device->transform_shadow.view, &(caneraShadow->pos), &caneraShadow->front, &caneraShadow->worldup);
+	matrix_set_lookat(&caneraShadow->transform.view, &(caneraShadow->eye), &caneraShadow->front, &caneraShadow->worldup);
 }
 
-//这里有三个帧缓冲  （显存）帧缓冲 -》（内存）帧缓冲 -》（设备）帧缓冲
-// 设备初始化，fb为外部帧缓存，非 NULL 将引用外部帧缓存（每行 4字节对齐）
-void device_init(device_t *device, int width, int height, void *fb)
-{
-
-	int lengthVoid = sizeof(void*);//sizeof(void*)是取决于这个整形量有多少个字节而不是取决于其指向了啥。x86通常4bytes.  x64通常8bytes.
-
-	int need = lengthVoid * (height * 2 + 1024) + width * height * 8;
-
-	//ptr是二级指针。  内存帧缓冲指向ptr，ptr再指向
-	char *ptr = (char*)malloc(need + 64); //为什么是 char*
-
-	char *nativeFramebuf, *zbuf;
-	int j;
-	assert(ptr); //断言
-
-
-	device->framebuffer = (IUINT32**)ptr; 	//1.（显存）帧缓冲跟渲染像素完全相同 需要的是 lengthVoid * height 也就是 height这么多的指针，用于指向 （内存）帧缓冲
-	ptr += lengthVoid * height; // 2. 指针后移lengthVoid * height 指向下一个区域
-
-
-	device->zbuffer = (float**)ptr;  // 2.深度缓冲需要的是 lengthVoid * height  因为是扫描线，所以按高度来记录
-	ptr += lengthVoid * height;
-
-	device->texture = (IUINT32**)ptr;   //3. 转纹理空间 纹理：同样是每行索引， 1024个指针，来指向真正的纹理
-	ptr += lengthVoid * 1024;
-
-	//	nativeFramebuf = (char*)ptr; //4.（内存）帧缓冲  width * height * 4 这里是防止没有拿到windows的帧缓冲
-	ptr += width * height * 4;
-
-	zbuf = (char*)ptr;	//5.zbuffer里的 每一个点真正的Zbuf  width * height * 4;
-	ptr += width * height * 4;
-
-	// device->framebuffer 填充了ptr地址
-	//同时device->framebuffer[j] 填充了 nativeFramebuf  也就是 fb这个地址
-	//所以 相当于 ptr前面一段内存填充的是一个指针， 指向fb的指针
-	if (fb != NULL)
-		nativeFramebuf = (char*)fb; //拿到windows的帧缓冲
-
-									//赋值 设备里的 帧缓冲 和 Z深度缓冲
-	for (j = 0; j < height; j++)  // 高度这么多的扫描线
-	{
-		device->framebuffer[j] = (IUINT32*)(nativeFramebuf + width * 4 * j); //将本地帧缓冲赋值给指向的设备帧缓冲,每一行帧缓冲是 width * 4 宽度  framebuffer直接指向他
-		device->zbuffer[j] = (float*)(zbuf + width * 4 * j);
-	}
-
-	//分配一个阴影缓存  即使是多灯光，也是在像素上依次叠加计算，现在暂时只计算单灯光阴影
-	float *shadowbuffer = (float*)malloc(height * width * sizeof(float));
-	device->shadowbuffer = shadowbuffer;
-
-	device->texture[0] = (IUINT32*)ptr;  //？ 这里指针长度貌似不对
-	device->texture[1] = (IUINT32*)(ptr + 16);
-
-	memset(device->texture[0], 0, 64);
-	device->tex_width = 2;
-	device->tex_height = 2;
-	device->max_u = 1.0f;
-	device->max_v = 1.0f;
-	device->width = width;
-	device->height = height;
-	device->background = 0xc0c0c0;  //背景颜色
-	device->foreground = 0; //线框颜色
-
-	device->render_state = RENDER_STATE_WIREFRAME;
-
-	(&device->transform)->screen_width = (float)width;
-	(&device->transform)->screen_height = (float)height;
-
-	//matrix_set_identity(&device->model);
-	//matrix_set_identity(&device->view);
-}
-
-// 删除设备
-void device_destroy(device_t *device) {
-	if (device->framebuffer)
-		free(device->framebuffer);
-	device->framebuffer = NULL;
-	device->zbuffer = NULL;
-	device->texture = NULL;
-}
-
-// 设置当前纹理
-void device_set_texture(device_t *device, void *bits, long pitch, int w, int h) {
-
-
-	char *ptr = (char*)bits; //
-	int j;
-	assert(w <= 1024 && h <= 1024); //不能超过1024
-
-	for (j = 0; j < h; ptr += pitch, j++) 	//重新计算每行纹理的指针    device->texture的行数 是纹理的高度 
-		device->texture[j] = (IUINT32*)ptr;
-	device->tex_width = w;
-	device->tex_height = h;
-	device->max_u = (float)(w - 1);
-	device->max_v = (float)(h - 1);
-}
-
-// 清空 framebuffer 和 zbuffer
-void device_clear(device_t *device, int mode)
-{
-	int y, x, height = device->height;
-	for (y = 0; y < device->height; y++)
-	{
-		IUINT32 *dst = device->framebuffer[y];
-		IUINT32 cc = (height - 1 - y) * 230 / (height - 1);
-		cc = (cc << 16) | (cc << 8) | cc;
-		if (mode == 0)
-			cc = device->background;
-		for (x = device->width; x > 0; dst++, x--)
-			dst[0] = cc;
-	}
-	for (y = 0; y < device->height; y++)
-	{
-		float *dst = device->zbuffer[y];
-		for (x = device->width; x > 0; dst++, x--)
-			dst[0] = 0.0f;
-	}
-
-	//清空shaderbuffer,默认深度是CVV盒子最远离摄像机的边的深度，也就是1
-	if (device->shadowbuffer != NULL) {
-		for (int y = 0; y < device->height; y++)
-			for (int x = 0; x < device->width; x++)
-				device->shadowbuffer[y * device->width + x] = 1.0f;
-	}
-}

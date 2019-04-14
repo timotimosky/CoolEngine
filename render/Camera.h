@@ -12,13 +12,11 @@ typedef enum {
 
 typedef struct  camera_temp
 {
-	//x朝画布外，z朝上，y朝右
-
-	// 这里的 (x,y,z) 相当于DX 里的 (z,x,y)
-
-	// public
 	vector_t pos; //位置
+	vector_t eye; //看向前方的向量 //非坐标矢量
+	int cull;   // 0:不裁剪;1:裁剪反面;2:裁剪正面
 
+	transform_t transform;
 
 	//仿Unity，还是使用Transform组件的Rotation
 	vector_t rotation;
@@ -57,11 +55,6 @@ typedef struct  camera_temp
 	float aspect; //纵横比；如果是主摄像头，则全屏 = 屏幕高宽比
 }camera;
 
-extern float Forwardoffset;
-extern camera camera_main;
-
-#define MAX_NUM_CAMERA 10
-extern camera cameras[MAX_NUM_CAMERA];
 
 void CameraInit();
 
@@ -69,17 +62,5 @@ void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *at, con
 
 void matrix_set_perspective(matrix_t *m, float fovy, float aspect, float zn, float zf);
 
-void camera_update(device_t *device, camera * caneraMain);
-void camera_updateShadow(device_t *device, camera * caneraMain);
-
-void Forward();
-
-void device_init(device_t *device, int width, int height, void *fb);
-
-void device_destroy(device_t *device);
-
-// 设置当前纹理
-void device_set_texture(device_t *device, void *bits, long pitch, int w, int h);
-
-// 清空 framebuffer 和 zbuffer
-void device_clear(device_t *device, int mode);
+void camera_update(camera * caneraMain);
+void camera_updateShadow(camera * caneraMain);

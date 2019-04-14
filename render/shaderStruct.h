@@ -125,35 +125,6 @@ typedef struct {
 }
 transform_t;
 
-//TODO:以后同时渲染多个物体
-
-//=====================================================================
-// 渲染设备   这个渲染设备 是怎么跟最后Windwos的gdi关联上的？
-//=====================================================================
-typedef struct {
-	transform_t transform;      // 坐标变换器
-	transform_t transform_shadow;      // 坐标变换器
-	int width;                  // 窗口宽度
-	int height;                 // 窗口高度
-
-								//最后输出到屏幕的像素  800*600*32
-	IUINT32 **framebuffer;      // 像素缓存：framebuffer[x] 代表第x行      framebuffer[x][y] 代表第x行第y个像素
-
-								//每个像素的深度 800*600*4   32位系统里，char 1位  short 2位   float int long 都是4位 只有double是8位
-	float **zbuffer;            // 深度缓存：zbuffer[y] 为第 y行指针      zbuffer[x][y] 代表第x行第y个像素
-	float *shadowbuffer;        // 阴影缓存
-	IUINT32 **texture;          // 纹理：同样是每行索引
-	int tex_width;              // 纹理宽度
-	int tex_height;             // 纹理高度
-	float max_u;                // 纹理最大宽度：tex_width - 1
-	float max_v;                // 纹理最大高度：tex_height - 1
-	int render_state;           // 渲染状态
-	IUINT32 background;         // 背景颜色
-	IUINT32 foreground;         // 线框颜色
-
-	int cull;   // 0:不裁剪;1:裁剪反面;2:裁剪正面
-}
-device_t;
 
 // 矩阵更新
 void transform_update(transform_t *ts);
@@ -161,11 +132,7 @@ void transform_update(transform_t *ts);
 
 void transform_apply(const transform_t *ts, vector_t *posInCVV, const vector_t *posInObj);
 
-//void vert_shader(device_t *device, a2v *av, v2f *vf);
-
-void frag_shader(device_t *device, v2f *vf, color_t *color);
 
 void transform_applyVP(const transform_t *ts, vector_t *posInCVV, const vector_t *posInWorld);
 
-void device_clear(device_t *device);
 #endif

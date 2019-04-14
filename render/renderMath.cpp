@@ -235,12 +235,13 @@ void matrix_World2Obj(matrix_t *m, vector_t rot, vector_t pos, float scale)
 	m->m[3][3] = 1.0f;
 }
 
-
+	//物体旋转，以自身坐标系旋转。最好在3DMAX里做的物体坐标系跟引擎保持一致
 	//A坐标系转到B坐标系   任何两个矩阵之间的交换都可以
-	//欧拉角 根据基向量 转矩阵 采用Y-X-Z轴的顺序 根据矩阵乘法可结合来叠加成一个矩阵
+	//欧拉角 根据基向量 转矩阵 
+	//采用正旋 X-Y-Z轴的顺序， 根据矩阵乘法可结合来叠加成一个矩阵
+	//右乘
 	void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos,float scale)
 	{
-
 		float rot_x = rot.x;
 		float rot_y = rot.y;
 		float rot_z = rot.z;
@@ -257,27 +258,29 @@ void matrix_World2Obj(matrix_t *m, vector_t rot, vector_t pos, float scale)
 		float cosY = (float)cos(rot_y);
 		float cosZ = (float)cos(rot_z);
 
-		m->m[0][0] = cosX * cosZ;
-		m->m[0][1] = -sinZ;
-		m->m[0][2] = -sinY*cosZ;
+		m->m[0][0] = cosY * cosZ;
+		m->m[0][1] = cosY * sinZ;
+		m->m[0][2] = -sinY;
 
-		m->m[1][0] = cosX * cosY* sinZ - sinX * sinY;
-		m->m[1][1] = cosX * cosZ;
-		m->m[1][2] = -cosX * sinY*sinZ - sinX * cosY;
+		m->m[1][0] = sinX * sinY* cosZ - cosX * sinZ;
+		m->m[1][1] = (sinX * sinY*sinZ + cosX * cosZ);
+		m->m[1][2] = sinX * cosY;
 
-		m->m[2][0] = sinX * cosY* sinZ + cosX * sinY;
-		m->m[2][1] = sinX * cosZ;
-		m->m[2][2] = -sinX * sinY * sinZ + cosX * cosY;
+		m->m[2][0] = cosX * sinY* cosZ + sinX * sinZ;
+		m->m[2][1] = cosX * sinY* sinZ - sinX * cosZ;
+		m->m[2][2] = (-sinX  + cosX * cosY);
 
 		//平移
 		m->m[0][3] = 0;
 		m->m[1][3] = 0;
 		m->m[2][3] = 0;
 
-
-		m->m[3][0] = xOffset;
-		m->m[3][1] = yOffest;
-		m->m[3][2] = zOffset;
+		m->m[3][0] = 0;
+		m->m[3][1] = 0;
+		m->m[3][2] = 0;
+		//m->m[3][0] = xOffset;
+		//m->m[3][1] = yOffest;
+		//m->m[3][2] = zOffset;
 		m->m[3][3] = 1.0f;	
 	}
 
@@ -320,10 +323,11 @@ void matrix_set_rotate(matrix_t *m, float x, float y, float z, float theta, floa
 	m->m[2][2] = 1 - 2 * x * x - 2 * y * y;
 
 	m->m[0][3] = m->m[1][3] = m->m[2][3] = 0.0f;
-	//m->m[3][0] = m->m[3][1] = m->m[3][2] = 0.0f;
+
 	m->m[3][0] = xOffset;
 	m->m[3][1] = yOffest;
 	m->m[3][2] = zOffset;
+
 
 	m->m[3][3] = 1.0f;
 }

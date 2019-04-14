@@ -28,20 +28,3 @@ void transform_applyVP(const transform_t *ts, vector_t *posInCVV, const vector_t
 	//拿到MVP矩阵，从物体坐标转到CVV坐标
 	matrix_apply(posInCVV, posInObj, &ts->vp);
 }
-
-void device_clear(device_t *device) {
-	if (device->framebuffer != NULL) {
-		for (int y = 0; y < device->height; y++)
-			for (int x = 0; x < device->width; x++)
-				//device->framebuffer[y * device->width + x] = device->background;
-				device->framebuffer[y][x] = device->background;
-	}
-	// memset(device->framebuffer, 0xff, device->camera->width * device->camera->height * sizeof(IUINT32));
-	if (device->zbuffer != NULL)
-		memset(device->zbuffer, 0, device->width * device->height * sizeof(float));
-	if (device->shadowbuffer != NULL) {
-		for (int y = 0; y < device->height; y++)
-			for (int x = 0; x < device->width; x++)
-				device->shadowbuffer[y * device->width + x] = 1.0f;
-	}
-}
