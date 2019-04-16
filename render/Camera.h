@@ -12,8 +12,8 @@ typedef enum {
 
 typedef struct  camera_temp
 {
-	vector_t pos; //位置
-	vector_t eye; //看向前方的向量 //非坐标矢量
+	vector_t eye; //当前坐标
+	vector_t eyeTarget; //看向的焦点
 	int cull;   // 0:不裁剪;1:裁剪反面;2:裁剪正面
 
 	transform_t transform;
@@ -22,7 +22,7 @@ typedef struct  camera_temp
 	vector_t rotation;
 
 
-	vector_t front; //朝前 cameraTarget
+	vector_t front; //朝前向量
 	vector_t worldup;  //朝上
 
 

@@ -2,12 +2,12 @@
 
 //TODO：这里拿到的 貌似不是真正的世界坐标转摄像机矩阵，拿到的是 此刻 转置矩阵 =逆矩阵
 // 设置摄像机  eye自身坐标 front正前方  up是Y轴
-void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *at, const vector_t *up)
+void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *eyeTarget, const vector_t *up)
 {
 	vector_t xaxis, yaxis, zaxis;
 
-	//zaxis 摄像机Z轴
-	vector_sub(&zaxis, at, eye); //Z
+	//zaxis 摄像机Z轴 朝屏幕内
+	vector_sub(&zaxis, eyeTarget, eye); //Z 
 
 	//叉乘之前要归一化。 
 	vector_normalize(&zaxis);
@@ -105,10 +105,10 @@ void camera_update(camera* caneraMain)
 	
 	//matrix_World2Obj(&device->transform.view, caneraMain->rotation,caneraMain->pos, 1);
 
-	vector_t right, at, up, front;
-	vector_add(&at, &caneraMain->pos, &caneraMain->front);
+	//vector_t right, eyeTarget, up, front;
+	//vector_add(&eyeTarget, &caneraMain->eye, &caneraMain->front);
 	//摄像机矩阵 摄像机的位移
-	matrix_set_lookat(&(&caneraMain->transform)->view, &(caneraMain->pos), &at, &caneraMain->worldup);
+	matrix_set_lookat(&(&caneraMain->transform)->view, &(caneraMain->eye), &caneraMain->eyeTarget, &caneraMain->worldup);
 
 }
 
@@ -119,6 +119,6 @@ void camera_updateShadow(camera * caneraShadow)
 	//matrix_set_perspective(&(&device->transform)->projection, camera_main.fov, camera_main.aspect, camera_main.zn, camera_main.zf); //设定近平面为1，这样W取值为1就好了。缩放到投影面比较方便
 
 	//摄像机矩阵 摄像机的位移
-	matrix_set_lookat(&caneraShadow->transform.view, &(caneraShadow->eye), &caneraShadow->front, &caneraShadow->worldup);
+	matrix_set_lookat(&caneraShadow->transform.view, &(caneraShadow->eye), &caneraShadow->eyeTarget, &caneraShadow->worldup);
 }
 

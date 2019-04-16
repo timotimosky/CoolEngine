@@ -320,9 +320,9 @@ void Init_Obj()
 void InitCamera(device_t* device,int width, int height)
 {
 	//初始化主摄像机
-	device->camera_main.pos = { 0, 0, -10, 1 };
-	device->camera_main.front = { 0, 0, 1, 0 };
-	device->camera_main.worldup = { 0, 1, 0, 0 };
+	device->camera_main.eye = { 0, 0, -10, 1 };
+	device->camera_main.eyeTarget = { 0, 0, 0, 1};
+	device->camera_main.worldup = { 0, 1, 0, 1 };
 
 	device->camera_main.fov = PI * 0.5f;
 	device->camera_main.zn = 1;
@@ -398,8 +398,8 @@ int main(void)
 		//动态灯光 阴影
 		//camera_updateShadow(&device, &cameras[0]);
 
-		if (screen_keys[VK_UP]) device.camera_main.pos.z += 0.01f; //摄像机前进  pos -= 0.01f;
-		if (screen_keys[VK_DOWN]) device.camera_main.pos.z -= 0.01f; //摄像机后退
+		if (screen_keys[VK_UP]) device.camera_main.eye.z += 0.01f; //摄像机前进  pos -= 0.01f;
+		if (screen_keys[VK_DOWN]) device.camera_main.eye.z -= 0.01f; //摄像机后退
 		if (screen_keys[VK_LEFT]) alpha += 0.01f; //物体向左旋转
 		if (screen_keys[VK_RIGHT]) alpha -= 0.01f; //物体向右旋转
 

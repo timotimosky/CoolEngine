@@ -604,7 +604,6 @@ void device_render_trap(device_t *device, trapezoid_t *trap, float surfaceLight)
 void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_t *v3)
 {
 	//1--------物体空间------------------------------
-	vertex_t *vertice[3] = { v1, v2, v3 };
 
 	point_t world_pos1, world_pos2, world_pos3, //世界坐标
 		raster_pos1, raster_pos2, raster_pos3, // 光栅化坐标，在一个2D平面上，对应到屏幕上真正的像素了（本应该通过当前的采样方式来对应，这里直接是按屏幕像素大小缩放）	
@@ -621,22 +620,16 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 	matrix_apply(&world_pos2, &v2->pos, &transform.model);
 	matrix_apply(&world_pos3, &v3->pos, &transform.model);
 
-	//法线转换到世界空间
-	vector_t world_normal1, world_normal2, world_normal3;
-	matrix_apply(&world_normal1, &v1->normal, &transform.model);
-	matrix_apply(&world_normal2, &v2->normal, &transform.model);
-	matrix_apply(&world_normal3, &v3->normal, &transform.model);
-
 	// 背面剔除
-	if (device->cull > 0)
+	if (device->camera_main.cull > 0)
 	{
-		float cullValue = CullCalcutate(&world_pos1, &world_pos2, &world_pos3, &device->camera_main.pos);
-		if (device->cull == 1)
+		float cullValue = CullCalcutate(&world_pos1, &world_pos2, &world_pos3, &device->camera_main.eye);
+		if (device->camera_main.cull == 1)
 		{
 			if (cullValue <= 0)
 				return;
 		}
-		else if (device->cull == 2) {
+		else if (device->camera_main.cull == 2) {
 			if (cullValue> 0)
 				return;
 		} 
@@ -647,21 +640,24 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 
 	//--------------------------------4.CVV空间裁剪(视锥裁剪)-----------------------------
 
-	transform_apply(&transform, &project_pos1, &v1->pos);
-	transform_apply(&transform, &project_pos2, &v2->pos);
-	transform_apply(&transform, &project_pos3, &v3->pos);
+	matrix_apply(&project_pos1, &v1->pos, &((&transform)->mvp));
+	matrix_apply(&project_pos2, &v2->pos, &((&transform)->mvp));
+	matrix_apply(&project_pos3, &v3->pos, &((&transform)->mvp));
 
-	//if (transform_check_cvv(&project_pos1) != 0) return;
-	//if (transform_check_cvv(&project_pos2) != 0) return;
-	//if (transform_check_cvv(&project_pos3) != 0) return;
+	if (transform_check_cvv(&project_pos1) != 0) return;
+	if (transform_check_cvv(&project_pos2) != 0) return;
+	if (transform_check_cvv(&project_pos3) != 0) return;
 
 
-
+	//法线转换到世界空间
+	vector_t world_normal1, world_normal2, world_normal3;
+	matrix_apply(&world_normal1, &v1->normal, &transform.model);
+	matrix_apply(&world_normal2, &v2->normal, &transform.model);
+	matrix_apply(&world_normal3, &v3->normal, &transform.model);
 	//阴影预备
 	//DisVertexToLight(lightPosition, &world_pos1);
 
 	//转换到灯光空间
-
 
 
 	//--------如果是动态物体-------在视锥裁剪之后计算，比较节约性能---------另外,部分shader特效需要在摄像机空间计算法线、摄像机、灯光三者的角度------//
