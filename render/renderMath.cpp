@@ -139,9 +139,9 @@ void matrix_scale(matrix_t *c, const matrix_t *a, float f) {
 void matrix_apply(vector_t *y, const vector_t *x, const matrix_t *m) {
 	float X = x->x, Y = x->y, Z = x->z, W = x->w;
 	y->x = X * m->m[0][0] + Y * m->m[1][0] + Z * m->m[2][0] + W * m->m[3][0];
-	y->y = X * m->m[1][0] + Y * m->m[1][1] + Z * m->m[2][1] + W * m->m[3][1];
-	y->z = X * m->m[2][0] + Y * m->m[1][2] + Z * m->m[2][2] + W * m->m[3][2];
-	y->w = X * m->m[3][0] + Y * m->m[1][3] + Z * m->m[2][3] + W * m->m[3][3];
+	y->y = X * m->m[0][1] + Y * m->m[1][1] + Z * m->m[2][1] + W * m->m[3][1];
+	y->z = X * m->m[0][2] + Y * m->m[1][2] + Z * m->m[2][2] + W * m->m[3][2];
+	y->w = X * m->m[0][3] + Y * m->m[1][3] + Z * m->m[2][3] + W * m->m[3][3];
 }
 
 ////ЯђСП зѓГЫОиеѓ 

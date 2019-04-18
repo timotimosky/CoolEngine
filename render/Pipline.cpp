@@ -644,9 +644,10 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 	matrix_apply(&project_pos2, &v2->pos, &((&transform)->mvp));
 	matrix_apply(&project_pos3, &v3->pos, &((&transform)->mvp));
 
+	//mvp计算有问题
 	if (transform_check_cvv(&project_pos1) != 0) return;
-	if (transform_check_cvv(&project_pos2) != 0) return;
-	if (transform_check_cvv(&project_pos3) != 0) return;
+	//if (transform_check_cvv(&project_pos2) != 0) return;
+	//if (transform_check_cvv(&project_pos3) != 0) return;
 
 
 	//法线转换到世界空间
