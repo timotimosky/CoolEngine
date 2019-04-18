@@ -189,22 +189,27 @@ void draw_plane(device_t *device, int a, int b, int c, int d) {
 
 void draw_Object(Object_t Cube, device_t *device)
 {
-	matrix_t s,r;
+	matrix_t s,r,t,temp;
 
 	//TODO: 计算 旋转 和位移 需要的矩阵
 
 	//输入 当前物体原点在世界坐标系中的位置和旋转，  来反推世界矩阵
 	//axis.x 绕X轴的旋转角度
 
+	//物体转世界坐标系  	//平移-> 旋转-》缩放 
 	matrix_set_scale(&s, Cube.scale, Cube.scale, Cube.scale);
 	matrix_Obj2World(&r, Cube.axis, Cube.pos, Cube.scale);
+	matrix_set_identity(&t);
+	t.m[3][0] = Cube.pos.x;
+	t.m[3][1] = Cube.pos.y;
+	t.m[3][2] = Cube.pos.z;
 
-	matrix_mul(&Cube.model, &s, &r);
+	matrix_mul(&temp, &r, &t);
+	matrix_mul(&Cube.model, &s, &temp);
 
-	//TODO : 平移 旋转 缩放 不能直接写入同一个矩阵。需要写三个矩阵，然后按  缩放 -> 旋转 -> 平移 相乘。 对于摄像机同样如此
-	(&Cube)->model.m[3][0] = Cube.pos.x;
+	/*(&Cube)->model.m[3][0] = Cube.pos.x;
 	(&Cube)->model.m[3][1] = Cube.pos.y;
-	(&Cube)->model.m[3][2] = Cube.pos.z;
+	(&Cube)->model.m[3][2] = Cube.pos.z;*/
 
 	//matrix_set_rotate(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z, 0, Cube.pos.x, Cube.pos.y, Cube.pos.z); //theta  是物体本身的x,y,z轴相对的旋转
 
@@ -297,7 +302,7 @@ void Init_Obj()
 	//初始化一个地板
 	Object_t ground;
 
-	ground.pos = { 0, -3, 0,1 };
+	ground.pos = { -2, -3, 0,1 };
 	ground.axis = { 0, 0, 0, 0 };
 	ground.mesh = ground_mesh;
 	ground.mesh_num = 4;
@@ -306,7 +311,7 @@ void Init_Obj()
 
 	//初始化一个物体
 	Object_t Cube; 
-	Cube.pos = { 0, 0, 0 ,1 };
+	Cube.pos = { 1, 2, 1 ,1 };
 	Cube.axis = { 0, 0, 0, 0 };
 	Cube.mesh = box_mesh;
 	Cube.mesh_num = 34;
@@ -320,7 +325,7 @@ void Init_Obj()
 void InitCamera(device_t* device,int width, int height)
 {
 	//初始化主摄像机
-	device->camera_main.eye = { 0, 0, -10, 1 };
+	device->camera_main.eye = { 0, 3, -10, 1 };
 	device->camera_main.eyeTarget = { 0, 0, 0, 1};
 	device->camera_main.worldup = { 0, 1, 0, 1 };
 

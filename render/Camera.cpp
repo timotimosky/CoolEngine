@@ -1,69 +1,46 @@
 #include "Camera.h"
 
-//TODO：这里拿到的 貌似不是真正的世界坐标转摄像机矩阵，拿到的是 此刻 转置矩阵 =逆矩阵
+//因为最开始物体坐标系跟世界坐标系重合，物体的运动就是从世界坐标系 转到其他坐标系，符合现实的状态是，先缩放、再旋转，在平移，
+//而从其他坐标系转到世界坐标系  则是相反  因为 (T*R)的逆矩阵 = （R的逆矩阵）*（T的逆矩阵） 先平移、再旋转，在缩放，
 // 设置摄像机  eye自身坐标 front正前方  up是Y轴
 void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *eyeTarget, const vector_t *up)
 {
+	//获取摄像机坐标系的3个基向量 因为当前项目设计为Unity的左手坐标系，所有叉乘也遵循左手法则
 	vector_t xaxis, yaxis, zaxis;
 
 	//zaxis 摄像机Z轴 朝屏幕内
-	vector_sub(&zaxis, eyeTarget, eye); //Z 
-
-	//叉乘之前要归一化。 
+	vector_sub(&zaxis, eyeTarget, eye); //Z
 	vector_normalize(&zaxis);
-	vector_crossproduct(&xaxis, up, &zaxis);  //叉乘得到 X轴
-
+	vector_crossproduct(&xaxis, up, &zaxis); 
 	vector_normalize(&xaxis);
-	vector_crossproduct(&yaxis, &zaxis, &xaxis);  //up只是单纯的设置为 朝上。与目光看向焦点 构成一个平面，来运算出X轴， 然后这里还要算出一次真正的Y轴
+	vector_crossproduct(&yaxis, &zaxis, &xaxis);
 
 	//计算 摄像机相对于世界坐标系的旋转 
+	matrix_t rotationM;
+	rotationM.m[0][0] = xaxis.x;
+	rotationM.m[1][0] = xaxis.y;
+	rotationM.m[2][0] = xaxis.z;
 
-	//由于是要从世界转摄像机，所以是-号
-	float cos_rot_x  = -vector_dotproduct(&xaxis, eye);
-	float cos_rot_y = -vector_dotproduct(&yaxis, eye);
-	float cos_rot_z = -vector_dotproduct(&zaxis, eye);
+	rotationM.m[0][1] = yaxis.x;
+	rotationM.m[1][1] = yaxis.y;
+	rotationM.m[2][1] = yaxis.z;
 
-	//matrix_Obj2World(m,  vector_t(cos_rot_x, cos_rot_y, cos_rot_z, 0), *eye, 1);
+	rotationM.m[0][2] = zaxis.x;
+	rotationM.m[1][2] = zaxis.y;
+	rotationM.m[2][2] = zaxis.z;
 
-	//return;
-//点积不仅能表示两个向量的角度范围 , 而且可以表示在标准化坐标系内的X , Y ,Z 轴上的对应位置 
+	rotationM.m[0][3] = rotationM.m[1][3] = rotationM.m[2][3] = 0.0f;
+	rotationM.m[3][0] = rotationM.m[3][1] = rotationM.m[3][2] = 0.0f;
+	rotationM.m[3][3] = 1.0f;
 
-//摄像机坐标系 1.整体平移，将摄像机平移至世界坐标系原点，2.将坐标点从世界坐标系转换至摄像机坐标系。
-//使用单位向量U, V, W分别代表摄像机坐标系X, Y, Z轴正向的单位向量在世界坐标系中的表示，则在摄像相机坐标系与世界坐标系原点重合的情况下，物体顶点坐标代表的向量（即从世界原点指向物体顶点的向量）
-//在U, V, W上的投影大小即是物体顶点在摄像机坐标系下的坐标值。因为U, V, W是单位向量，使用二者的点乘即可以得到顶点的投影大小。
-//P  =  (ax,by,cz)  a b c是已知数
-//转换到另一个坐标系，为  PN = (mU, nV,qP)
+	//计算 摄像机相对于世界坐标系的位移
+	matrix_t transM;
+	matrix_set_identity(&transM);
+	transM.m[3][0] = -eye->x;
+	transM.m[3][1] = -eye->y;
+	transM.m[3][2] = -eye->z;
 
-//世界转视图空间矩阵
-
-//float m[4][4] = { { xaxis.x,xaxis.y,xaxis.z,0 },{ V.x,V.y,V.z,0 },{ W.x,W.y,W.z,0 },{ 0,0,0,1 } };
-
-
-//矩阵乘法 =  被变换的向量  点积   矩阵的对应的那一列标识的向量（如果是行变化，也就是左乘，就是每一列）
-
- //其实到时候矩阵效果就是  Px * xaxis = newPx;  原本在世界坐标系的X坐标，乘以xaxis，获得在摄像机基坐标x轴上的投影， 也就是在摄像机坐标系里的新X坐标了
- //右乘。考虑矩阵的意义，如果是斜线才有值的矩阵，从行变换来考虑。  下面这种，用列变换考虑比较好。
-	m->m[0][0] = xaxis.x;
-	m->m[1][0] = xaxis.y;
-	m->m[2][0] = xaxis.z;
-	m->m[3][0] = -vector_dotproduct(&xaxis, eye);  //cos
-
-												   //这三行是 摄像机坐标系的Y轴的基向量
-												   //到时候矩阵运算会跟世界坐标的Y坐标点乘,  拿到的也就是世界坐标系里的点，在 摄像机坐标系 X轴上的投影
-	m->m[0][1] = yaxis.x;
-	m->m[1][1] = yaxis.y;
-	m->m[2][1] = yaxis.z;
-
-	//因为摄像机的基坐标平移了，所以点也要跟着平移。
-	m->m[3][1] = -vector_dotproduct(&yaxis, eye);
-
-	m->m[0][2] = zaxis.x;
-	m->m[1][2] = zaxis.y;
-	m->m[2][2] = zaxis.z;
-	m->m[3][2] = -vector_dotproduct(&zaxis, eye);//这里是填写的 平移变化的基坐标
-
-	m->m[0][3] = m->m[1][3] = m->m[2][3] = 0.0f;
-	m->m[3][3] = 1.0f;
+	matrix_mul(m, &transM, &rotationM); //世界-》摄像机。 先平移，再旋转
 }
 
 
