@@ -1,5 +1,6 @@
 #include "objectManager.h"
 
+
 //储存所有渲染物体
 vector<Object_t> Scene_render_Objs;
 
@@ -14,11 +15,12 @@ void vertex_add(vertex_t *y, const vertex_t *x) {
 	y->color.r += x->color.r;
 	y->color.g += x->color.g;
 	y->color.b += x->color.b;
+	y->shadowPos_z += x->shadowPos_z;
 }
 //方向光
 dirlight_t dirLight =
 {
-	{0,0,-10,0},
+	{0,-10,-10,1},
 	{0.3f, 0.3f, 0.3f, 0.3f},
 	true,
 };

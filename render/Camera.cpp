@@ -89,12 +89,13 @@ void camera_update(camera* caneraMain)
 
 }
 
-
+//平行光=正交矩阵 点光源=透视矩阵
 //如果是动态灯光，需要刷新
-void camera_updateShadow(camera * caneraShadow)
-{
-	//matrix_set_perspective(&(&device->transform)->projection, camera_main.fov, camera_main.aspect, camera_main.zn, camera_main.zf); //设定近平面为1，这样W取值为1就好了。缩放到投影面比较方便
 
+//TODO：暂时使用主摄像机的fov
+void camera_updateShadow(camera * caneraShadow, camera *  camera_main)
+{
+	//matrix_set_perspective(&(&caneraShadow->transform)->projection, camera_main->fov, camera_main->aspect, camera_main->zn, camera_main->zf);
 	//摄像机矩阵 摄像机的位移
 	matrix_set_lookat(&caneraShadow->transform.view, &(caneraShadow->eye), &caneraShadow->eyeTarget, &caneraShadow->worldup);
 }

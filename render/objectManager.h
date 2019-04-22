@@ -1,10 +1,10 @@
 #ifndef objectManager_h
 #define objectManager_h
 
-
-
 #include "shaderStruct.h"
 #include "UObject.h"
+#include "Lights.h"
+
 //用于集成物体的模型、网格、动画、材质、贴图
 
 

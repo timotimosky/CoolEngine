@@ -83,5 +83,8 @@
     <ClInclude Include="render\ShadingCalculate.h">
       <Filter>头文件\Shading</Filter>
     </ClInclude>
+    <ClInclude Include="Lights.h">
+      <Filter>头文件\HScene</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

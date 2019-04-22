@@ -216,9 +216,9 @@ void draw_Object(Object_t Cube, device_t *device)
 	device->camera_main.transform.model = Cube.model;
 	transform_update(&device->camera_main.transform);
 
-	//TODO：如果打开阴影
-	//device->transform_shadow.model = m;
-	//transform_update(&device->transform_shadow);
+	//阴影
+	device->cameras[0].transform.model = Cube.model;
+	transform_update(&device->cameras[0].transform);
 
 	//直接渲染三角形
 	for (int i = 0; i < Cube.mesh_num; i += 3)
@@ -306,7 +306,7 @@ void Init_Obj()
 	ground.axis = { 0, 0, 0, 0 };
 	ground.mesh = ground_mesh;
 	ground.mesh_num = 4;
-	ground.scale = 6;
+	ground.scale = 9;
 	//ground.theta = 0;
 
 	//初始化一个物体
@@ -342,15 +342,15 @@ void InitCamera(device_t* device,int width, int height)
 	//matrix_set_identity(&device->camera_main.view);
 }
 
-//传结构体的值传递不行
+
 void Init_ShadowCamera(device_t* device)
 {
 	if (dirLight.shadow == true)
 	{
 		//初始化阴影摄像机 采用深度测试，然后将设定的阴影颜色跟当前像素颜色混合。在像素阶段执行
 		camera* shadowCamera = &device->cameras[0];
-		//shadowCamera->pos = { 0.0f, 3.0f, -3.0f, 1.0f }; //设定到产生阴影的那个灯光位置
-		shadowCamera->front = dirLight.dir;
+		shadowCamera->eye = vector_t{0,10,10,1};
+		shadowCamera->eyeTarget = vector_t{ 0,0,0,1 };
 		shadowCamera->worldup = { 0, 1, 0, 1 };
 	}
 }
@@ -380,7 +380,7 @@ int main(void)
 
 	InitCamera(&device, width, height);//初始化主摄像机
 
-	//Init_ShadowCamera();//阴影摄像机
+	Init_ShadowCamera(&device);//阴影摄像机
 
 	Init_Obj();//初始化场景里的物体
 
@@ -398,10 +398,8 @@ int main(void)
 		fps = Get_FPS();
 
 		screen_dispatch(); //分发msg
-		device_clear(&device, 1); //清空缓存 Zbuffer frameBuffer
-
-		//动态灯光 阴影
-		//camera_updateShadow(&device, &cameras[0]);
+		device_clear(&device, 1); //清空缓冲
+		//device_clear(&device); // Zbuffer frameBuffer
 
 		if (screen_keys[VK_UP]) device.camera_main.eye.z += 0.01f; //摄像机前进  pos -= 0.01f;
 		if (screen_keys[VK_DOWN]) device.camera_main.eye.z -= 0.01f; //摄像机后退
@@ -413,6 +411,8 @@ int main(void)
 		if (screen_keys[0x42]) beta += 0.01f; //欧拉角
 
 		camera_update(&device.camera_main); //摄像机不断更新矩阵
+		//动态灯光 阴影
+		camera_updateShadow(&device.cameras[0], &device.camera_main);
 
 		if (screen_keys[VK_F1])
 		{
@@ -463,6 +463,7 @@ int main(void)
 
 		Sleep(1);
 	}
+
 	device_destroy(&device);
 	//static_device_t = nullptr;
 	return 0;

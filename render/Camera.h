@@ -63,4 +63,4 @@ void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *at, con
 void matrix_set_perspective(matrix_t *m, float fovy, float aspect, float zn, float zf);
 
 void camera_update(camera * caneraMain);
-void camera_updateShadow(camera * caneraMain);
+void camera_updateShadow(camera * caneraShadow,camera* caneraMain);

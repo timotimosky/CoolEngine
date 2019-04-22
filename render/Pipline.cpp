@@ -105,26 +105,34 @@ void vertex_interp(int render_state,  vertex_t *y, const vertex_t *x1, const ver
 	y->color.g = interp(x1->color.g, x2->color.g, t);
 	y->color.b = interp(x1->color.b, x2->color.b, t);
 
+	y->shadowPos_z = interp(x1->shadowPos_z, x2->shadowPos_z, t);
+
 	if (render_state & (RENDER_STATE_verterNormal_color))
 		y->vertexLight = interp(x1->vertexLight, x2->vertexLight, t);
 }
 
 //这是扫描线的像素插值  计算每个像素点的过渡的差值  包括坐标x,y,z,w 颜色rpg
-void vertex_division(int render_state, vertex_t *y, const vertex_t *x1, const vertex_t *x2, float width) {
+void vertex_division(int render_state, vertex_t *y, const vertex_t *begin, const vertex_t *end, float width) {
 
 	float inv = 1.0f / width; //使用扫描线的宽度来插值， 扫描线长度/它的宽度，就等于这个扫描线拥有的像素数量
-	y->pos.x = (x2->pos.x - x1->pos.x) * inv;
-	y->pos.y = (x2->pos.y - x1->pos.y) * inv;
-	y->pos.z = (x2->pos.z - x1->pos.z) * inv;
-	y->pos.w = (x2->pos.w - x1->pos.w) * inv; //注意，这里的W值也是插值的  w倒数用于作为深度。  非线性插值，用的 1/w
-	y->tc.u = (x2->tc.u - x1->tc.u) * inv;
-	y->tc.v = (x2->tc.v - x1->tc.v) * inv;
-	y->color.r = (x2->color.r - x1->color.r) * inv;
-	y->color.g = (x2->color.g - x1->color.g) * inv;
-	y->color.b = (x2->color.b - x1->color.b) * inv;
+	y->pos.x = (end->pos.x - begin->pos.x) * inv;
+	y->pos.y = (end->pos.y - begin->pos.y) * inv;
+	y->pos.z = (end->pos.z - begin->pos.z) * inv;
+	y->pos.w = (end->pos.w - begin->pos.w) * inv; //注意，这里的W值也是插值的  w倒数用于作为深度。  非线性插值，用的 1/w
+
+	//TODO： 阴影 以后决定是否插值
+	y->shadowPos_z = (end->shadowPos_z - begin->shadowPos_z) * inv;
+
+	y->tc.u = (end->tc.u - begin->tc.u) * inv;
+	y->tc.v = (end->tc.v - begin->tc.v) * inv;
+	y->color.r = (end->color.r - begin->color.r) * inv;
+	y->color.g = (end->color.g - begin->color.g) * inv;
+	y->color.b = (end->color.b - begin->color.b) * inv;
 
 	if (render_state & RENDER_STATE_verterNormal_color)//计算扫描线上 起始点的灯光插值的步长
-		y->vertexLight = (x2->vertexLight - x1->vertexLight) * inv;
+		y->vertexLight = (end->vertexLight - begin->vertexLight) * inv;
+
+	
 }
 
 
@@ -426,19 +434,18 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 				if (zbuffer != NULL)
 					zbuffer[scanlineX] = rhw;//最前面的深度
 
-#pragma region 计算阴影颜色 DJLTODO：没转换
+#pragma region 计算阴影颜色 
+
+				//float shadow = new vector();
 
 				//根据深度图，计算深度，是否要产生阴影
 				if (device->shadowbuffer != NULL) 
 				{
-					float z = scanline->v.pos.z;
+					float z = scanline->v.shadowPos_z;
 
 					//记录最小（离）
 					if (z <= device->shadowbuffer[scanlineY*width + scanlineX]) {
 						device->shadowbuffer[scanlineY*width + scanlineX] = z;
-
-
-						//TODO：暂时直接处理
 					}
 				}
 #pragma endregion
@@ -487,8 +494,27 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 					G = CMID(G, 0, 255);
 					B = CMID(B, 0, 255);
 
-					//位运算 
-					framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);  //<<是左移运算符    RGB 每个占8位.  或运算，恰好保留有1的位。 就合并RGB为一个int了
+					//根据深度图，计算深度，是否要产生阴影
+					if (device->shadowbuffer != NULL)
+					{
+						float z = scanline->v.shadowPos_z;
+
+						//记录最小（离）
+						if (z <= device->shadowbuffer[scanlineY*width + scanlineX]) 
+						{
+							device->shadowbuffer[scanlineY*width + scanlineX] = z;
+							framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);
+						}
+						else
+						{
+							R = 5;
+							G = 5;
+							B = 5;
+							framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);
+						}
+					}
+					else 
+						framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);  //<<是左移运算符    RGB 每个占8位.  或运算，恰好保留有1的位。 就合并RGB为一个int了
 				}
 
 				if (render_state & RENDER_STATE_TEXTURE)
@@ -644,10 +670,9 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 	matrix_apply(&project_pos2, &v2->pos, &((&transform)->mvp));
 	matrix_apply(&project_pos3, &v3->pos, &((&transform)->mvp));
 
-	//mvp计算有问题
 	if (transform_check_cvv(&project_pos1) != 0) return;
-	//if (transform_check_cvv(&project_pos2) != 0) return;
-	//if (transform_check_cvv(&project_pos3) != 0) return;
+	if (transform_check_cvv(&project_pos2) != 0) return;
+	if (transform_check_cvv(&project_pos3) != 0) return;
 
 
 	//法线转换到世界空间
@@ -690,19 +715,22 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 
 	//---------TODO：生成阴影摄像机的深度图
 	//如果阴影,插值
-	point_t shadow_raster_pos1, shadow_raster_pos2, shadow_raster_pos3,
-		shadow_project_pos1, shadow_project_pos2, shadow_project_pos3;
+	point_t shadow_view_pos1, shadow_view_pos2, shadow_view_pos3;
 
 	//切换到光源视点，渲染一张图（平行光是正交投影,点光源是透视投影）
 
-	//transform_apply(&device->transform_shadow, &shadow_project_pos1, &world_pos1);
-	//transform_apply(&device->transform_shadow, &shadow_project_pos2, &world_pos2);
-	//transform_apply(&device->transform_shadow, &shadow_project_pos3, &world_pos3);
+	transform_t shadow_transform = device->cameras[0].transform;
 
-	//transform_homogenize(&device->transform_shadow, &shadow_raster_pos1, &shadow_project_pos1);  //TODO：这里以后要改为投影摄像机的成像大小 不用屏幕大小
-	//transform_homogenize(&device->transform_shadow, &shadow_raster_pos2, &shadow_project_pos2);
-	//transform_homogenize(&device->transform_shadow, &shadow_raster_pos3, &shadow_project_pos3);
-	//point_t shadow_points[3] = (raster_pos1_shadow, raster_pos2_shadow, raster_pos3_shadow);
+	matrix_apply(&shadow_view_pos1, &v1->pos, &((&shadow_transform)->mv));
+	matrix_apply(&shadow_view_pos2, &v2->pos, &((&shadow_transform)->mv));
+	matrix_apply(&shadow_view_pos3, &v3->pos, &((&shadow_transform)->mv));
+
+
+	 //TODO：这里以后要改为投影摄像机的成像大小 不用屏幕大小
+	//transform_homogenize(&shadow_transform, &shadow_raster_pos1, &shadow_project_pos1);
+	//transform_homogenize(&shadow_transform, &shadow_raster_pos2, &shadow_project_pos2);
+	//transform_homogenize(&shadow_transform, &shadow_raster_pos3, &shadow_project_pos3);
+	//point_t shadow_points[3] = point_t{ shadow_raster_pos1, shadow_raster_pos2, shadow_raster_pos3 };
 
 
 	//纹理或者色彩绘制
@@ -717,9 +745,9 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 		t2.pos = raster_pos2;
 		t3.pos = raster_pos3;
 
-		t1.shadowPos = shadow_raster_pos1;
-		t2.shadowPos = shadow_raster_pos2;
-		t3.shadowPos = shadow_raster_pos3;
+		t1.shadowPos_z = shadow_view_pos1.z;
+		t2.shadowPos_z = shadow_view_pos2.z;
+		t3.shadowPos_z = shadow_view_pos3.z;
 
 		t1.worldPos = world_pos1;
 		t2.worldPos = world_pos2;
@@ -880,7 +908,7 @@ void device_destroy(device_t *device) {
 
 
 
-// 清空 framebuffer 和 zbuffer
+// 清空缓冲
 void device_clear(device_t *device, int mode)
 {
 	int y, x, height = device->height;
@@ -900,13 +928,6 @@ void device_clear(device_t *device, int mode)
 		for (x = device->width; x > 0; dst++, x--)
 			dst[0] = 0.0f;
 	}
-
-	//清空shaderbuffer,默认深度是CVV盒子最远离摄像机的边的深度，也就是1
-	if (device->shadowbuffer != NULL) {
-		for (int y = 0; y < device->height; y++)
-			for (int x = 0; x < device->width; x++)
-				device->shadowbuffer[y * device->width + x] = 1.0f;
-	}
 }
 
 
@@ -923,6 +944,6 @@ void device_clear(device_t *device) {
 	if (device->shadowbuffer != NULL) {
 		for (int y = 0; y < device->height; y++)
 			for (int x = 0; x < device->width; x++)
-				device->shadowbuffer[y * device->width + x] = 1.0f;
+				device->shadowbuffer[y * device->width + x] = 0;
 	}
 }

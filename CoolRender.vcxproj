@@ -96,6 +96,7 @@
     <ClCompile Include="render\UObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Lights.h" />
     <ClInclude Include="render\Camera.h" />
     <ClInclude Include="render\CMaterail.h" />
     <ClInclude Include="render\objectManager.h" />

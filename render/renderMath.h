@@ -70,22 +70,6 @@ vector_t operator-(const vector_t* value)
 } ; //使用的3D齐次坐标  其常规坐标为 {x/w, y/w, z/w; }
 typedef vector_t point_t;
 
-//rgb   和 强度 用于环境光
-typedef struct { 
-	float r, g, b, intension; 
-	bool shadow;   //是否产生阴影
-} Light_t;
-
-
-//方向光 位置无所谓
-typedef struct {
-	vector_t dir;
-	vector_t ambi;
-	//color_t ambi;
-	//color_t diff;
-	//color_t spec;
-	bool shadow;
-} dirlight_t;
 
 
 //不允许超过上下限 
