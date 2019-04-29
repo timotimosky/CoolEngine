@@ -412,7 +412,7 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 {
 	int scanlineY = scanline->y;
 
-	IUINT32 *framebuffer = device->framebuffer[scanlineY]; //拿到当前这一行的扫描线 帧缓冲
+	IUINT32 *framebuffer = device->framebuffer[scanlineY]; //拿到当前这一行的扫描线起点属性，再通过步进插值 帧缓冲
 	float *zbuffer = device->zbuffer[scanlineY]; //拿到当前这一行的扫描线  Zbuffer
 	int scanlineX = scanline->x;
 	int lineWidth = scanline->width;
@@ -439,22 +439,22 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 				//float shadow = new vector();
 
 				//根据深度图，计算深度，是否要产生阴影
-				if (device->shadowbuffer != NULL) 
-				{
-					float z = scanline->v.shadowPos_z;
-
-					//记录最小（离）
-					if (z <= device->shadowbuffer[scanlineY*width + scanlineX]) {
-						device->shadowbuffer[scanlineY*width + scanlineX] = z;
-					}
-				}
+				//if (device->shadowbuffer != NULL) 
+				//{
+				//	float z = scanline->v.shadowPos_z;
+				//	printf("nowZ========%f------oldZ==========%f\n",z , device->shadowbuffer[scanlineY*width + scanlineX]);
+				//	//记录最小（离）
+				//	if (z <= device->shadowbuffer[scanlineY*width + scanlineX]) {
+				//		device->shadowbuffer[scanlineY*width + scanlineX] = z;
+				//	}
+				//}
 #pragma endregion
 				
 				//计算shadow 或者是 rendertextrue
 
 				point_t interpos = scanline->v.pos;
 
-				transform_homogenize_reverse(&device->camera_main.transform,&interpos, &interpos);//从CVV空间回到主摄像机空间
+				transform_homogenize_reverse(&device->transform,&interpos, &interpos);//从CVV空间回到主摄像机空间
 
 				//使用转置矩阵 从主摄像机空间回到世界空间
 
@@ -495,29 +495,39 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 					B = CMID(B, 0, 255);
 
 					//根据深度图，计算深度，是否要产生阴影
-					if (device->shadowbuffer != NULL)
-					{
-						float z = scanline->v.shadowPos_z;
+					//if (device->shadowbuffer != NULL)
+					//{
+					//	//float z = scanline->v.shadowPos_z;
+					//
+					//	////记录最小（离）
 
-						//记录最小（离）
-						if (z <= device->shadowbuffer[scanlineY*width + scanlineX]) 
-						{
-							device->shadowbuffer[scanlineY*width + scanlineX] = z;
-							framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);
-						}
-						else
-						{
-							R = 5;
-							G = 5;
-							B = 5;
-							framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);
-						}
-					}
-					else 
+					//	//if (device->shadowbuffer[scanlineY*width + scanlineX] == 0)
+					//	//{
+					//	////	printf("2222222");
+					//	//	device->shadowbuffer[scanlineY*width + scanlineX] = z;
+					//	//	framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);
+					//	//}
+
+					//	//else if (z > device->shadowbuffer[scanlineY*width + scanlineX]) 
+					//	//{
+					//	//	//printf("111111111111");
+					//	//	device->shadowbuffer[scanlineY*width + scanlineX] = z;
+					//	//	framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);
+					//	//}
+					//	//else
+					//	{
+					//		//printf("nowZ========%f------oldZ==========%f\n", z, device->shadowbuffer[scanlineY*width + scanlineX]);
+					//		R = 0;
+					//		G = 0;
+					//		B = 0;
+					//		framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);
+					//	}
+					//}
+					//else 
 						framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);  //<<是左移运算符    RGB 每个占8位.  或运算，恰好保留有1的位。 就合并RGB为一个int了
 				}
 
-				if (render_state & RENDER_STATE_TEXTURE)
+				else if (render_state & RENDER_STATE_TEXTURE)
 				{
 					float u = scanline->v.tc.u;//* pixRhw;
 					float v = scanline->v.tc.v;//* pixRhw;
@@ -526,7 +536,7 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 				}
 
 				//顶点插值
-				if (render_state &(RENDER_STATE_verterNormal_color))
+				else if (render_state &(RENDER_STATE_verterNormal_color))
 				{
 					//asset(v.color.r<0.2f);
 					//获取颜色 0-1
@@ -552,7 +562,7 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 
 				}
 
-				if (render_state &(RENDER_STATE_surfaceNormal_color))
+				else if (render_state &(RENDER_STATE_surfaceNormal_color))
 				{
 					//获取颜色 0-1
 					float r = vf.color.r;// *pixRhw; 
@@ -637,7 +647,7 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 
 	int render_state = device->render_state;
 
-	transform_t transform = device->camera_main.transform;
+	transform_t transform = device->transform;
 
 	//2--------世界空间----------计算光照---------------------------------如果是烘焙 没法考虑摄像机遮挡，所以在这里直接计算---//
 
@@ -647,15 +657,15 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 	matrix_apply(&world_pos3, &v3->pos, &transform.model);
 
 	// 背面剔除
-	if (device->camera_main.cull > 0)
+	if (device->cull > 0)
 	{
-		float cullValue = CullCalcutate(&world_pos1, &world_pos2, &world_pos3, &device->camera_main.eye);
-		if (device->camera_main.cull == 1)
+		float cullValue = CullCalcutate(&world_pos1, &world_pos2, &world_pos3, &device->curCamera.eye);
+		if (device->cull == 1)
 		{
 			if (cullValue <= 0)
 				return;
 		}
-		else if (device->camera_main.cull == 2) {
+		else if (device->cull == 2) {
 			if (cullValue> 0)
 				return;
 		} 
@@ -708,9 +718,9 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 
 	//避免重复计算rhw. 在光栅化初期计算完了就保存
 	//2.------------------光栅化空间--------------5.光栅化过程：先归一化，从CVV空间到矩形空间，然后从 -1到1变换到0到1的取值范围，然后 拿到屏幕的长宽，取得屏幕坐标-------------
-	transform_homogenize(&device->camera_main.transform, &raster_pos1, &project_pos1);
-	transform_homogenize(&device->camera_main.transform, &raster_pos2, &project_pos2);
-	transform_homogenize(&device->camera_main.transform, &raster_pos3, &project_pos3);
+	transform_homogenize(&device->transform, &raster_pos1, &project_pos1);
+	transform_homogenize(&device->transform, &raster_pos2, &project_pos2);
+	transform_homogenize(&device->transform, &raster_pos3, &project_pos3);
 
 
 	//---------TODO：生成阴影摄像机的深度图
@@ -719,7 +729,7 @@ void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_
 
 	//切换到光源视点，渲染一张图（平行光是正交投影,点光源是透视投影）
 
-	transform_t shadow_transform = device->cameras[0].transform;
+	transform_t shadow_transform = device->transform;
 
 	matrix_apply(&shadow_view_pos1, &v1->pos, &((&shadow_transform)->mv));
 	matrix_apply(&shadow_view_pos2, &v2->pos, &((&shadow_transform)->mv));

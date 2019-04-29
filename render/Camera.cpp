@@ -1,5 +1,9 @@
 #include "Camera.h"
 
+
+
+
+
 //因为最开始物体坐标系跟世界坐标系重合，物体的运动就是从世界坐标系 转到其他坐标系，符合现实的状态是，先缩放、再旋转，在平移，
 //而从其他坐标系转到世界坐标系  则是相反  因为 (T*R)的逆矩阵 = （R的逆矩阵）*（T的逆矩阵） 先平移、再旋转，在缩放，
 // 设置摄像机  eye自身坐标 front正前方  up是Y轴
@@ -40,7 +44,8 @@ void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *eyeTarg
 	transM.m[3][1] = -eye->y;
 	transM.m[3][2] = -eye->z;
 
-	matrix_mul(m, &transM, &rotationM); //世界-》摄像机。 先平移，再旋转
+	*m = transM * rotationM;
+	//matrix_mul(m, &transM, &rotationM); //世界-》摄像机。 先平移，再旋转
 }
 
 

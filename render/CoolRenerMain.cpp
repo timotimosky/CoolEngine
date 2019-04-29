@@ -37,6 +37,12 @@ void screen_update(LPCSTR);							// 显示FrameBuffer
 													// win32 event handler
 static LRESULT screen_events(HWND, UINT, WPARAM, LPARAM);
 
+namespace {
+	camera cameras[MAX_NUM_CAMERA];
+	camera camera_main;
+}
+
+
 //一个解析mesh网格的函数
 void GetMesh(vertex_t* meshPtr)
 {
@@ -187,38 +193,30 @@ void draw_plane(device_t *device, int a, int b, int c, int d) {
 }
 
 
+void draw_Object_Shadow(Object_t Cube, device_t *device)
+{
+	//阴影
+	device->transform.model = Cube.model;
+	transform_update(&device->transform);
+
+	//直接渲染三角形
+	for (int i = 0; i < Cube.mesh_num; i += 3)
+	{
+		//以后只有改变的时候，才去动态缩放一次
+		vertex_t v1 = (Cube.mesh)[i];
+		vertex_t v2 = (Cube.mesh)[i + 1];
+		vertex_t v3 = (Cube.mesh)[i + 2];
+
+		device_draw_primitive(device, &v1, &v2, &v3);
+	}
+}
+
+
 void draw_Object(Object_t Cube, device_t *device)
 {
-	matrix_t s,r,t,temp;
 
-	//TODO: 计算 旋转 和位移 需要的矩阵
-
-	//输入 当前物体原点在世界坐标系中的位置和旋转，  来反推世界矩阵
-	//axis.x 绕X轴的旋转角度
-
-	//物体转世界坐标系  	//平移-> 旋转-》缩放 
-	matrix_set_scale(&s, Cube.scale, Cube.scale, Cube.scale);
-	matrix_Obj2World(&r, Cube.axis, Cube.pos, Cube.scale);
-	matrix_set_identity(&t);
-	t.m[3][0] = Cube.pos.x;
-	t.m[3][1] = Cube.pos.y;
-	t.m[3][2] = Cube.pos.z;
-
-	matrix_mul(&temp, &r, &t);
-	matrix_mul(&Cube.model, &s, &temp);
-
-	/*(&Cube)->model.m[3][0] = Cube.pos.x;
-	(&Cube)->model.m[3][1] = Cube.pos.y;
-	(&Cube)->model.m[3][2] = Cube.pos.z;*/
-
-	//matrix_set_rotate(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z, 0, Cube.pos.x, Cube.pos.y, Cube.pos.z); //theta  是物体本身的x,y,z轴相对的旋转
-
-	device->camera_main.transform.model = Cube.model;
-	transform_update(&device->camera_main.transform);
-
-	//阴影
-	device->cameras[0].transform.model = Cube.model;
-	transform_update(&device->cameras[0].transform);
+	device->transform.model = Cube.model;
+	transform_update(&device->transform);
 
 	//直接渲染三角形
 	for (int i = 0; i < Cube.mesh_num; i += 3)
@@ -227,9 +225,6 @@ void draw_Object(Object_t Cube, device_t *device)
 		vertex_t v1 = (Cube.mesh)[i];
 		vertex_t v2 = (Cube.mesh)[i+1];
 		vertex_t v3 = (Cube.mesh)[i+2];
-	/*	vector_scale(&v1.pos, Cube.scale);
-		vector_scale(&v2.pos, Cube.scale);
-		vector_scale(&v3.pos, Cube.scale);*/
 
 		device_draw_primitive(device, &v1, &v2, &v3);
 	}
@@ -243,8 +238,8 @@ void draw_box(device_t *device, float theta)
 	matrix_Obj2World(&m,  vector_t(0, theta, beta,1), vector_t(2, 4, 5,1), 1);
 	//matrix_set_rotate(&m, -3, -0.5, 1, theta,0,0,0); 
 
-	device->camera_main.transform.model = m;
-	transform_update(&device->camera_main.transform);
+	camera_main.transform.model = m;
+	transform_update(&camera_main.transform);
 
 
 	//四个面
@@ -297,7 +292,7 @@ float Get_FPS()
 }
 
 
-void Init_Obj()
+void Create_Obj()
 {
 	//初始化一个地板
 	Object_t ground;
@@ -322,24 +317,39 @@ void Init_Obj()
 	Scene_render_Objs.push_back(ground);
 }
 
+void Init_Obj(Object_t Cube)
+{	//matrix_set_rotate(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z, 0, Cube.pos.x, Cube.pos.y, Cube.pos.z); //theta  是物体本身的x,y,z轴相对的旋转
+
+	matrix_t s, r, t;
+	//TODO: 计算 旋转 和位移 需要的矩阵
+
+//输入 当前物体原点在世界坐标系中的位置和旋转，  来反推世界矩阵
+//axis.x 绕X轴的旋转角度
+
+//物体转世界坐标系  	//平移-> 旋转-》缩放 
+	matrix_set_scale(&s, Cube.scale, Cube.scale, Cube.scale);
+	matrix_Obj2World(&r, Cube.axis, Cube.pos, Cube.scale);
+	matrix_set_identity(&t);
+	t.m[3][0] = Cube.pos.x;
+	t.m[3][1] = Cube.pos.y;
+	t.m[3][2] = Cube.pos.z;
+
+	Cube.model = s * r * t;
+}
+
 void InitCamera(device_t* device,int width, int height)
 {
 	//初始化主摄像机
-	device->camera_main.eye = { 0, 3, -10, 1 };
-	device->camera_main.eyeTarget = { 0, 0, 0, 1};
-	device->camera_main.worldup = { 0, 1, 0, 1 };
+	camera_main.eye = { 0, 3, -10, 1 };
+	camera_main.eyeTarget = { 0, 0, 0, 1};
+	camera_main.worldup = { 0, 1, 0, 1 };
 
-	device->camera_main.fov = PI * 0.5f;
-	device->camera_main.zn = 1;
-	device->camera_main.zf = 500;
-	device->camera_main.aspect = (float)width / ((float)height);
+	camera_main.fov = PI * 0.5f;
+	camera_main.zn = 1;
+	camera_main.zf = 500;
+	camera_main.aspect = (float)width / ((float)height);
 	//camera_main.rotation = { -0.15, 0, 0, 1 };
 
-	(&device->camera_main.transform)->screen_width = (float)width;
-	(&device->camera_main.transform)->screen_height = (float)height;
-
-	//matrix_set_identity(&device->camera_main.model);
-	//matrix_set_identity(&device->camera_main.view);
 }
 
 
@@ -348,11 +358,17 @@ void Init_ShadowCamera(device_t* device)
 	if (dirLight.shadow == true)
 	{
 		//初始化阴影摄像机 采用深度测试，然后将设定的阴影颜色跟当前像素颜色混合。在像素阶段执行
-		camera* shadowCamera = &device->cameras[0];
+		camera* shadowCamera = &cameras[0];
 		shadowCamera->eye = vector_t{0,10,10,1};
 		shadowCamera->eyeTarget = vector_t{ 0,0,0,1 };
 		shadowCamera->worldup = { 0, 1, 0, 1 };
 	}
+}
+void InitDevice(device_t* device,camera curCamera)
+{
+	device->cull = curCamera.cull;
+	device->transform = curCamera.transform;
+	device->curCamera = curCamera;
 }
 
 
@@ -382,7 +398,7 @@ int main(void)
 
 	Init_ShadowCamera(&device);//阴影摄像机
 
-	Init_Obj();//初始化场景里的物体
+	Create_Obj();//初始化场景里的物体
 
 	init_texture(&device); //纹理初始化
 
@@ -399,10 +415,16 @@ int main(void)
 
 		screen_dispatch(); //分发msg
 		device_clear(&device, 1); //清空缓冲
+
+		//if ((&device)->shadowbuffer != NULL) {
+		//	for (int y = 0; y < (&device)->height; y++)
+		//		for (int x = 0; x < (&device)->width; x++)
+		//			(&device)->shadowbuffer[y * (&device)->width + x] = 0;
+		//}
 		//device_clear(&device); // Zbuffer frameBuffer
 
-		if (screen_keys[VK_UP]) device.camera_main.eye.z += 0.01f; //摄像机前进  pos -= 0.01f;
-		if (screen_keys[VK_DOWN]) device.camera_main.eye.z -= 0.01f; //摄像机后退
+		if (screen_keys[VK_UP]) camera_main.eye.z += 0.01f; //摄像机前进  pos -= 0.01f;
+		if (screen_keys[VK_DOWN]) camera_main.eye.z -= 0.01f; //摄像机后退
 		if (screen_keys[VK_LEFT]) alpha += 0.01f; //物体向左旋转
 		if (screen_keys[VK_RIGHT]) alpha -= 0.01f; //物体向右旋转
 
@@ -410,21 +432,21 @@ int main(void)
 		if (screen_keys[0x41]) beta -= 0.01f; //欧拉角
 		if (screen_keys[0x42]) beta += 0.01f; //欧拉角
 
-		camera_update(&device.camera_main); //摄像机不断更新矩阵
+		camera_update(&camera_main); //摄像机不断更新矩阵
 		//动态灯光 阴影
-		camera_updateShadow(&device.cameras[0], &device.camera_main);
+		camera_updateShadow(&cameras[0], &camera_main);
 
 		if (screen_keys[VK_F1])
 		{
-			device.camera_main.cull = 0;
+			camera_main.cull = 0;
 		}
 		else if (screen_keys[VK_F2])
 		{
-			device.camera_main.cull = 1;
+			camera_main.cull = 1;
 		}
 		else if (screen_keys[VK_F3])
 		{
-			device.camera_main.cull = 2;
+			camera_main.cull = 2;
 		}
 		
 		if (screen_keys[VK_SPACE])
@@ -452,11 +474,39 @@ int main(void)
 		//渲染一个立方体 
 	//	draw_box(&device, alpha);
 
+		// 渲染物体,更新设备
+		(&device.transform)->screen_width = (float)width;
+		(&device.transform)->screen_height = (float)height;
+
+
+		//1.初始化物体的矩阵跟属性
 		for (int i = 0; i < Scene_render_Objs.size(); i++)
 		{
 			Scene_render_Objs[i].axis.y = alpha;
+			Init_Obj(Scene_render_Objs[i]);
+		}
+
+
+		//2.先渲染阴影的深度缓冲
+		InitDevice(&device, cameras[0]);
+		//matrix_set_identity(&device->camera_main.model);
+		//matrix_set_identity(&device->camera_main.view);
+
+
+
+		for (int i = 0; i < Scene_render_Objs.size(); i++)
+		{
+			//draw_Object_Shadow(Scene_render_Objs[i], &device);
+		}
+
+		//3.渲染物体
+		InitDevice(&device, camera_main);
+
+		for (int i = 0; i < Scene_render_Objs.size(); i++)
+		{
 			draw_Object(Scene_render_Objs[i], &device);
 		}
+
 
 		//真正的渲染函数
 		screen_update(type);
@@ -468,6 +518,7 @@ int main(void)
 	//static_device_t = nullptr;
 	return 0;
 }
+
 
 
 void Control(WPARAM wParam, LPARAM lParam)

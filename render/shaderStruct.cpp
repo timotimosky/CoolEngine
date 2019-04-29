@@ -4,9 +4,10 @@
 // ¾ØÕó¸üÐÂ
 void transform_update(transform_t *ts) {
 
-	matrix_mul(&ts->mv, &ts->model, &ts->view);
-	matrix_mul(&ts->vp, &ts->view, &ts->projection);
-	matrix_mul(&ts->mvp, &ts->mv, &ts->projection);
+	ts->mv = ts->model * ts->view;
+	ts->vp = ts->view * ts->projection;
+	ts->mvp = ts->mv * ts->projection;
+
 }
 
 

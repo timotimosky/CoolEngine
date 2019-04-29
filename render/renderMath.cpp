@@ -33,7 +33,7 @@ void vector_add(vector_t *z, const vector_t *x, const vector_t *y)
 	z->x = x->x + y->x;
 	z->y = x->y + y->y;
 	z->z = x->z + y->z;
-	z->w = 1.0;
+	//z->w = 1.0;
 }
 
 // z = x - y
@@ -42,7 +42,7 @@ void vector_sub(vector_t *z, const vector_t *x, const vector_t *y)
 	z->x = x->x - y->x;
 	z->y = x->y - y->y;
 	z->z = x->z - y->z;
-	z->w = 1.0;
+	//z->w = 1.0;
 }
 
 
@@ -90,50 +90,30 @@ void vector_normalize(vector_t *v)
 		v->z *= inv;
 	}
 }
-
-// c = a + b
-void matrix_add(matrix_t *c, const matrix_t *a, const matrix_t *b)
-{
-	int i, j;
-	for (i = 0; i < 4; i++) {
-		for (j = 0; j < 4; j++)
-			c->m[i][j] = a->m[i][j] + b->m[i][j];
-	}
-}
-
-// c = a - b
-void matrix_sub(matrix_t *c, const matrix_t *a, const matrix_t *b) {
-	int i, j;
-	for (i = 0; i < 4; i++) {
-		for (j = 0; j < 4; j++)
-			c->m[i][j] = a->m[i][j] - b->m[i][j];
-	}
-}
-
 // c = a * b
-void matrix_mul(matrix_t *c, const matrix_t *left , const matrix_t *right) {         
-	int i, j;
-	for (i = 0; i < 4; i++)
-	{
-		for (j = 0; j < 4; j++)
-		{
-			c->m[i][j] =
-				(left->m[i][0] * right->m[0][j]) +
-				(left->m[i][1] * right->m[1][j]) +
-				(left->m[i][2] * right->m[2][j]) +
-				(left->m[i][3] * right->m[3][j]);
-		}
-	}
-}
+//void matrix_mul(matrix_t *c, const matrix_t *left , const matrix_t *right) {         
+//	int i, j;
+//	for (i = 0; i < 4; i++)
+//	{
+//		for (j = 0; j < 4; j++)
+//		{
+//			c->m[i][j] =
+//				(left->m[i][0] * right->m[0][j]) +
+//				(left->m[i][1] * right->m[1][j]) +
+//				(left->m[i][2] * right->m[2][j]) +
+//				(left->m[i][3] * right->m[3][j]);
+//		}
+//	}
+//}
 
 // c = a * f
-void matrix_scale(matrix_t *c, const matrix_t *a, float f) {
-	int i, j;
-	for (i = 0; i < 4; i++) {
-		for (j = 0; j < 4; j++)
-			c->m[i][j] = a->m[i][j] * f;
-	}
-}
+//void matrix_scale(matrix_t *c, const matrix_t *a, float f) {
+//	int i, j;
+//	for (i = 0; i < 4; i++) {
+//		for (j = 0; j < 4; j++)
+//			c->m[i][j] = a->m[i][j] * f;
+//	}
+//}
 
 //ÏòÁ¿ ÓÒ³Ë¾ØÕó 
 void matrix_apply(vector_t *y, const vector_t *x, const matrix_t *m) {
@@ -143,15 +123,6 @@ void matrix_apply(vector_t *y, const vector_t *x, const matrix_t *m) {
 	y->z = X * m->m[0][2] + Y * m->m[1][2] + Z * m->m[2][2] + W * m->m[3][2];
 	y->w = X * m->m[0][3] + Y * m->m[1][3] + Z * m->m[2][3] + W * m->m[3][3];
 }
-
-////ÏòÁ¿ ×ó³Ë¾ØÕó 
-//void matrix_apply_left(vector_t *y, const vector_t *x, const matrix_t *m) {
-//	float X = x->x, Y = x->y, Z = x->z, W = x->w;
-//	y->x = X * m->m[0][0] + Y * m->m[0][1] + Z * m->m[0][2] + W * m->m[0][3];
-//	y->y = X * m->m[1][0] + Y * m->m[1][1] + Z * m->m[1][2] + W * m->m[1][3];
-//	y->z = X * m->m[2][0] + Y * m->m[2][1] + Z * m->m[2][2] + W * m->m[2][3];
-//	y->w = X * m->m[3][0] + Y * m->m[3][1] + Z * m->m[3][2] + W * m->m[3][3]; 
-//}
 
 //±ê×¼¾ØÕó 4X4 
 void matrix_set_identity(matrix_t *m) {

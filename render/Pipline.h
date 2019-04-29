@@ -31,20 +31,19 @@
 
 #define MAX_NUM_CAMERA 10
 
+
 typedef struct {
 
-	camera cameras[MAX_NUM_CAMERA];
-	camera camera_main;
-	
+	transform_t  transform;
 	int width;                  // 窗口宽度
 	int height;                 // 窗口高度
-
+	camera curCamera;
 								//最后输出到屏幕的像素  800*600*32
 	IUINT32 **framebuffer;      // 像素缓存：framebuffer[x] 代表第x行      framebuffer[x][y] 代表第x行第y个像素
 
 								//每个像素的深度 800*600*4   32位系统里，char 1位  short 2位   float int long 都是4位 只有double是8位
 	float **zbuffer;            // 深度缓存：zbuffer[y] 为第 y行指针      zbuffer[x][y] 代表第x行第y个像素
-	float *shadowbuffer;        // 阴影缓存
+	float *shadowbuffer;        // 阴影缓存  以后跟深度是同一个缓冲
 	IUINT32 **texture;          // 纹理：同样是每行索引
 	int tex_width;              // 纹理宽度
 	int tex_height;             // 纹理高度

@@ -15,7 +15,7 @@ void vertex_add(vertex_t *y, const vertex_t *x) {
 	y->color.r += x->color.r;
 	y->color.g += x->color.g;
 	y->color.b += x->color.b;
-	y->shadowPos_z += x->shadowPos_z;
+	//y->shadowPos_z += x->shadowPos_z;
 }
 //·½Ïò¹â
 dirlight_t dirLight =
