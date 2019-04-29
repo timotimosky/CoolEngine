@@ -16,7 +16,13 @@ typedef struct  camera_temp
 	vector_t eyeTarget; //看向的焦点
 	int cull;   // 0:不裁剪;1:裁剪反面;2:裁剪正面
 
-	transform_t transform;
+	matrix_t view_matrix_r;
+
+	matrix_t view;          // 摄影机坐标变换 世界到摄像机坐标变换矩阵  TODO:以后分离到每个摄像机管理
+	matrix_t projection_trans;    // 投影变换 ，就是变换到摄像机的远平面-近平面空间内  TODO:以后分离到每个摄像机管理
+	//物体与相机的距离（z）也是如此！对于具有相似x和y坐标的两个顶点，具有最大z坐标的顶点将比屏幕的中心更多地位于屏幕的中心。     
+	// 另外，如果是透视视图，W负责缩放物体大小，来模拟视觉。远处的物体更小
+
 
 	//仿Unity，还是使用Transform组件的Rotation
 	vector_t rotation;
@@ -26,9 +32,6 @@ typedef struct  camera_temp
 	vector_t worldup;  //朝上
 
 
-	matrix_t view_matrix;
-	matrix_t projection_matrix;
-	matrix_t view_matrix_r;
 
 	//宽高
 	int width;

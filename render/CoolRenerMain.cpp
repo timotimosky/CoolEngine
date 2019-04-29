@@ -212,7 +212,7 @@ void draw_Object_Shadow(Object_t Cube, device_t *device)
 }
 
 
-void draw_Object(Object_t Cube, device_t *device)
+void draw_Object(const Object_t& Cube, device_t *device)
 {
 
 	device->transform.model = Cube.model;
@@ -238,8 +238,8 @@ void draw_box(device_t *device, float theta)
 	matrix_Obj2World(&m,  vector_t(0, theta, beta,1), vector_t(2, 4, 5,1), 1);
 	//matrix_set_rotate(&m, -3, -0.5, 1, theta,0,0,0); 
 
-	camera_main.transform.model = m;
-	transform_update(&camera_main.transform);
+	device->transform.model = m;
+	transform_update(&device->transform);
 
 
 	//四个面
@@ -317,7 +317,7 @@ void Create_Obj()
 	Scene_render_Objs.push_back(ground);
 }
 
-void Init_Obj(Object_t Cube)
+void Init_Obj(Object_t& Cube)
 {	//matrix_set_rotate(&m, Cube.axis.x, Cube.axis.y, Cube.axis.z, 0, Cube.pos.x, Cube.pos.y, Cube.pos.z); //theta  是物体本身的x,y,z轴相对的旋转
 
 	matrix_t s, r, t;
@@ -364,10 +364,12 @@ void Init_ShadowCamera(device_t* device)
 		shadowCamera->worldup = { 0, 1, 0, 1 };
 	}
 }
-void InitDevice(device_t* device,camera curCamera)
+void InitDevice(device_t* device,camera& curCamera)
 {
 	device->cull = curCamera.cull;
-	device->transform = curCamera.transform;
+
+	//这里把屏幕制空了
+	device->transform.projection = curCamera.projection_trans;
 	device->curCamera = curCamera;
 }
 

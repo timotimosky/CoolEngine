@@ -81,7 +81,7 @@ void CameraInit()
 void camera_update(camera* caneraMain)
 {
 
-	matrix_set_perspective(&(&caneraMain->transform)->projection, caneraMain->fov, caneraMain->aspect, caneraMain->zn, caneraMain->zf); //设定近平面为1，这样W取值为1就好了。缩放到投影面比较方便
+	matrix_set_perspective(&caneraMain->projection_trans, caneraMain->fov, caneraMain->aspect, caneraMain->zn, caneraMain->zf); //设定近平面为1，这样W取值为1就好了。缩放到投影面比较方便
 
 	//计算 view矩阵 我们计算过matrix_Obj2World,如果我们把camera当作obj， World2view 就是它的逆矩阵 TOdo:以后增加伴随矩阵求逆矩阵
 	
@@ -90,7 +90,7 @@ void camera_update(camera* caneraMain)
 	//vector_t right, eyeTarget, up, front;
 	//vector_add(&eyeTarget, &caneraMain->eye, &caneraMain->front);
 	//摄像机矩阵 摄像机的位移
-	matrix_set_lookat(&(&caneraMain->transform)->view, &(caneraMain->eye), &caneraMain->eyeTarget, &caneraMain->worldup);
+	matrix_set_lookat(&caneraMain->view, &(caneraMain->eye), &caneraMain->eyeTarget, &caneraMain->worldup);
 
 }
 
@@ -102,6 +102,6 @@ void camera_updateShadow(camera * caneraShadow, camera *  camera_main)
 {
 	//matrix_set_perspective(&(&caneraShadow->transform)->projection, camera_main->fov, camera_main->aspect, camera_main->zn, camera_main->zf);
 	//摄像机矩阵 摄像机的位移
-	matrix_set_lookat(&caneraShadow->transform.view, &(caneraShadow->eye), &caneraShadow->eyeTarget, &caneraShadow->worldup);
+	matrix_set_lookat(&caneraShadow->view, &(caneraShadow->eye), &caneraShadow->eyeTarget, &caneraShadow->worldup);
 }
 
