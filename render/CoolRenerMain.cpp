@@ -337,7 +337,7 @@ void Init_Obj(Object_t& Cube)
 	Cube.model = s * r * t;
 }
 
-void InitCamera(device_t* device,int width, int height)
+void CreateCamera(device_t* device,int width, int height)
 {
 	//初始化主摄像机
 	camera_main.eye = { 0, 3, -10, 1 };
@@ -370,6 +370,7 @@ void InitDevice(device_t* device,camera& curCamera)
 
 	//这里把屏幕制空了
 	device->transform.projection = curCamera.projection_trans;
+	device->transform.view = curCamera.view;
 	device->curCamera = curCamera;
 }
 
@@ -396,7 +397,7 @@ int main(void)
 
 	device_init(&device, width, height, screen_fb); //设备初始
 
-	InitCamera(&device, width, height);//初始化主摄像机
+	CreateCamera(&device, width, height);//初始化主摄像机
 
 	Init_ShadowCamera(&device);//阴影摄像机
 
@@ -489,16 +490,13 @@ int main(void)
 		}
 
 
-		//2.先渲染阴影的深度缓冲
+		////2.先渲染阴影的深度缓冲
 		InitDevice(&device, cameras[0]);
-		//matrix_set_identity(&device->camera_main.model);
-		//matrix_set_identity(&device->camera_main.view);
-
 
 
 		for (int i = 0; i < Scene_render_Objs.size(); i++)
 		{
-			//draw_Object_Shadow(Scene_render_Objs[i], &device);
+			draw_Object_Shadow(Scene_render_Objs[i], &device);
 		}
 
 		//3.渲染物体
