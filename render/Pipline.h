@@ -86,12 +86,16 @@ void trapezoid_edge_interp(device_t *device, trapezoid_t *trap, float y);
 // 根据左右两边的端点，初始化计算出扫描线的起点和步长
 void trapezoid_init_scan_line(const trapezoid_t *trap, scanline_t *scanline, int y);
 
-// 画点 1.光栅化2D点（就是在二维数组上画点，了解色彩基本原理，并解决影像输出问题）
+// 画点 1.光栅化2D点
 void device_pixel(device_t *device, int x, int y, IUINT32 color);
 
 // x y都必须是整数。。。
 // 绘制线段 2.光栅化2D直线（布雷森漢姆直線演算法、吴小林直线算法等） 起点-终点，寻找线段上离二维栅格最近的像素点
 void device_draw_line(device_t *device, int x1, int y1, int x2, int y2, IUINT32 c);
+
+void device_draw_primitive_shadow(device_t *device, vertex_t *v1, vertex_t *v2, vertex_t *v3);
+
+void device_render_trap_shadow(device_t *device, trapezoid_t *trap, float surfaceLight);
 
 // 根据坐标读取纹理
 IUINT32 device_texture_read(const device_t *device, float u, float v);

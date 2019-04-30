@@ -487,9 +487,9 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 						if (z < device->shadowbuffer[scanlineY*width + scanlineX])
 						{
 							//printf("nowZ========%f------oldZ==========%f\n", z, device->shadowbuffer[scanlineY*width + scanlineX]);
-							R = 0;
-							G = 0;
-							B = 0;
+							R *= 0.5f;
+							G *= 0.5f;
+							B *= 0.5f;
 						}
 					}
 		
@@ -609,6 +609,7 @@ void device_draw_scanline_shadow(device_t *device, scanline_t *scanline, float s
 
 				point_t interpos = scanline->v.pos;
 
+
 				transform_homogenize_reverse(&device->transform, &interpos, &interpos);//从CVV空间回到主摄像机空间
 
 				//使用转置矩阵 从主摄像机空间回到世界空间
@@ -680,7 +681,7 @@ void device_draw_scanline_shadow(device_t *device, scanline_t *scanline, float s
 					//	}
 					//}
 					//else 
-					framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);  //<<是左移运算符    RGB 每个占8位.  或运算，恰好保留有1的位。 就合并RGB为一个int了
+					//framebuffer[scanlineX] = (R << 16) | (G << 8) | (B);  //<<是左移运算符    RGB 每个占8位.  或运算，恰好保留有1的位。 就合并RGB为一个int了
 				}
 			}
 		}
@@ -690,7 +691,34 @@ void device_draw_scanline_shadow(device_t *device, scanline_t *scanline, float s
 		vertex_add(&scanline->v, &scanline->step); //根据之前计算出来的插值，增加插值生成下一个点的数据,用于下一个点
 	}
 }
-// 主渲染函数   渲染一个三角形
+void device_render_trap_shadow(device_t *device, trapezoid_t *trap, float surfaceLight)
+{
+	scanline_t scanline;
+	int j, top, bottom;
+	top = (int)(trap->top + 0.5f);
+	bottom = (int)(trap->bottom + 0.5f);
+
+	for (j = top; j < bottom; j++)  //从top到bottom 每一个y轴像素一个扫描线
+	{
+		if (j >= 0 && j < device->height)
+		{
+			// 按照Y坐标计算出当前扫描线的X坐标，并且插值 颜色、深度
+			trapezoid_edge_interp(device, trap, (float)j + 0.5f);
+
+			// 根据左右两边的端点，初始化计算出扫描线的起点和步长   包括扫描线的x y  z  w的步长 
+			trapezoid_init_scan_line(device->render_state, trap, &scanline, j);
+
+			//TODO: Z buffer 需要在下一个摄像机之前清空
+
+			//绘制扫描线，通过步长得到最终值
+			device_draw_scanline_shadow(device, &scanline, surfaceLight);
+		}
+		if (j >= device->height)
+			break;
+	}
+}
+
+
 void device_render_trap(device_t *device, trapezoid_t *trap, float surfaceLight)
 {
 	scanline_t scanline;
@@ -833,9 +861,9 @@ void device_draw_primitive_shadow(device_t *device, vertex_t *v1, vertex_t *v2, 
 
 		//对两个梯形继续拆分为扫描线，一条线一条线的渲染
 		if (n >= 1)
-			device_render_trap(device, &traps[0], surfaceLight);
+			device_render_trap_shadow(device, &traps[0], surfaceLight);
 		if (n >= 2)
-			device_render_trap(device, &traps[1], surfaceLight);
+			device_render_trap_shadow(device, &traps[1], surfaceLight);
 	
 
 

@@ -100,7 +100,7 @@ void camera_update(camera* caneraMain)
 //TODO：暂时使用主摄像机的fov
 void camera_updateShadow(camera * caneraShadow, camera *  camera_main)
 {
-	//matrix_set_perspective(&(&caneraShadow->transform)->projection, camera_main->fov, camera_main->aspect, camera_main->zn, camera_main->zf);
+	matrix_set_perspective(&caneraShadow->projection_trans, camera_main->fov, camera_main->aspect, camera_main->zn, camera_main->zf);
 	//摄像机矩阵 摄像机的位移
 	matrix_set_lookat(&caneraShadow->view, &(caneraShadow->eye), &caneraShadow->eyeTarget, &caneraShadow->worldup);
 }

@@ -207,7 +207,8 @@ void draw_Object_Shadow(Object_t Cube, device_t *device)
 		vertex_t v2 = (Cube.mesh)[i + 1];
 		vertex_t v3 = (Cube.mesh)[i + 2];
 
-		device_draw_primitive(device, &v1, &v2, &v3);
+	
+		device_draw_primitive_shadow(device, &v1, &v2, &v3);
 	}
 }
 
@@ -499,6 +500,16 @@ int main(void)
 			draw_Object_Shadow(Scene_render_Objs[i], &device);
 		}
 
+		int y,x;
+		for (y = 0; y < (&device)->height; y++)
+		{
+			float *dst = (&device)->zbuffer[y];
+			for (x = (&device)->width; x > 0; dst++, x--)
+				dst[0] = 0.0f;
+		}
+
+		//if ((&device)->zbuffer != NULL)
+		//	memset((&device)->zbuffer, 0, (&device)->width * (&device)->height * sizeof(float));
 		//3.‰÷»æŒÔÃÂ
 		InitDevice(&device, camera_main);
 
