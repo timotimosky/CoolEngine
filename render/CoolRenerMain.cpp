@@ -373,6 +373,12 @@ void InitDevice(device_t* device,camera& curCamera)
 	device->transform.projection = curCamera.projection_trans;
 	device->transform.view = curCamera.view;
 	device->curCamera = curCamera;
+
+	if ((device)->shadowbuffer != NULL) {
+		for (int y = 0; y < (device)->height; y++)
+			for (int x = 0; x < (device)->width; x++)
+				(device)->shadowbuffer[y * (device)->width + x] = 0;
+	}
 }
 
 
@@ -493,6 +499,7 @@ int main(void)
 
 		////2.先渲染阴影的深度缓冲
 		InitDevice(&device, cameras[0]);
+
 
 
 		for (int i = 0; i < Scene_render_Objs.size(); i++)

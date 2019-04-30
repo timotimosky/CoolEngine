@@ -407,6 +407,12 @@ IUINT32 device_texture_read(const device_t *device, float u, float v) {
 // 像素阶段
 //=====================================================================
 
+// 阴影深度图，1. 存储在每个顶点
+
+//2. 在摄像机阶段 要转换 插值 到像素位置的深度图来比较
+
+//3. 要给每个像素，要转换回阴影摄像机空间，去跟深度图对比深度
+
 // 绘制扫描线
 void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceLight)
 {
@@ -434,12 +440,13 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 				if (zbuffer != NULL)
 					zbuffer[scanlineX] = rhw;//最前面的深度
 
+
 				
 				//计算shadow 或者是 rendertextrue
 
-				point_t interpos = scanline->v.pos;
+				//point_t interpos = scanline->v.pos;
 
-				transform_homogenize_reverse(&device->transform,&interpos, &interpos);//从CVV空间回到主摄像机空间
+				//transform_homogenize_reverse(&device->transform,&interpos, &interpos);//从CVV空间回到主摄像机空间
 
 				//使用转置矩阵 从主摄像机空间回到世界空间
 
@@ -483,8 +490,14 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 					if (device->shadowbuffer != NULL)
 					{
 						float z = scanline->v.shadowPos_z;
+						float buffZ = device->shadowbuffer[scanlineY*width + scanlineX];
+						if (buffZ > 0)
+						{
+							buffZ = buffZ;
+						}
 
-						if (z < device->shadowbuffer[scanlineY*width + scanlineX])
+
+						if (buffZ >0 && z > buffZ && buffZ !=0)
 						{
 							//printf("nowZ========%f------oldZ==========%f\n", z, device->shadowbuffer[scanlineY*width + scanlineX]);
 							R *= 0.5f;
@@ -574,6 +587,7 @@ void device_draw_scanline_shadow(device_t *device, scanline_t *scanline, float s
 	int width = device->width; //显示器范围  TODO：以后要加上摄像机范围
 	int render_state = device->render_state;
 
+
 	//逐个拿到当前扫描线的像素
 	for (; lineWidth > 0; scanlineX++, lineWidth--)
 	{
@@ -599,7 +613,20 @@ void device_draw_scanline_shadow(device_t *device, scanline_t *scanline, float s
 					float z = scanline->v.shadowPos_z;
 					//printf("nowZ========%f------oldZ==========%f\n",z , device->shadowbuffer[scanlineY*width + scanlineX]);
 					//记录最小（离）
-					if (z >= device->shadowbuffer[scanlineY*width + scanlineX]) {
+
+					//if (z < 0)
+					//{
+					//	z = z;
+					//}
+
+					//if (device->shadowbuffer[scanlineY*width + scanlineX] < 0) {
+					//	device->shadowbuffer[scanlineY*width + scanlineX] = device->shadowbuffer[scanlineY*width + scanlineX];
+					//}
+
+					if ( device->shadowbuffer[scanlineY*width + scanlineX] <0) {
+						device->shadowbuffer[scanlineY*width + scanlineX] = z;
+					}
+					if (z < device->shadowbuffer[scanlineY*width + scanlineX] && device->shadowbuffer[scanlineY*width + scanlineX] != 0) {
 						device->shadowbuffer[scanlineY*width + scanlineX] = z;
 					}
 				}
@@ -764,19 +791,19 @@ void device_draw_primitive_shadow(device_t *device, vertex_t *v1, vertex_t *v2, 
 	matrix_apply(&world_pos3, &v3->pos, &transform.model);
 
 	// 背面剔除
-	if (device->cull > 0)
-	{
-		float cullValue = CullCalcutate(&world_pos1, &world_pos2, &world_pos3, &device->curCamera.eye);
-		if (device->cull == 1)
-		{
-			if (cullValue <= 0)
-				return;
-		}
-		else if (device->cull == 2) {
-			if (cullValue > 0)
-				return;
-		}
-	}
+	//if (device->cull > 0)
+	//{
+	//	float cullValue = CullCalcutate(&world_pos1, &world_pos2, &world_pos3, &device->curCamera.eye);
+	//	if (device->cull == 1)
+	//	{
+	//		if (cullValue <= 0)
+	//			return;
+	//	}
+	//	else if (device->cull == 2) {
+	//		if (cullValue > 0)
+	//			return;
+	//	}
+	//}
 
 	// 这里的裁剪不准确，只要有顶点不满足，则剔除，可以完善为具体判断几个点在 cvv内以及同cvv相交平面的坐标比例
 	// 进行进一步精细裁剪，将一个分解为几个完全处在 cvv内的三角形
