@@ -9,7 +9,7 @@
 //color_t的W值，是用于记录该顶点/像素点的深度，用于深度剔除
 
 typedef struct {
-	point_t pos;//位置
+	point_t pos;//位置 摄像机
 
 	texcoord_t tc; //纹理坐标
 	color_t color; //颜色       
