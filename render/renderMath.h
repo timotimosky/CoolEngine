@@ -70,7 +70,7 @@ struct matrix_t {
 
 
 } ;
-struct vector_t  { float x, y, z, w;
+struct vector_t { float x, y, z, w;
 
 vector_t()
 {
@@ -87,6 +87,17 @@ vector_t(float ix, float iy, float iz, float iw)
 	y = iy;
 	z = iz;
 	w = iw;
+}
+
+//不重载也行 使用结构体本身的内存对齐拷贝(但不是按位拷贝)
+vector_t& operator=(const vector_t&  value)
+{
+	vector_t ncolor_t;
+	this->x = value.x;
+	this->y = value.y;
+	this->z = value.z;
+	this->w = value.w;
+	return *this;
 }
 
 vector_t operator*(float value)

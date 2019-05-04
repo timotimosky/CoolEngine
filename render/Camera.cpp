@@ -2,6 +2,48 @@
 
 
 
+//计算逆矩阵
+void matrix_set_lookat_r(matrix_t *m, const vector_t *eye, const vector_t *eyeTarget, const vector_t *up)
+{
+	//获取摄像机坐标系的3个基向量 因为当前项目设计为Unity的左手坐标系，所有叉乘也遵循左手法则
+	vector_t xaxis, yaxis, zaxis;
+
+	//zaxis 摄像机Z轴 朝屏幕内
+	vector_sub(&zaxis, eyeTarget, eye); //Z
+	vector_normalize(&zaxis);
+	vector_crossproduct(&xaxis, up, &zaxis);
+	vector_normalize(&xaxis);
+	vector_crossproduct(&yaxis, &zaxis, &xaxis);
+
+	//计算 摄像机相对于世界坐标系的旋转 
+	matrix_t rotationM;
+	rotationM.m[0][0] = xaxis.x;
+	rotationM.m[1][0] = xaxis.y;
+	rotationM.m[2][0] = xaxis.z;
+
+	rotationM.m[0][1] = yaxis.x;
+	rotationM.m[1][1] = yaxis.y;
+	rotationM.m[2][1] = yaxis.z;
+
+	rotationM.m[0][2] = zaxis.x;
+	rotationM.m[1][2] = zaxis.y;
+	rotationM.m[2][2] = zaxis.z;
+
+	rotationM.m[0][3] = rotationM.m[1][3] = rotationM.m[2][3] = 0.0f;
+	rotationM.m[3][0] = rotationM.m[3][1] = rotationM.m[3][2] = 0.0f;
+	rotationM.m[3][3] = 1.0f;
+
+	//计算 摄像机相对于世界坐标系的位移
+	matrix_t transM;
+	matrix_set_identity(&transM);
+	transM.m[3][0] = -eye->x;
+	transM.m[3][1] = -eye->y;
+	transM.m[3][2] = -eye->z;
+
+	*m = transM * rotationM;
+	//matrix_mul(m, &transM, &rotationM); //世界-》摄像机。 先平移，再旋转
+}
+
 
 
 //因为最开始物体坐标系跟世界坐标系重合，物体的运动就是从世界坐标系 转到其他坐标系，符合现实的状态是，先缩放、再旋转，在平移，
@@ -103,5 +145,8 @@ void camera_updateShadow(camera * caneraShadow, camera *  camera_main)
 	matrix_set_perspective(&caneraShadow->projection_trans, camera_main->fov, camera_main->aspect, camera_main->zn, camera_main->zf);
 	//摄像机矩阵 摄像机的位移
 	matrix_set_lookat(&caneraShadow->view, &(caneraShadow->eye), &caneraShadow->eyeTarget, &caneraShadow->worldup);
+
+
+
 }
 

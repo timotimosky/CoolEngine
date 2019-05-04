@@ -9,13 +9,19 @@ void vertex_add(vertex_t *y, const vertex_t *x) {
 	y->pos.y += x->pos.y;
 	y->pos.z += x->pos.z;
 	y->pos.w += x->pos.w;
+
+	y->worldPos.x += x->worldPos.x;
+	y->worldPos.y += x->worldPos.y;
+	y->worldPos.z += x->worldPos.z;
+	y->worldPos.w += x->worldPos.w;
+
 	y->color.a += x->color.a;
 	y->tc.u += x->tc.u;
 	y->tc.v += x->tc.v;
 	y->color.r += x->color.r;
 	y->color.g += x->color.g;
 	y->color.b += x->color.b;
-	//y->shadowPos_z += x->shadowPos_z;
+	y->shadowPos_z += x->shadowPos_z;
 }
 //·½Ïò¹â
 dirlight_t dirLight =

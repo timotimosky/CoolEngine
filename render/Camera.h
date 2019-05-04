@@ -10,10 +10,11 @@ typedef enum {
 	orthographic //正视
 } PROJECTION;
 
-typedef struct  camera_temp
+ struct  camera
 {
-	vector_t eye; //当前坐标
+	vector_t eye; //当前坐标   //C的结构体里的基本元素可以 用 =赋值。但复合结构不行
 	vector_t eyeTarget; //看向的焦点
+
 	int cull;   // 0:不裁剪;1:裁剪反面;2:裁剪正面
 
 	matrix_t view_matrix_r;
@@ -56,7 +57,7 @@ typedef struct  camera_temp
 
 				// private
 	float aspect; //纵横比；如果是主摄像头，则全屏 = 屏幕高宽比
-}camera;
+};
 
 
 void CameraInit();

@@ -31,6 +31,8 @@
 
 #define MAX_NUM_CAMERA 10
 
+extern camera cameras[MAX_NUM_CAMERA];
+extern camera camera_main;
 
 typedef struct {
 
@@ -84,7 +86,7 @@ int trapezoid_init_triangle(trapezoid_t *trap, const vertex_t *p1, const vertex_
 void trapezoid_edge_interp(device_t *device, trapezoid_t *trap, float y);
 
 // 根据左右两边的端点，初始化计算出扫描线的起点和步长
-void trapezoid_init_scan_line(const trapezoid_t *trap, scanline_t *scanline, int y);
+void trapezoid_init_scan_line(int  renderState, const trapezoid_t *trap, scanline_t *scanline, int y);
 
 // 画点 1.光栅化2D点
 void device_pixel(device_t *device, int x, int y, IUINT32 color);

@@ -3,6 +3,9 @@
 #include "UObject.h"
 
 
+camera cameras[MAX_NUM_CAMERA];
+camera camera_main;
+
 //位运算：
 //  a != b----->a = a | b, a 或者 b 只要有一个为 1, 那么，a 的最终结果就为 1
 //  a &= b----->a = a & b, a 和 b 二者必须都为 1, 那么，a 的最终结果才为 1
@@ -107,6 +110,8 @@ void vertex_interp(int render_state,  vertex_t *y, const vertex_t *x1, const ver
 
 	y->shadowPos_z = interp(x1->shadowPos_z, x2->shadowPos_z, t);
 
+	vector_interp(&y->worldPos, &x1->worldPos, &x2->worldPos, t);
+
 	if (render_state & (RENDER_STATE_verterNormal_color))
 		y->vertexLight = interp(x1->vertexLight, x2->vertexLight, t);
 }
@@ -148,11 +153,11 @@ int trapezoid_init_triangle(trapezoid_t *trap, const vertex_t *p1, const vertex_
 	if (p2->pos.y > p3->pos.y)
 		p = p2, p2 = p3, p3 = p; //确保p2是中间  P3是最顶
 
-	 //因为后面要做插值，所以这里直接计算出斜率 既可以拆分三角形，又可以后面插值用，会比较好
+
 	if (p1->pos.y == p2->pos.y && p1->pos.y == p3->pos.y)//Y轴相同
-		//X轴相同
-		if (p1->pos.x == p2->pos.x && p1->pos.x == p3->pos.x)
-			return 0;
+		return 0;		
+	if (p1->pos.x == p2->pos.x && p1->pos.x == p3->pos.x)//X轴相同
+		return 0;
 
 	// P1- - P2  
 	// -  -  
@@ -198,7 +203,7 @@ int trapezoid_init_triangle(trapezoid_t *trap, const vertex_t *p1, const vertex_
 		return (trap[0].top < trap[0].bottom) ? 1 : 0;
 	}
 
-	//计算斜率
+	//计算斜率 //因为后面要做插值，所以这里直接计算出斜率 既可以拆分三角形，又可以后面插值用，会比较好
 	float dP1P2 = (p2->pos.x - p1->pos.x) / (p2->pos.y - p1->pos.y);
 	float dP1P3 = (p3->pos.x - p1->pos.x) / (p3->pos.y - p1->pos.y);
 
@@ -420,6 +425,7 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 
 	IUINT32 *framebuffer = device->framebuffer[scanlineY]; //拿到当前这一行的扫描线起点属性，再通过步进插值 帧缓冲
 	float *zbuffer = device->zbuffer[scanlineY]; //拿到当前这一行的扫描线  Zbuffer
+	float *shadowbuffer = device->shadowbuffer; //拿到当前这一行的扫描线  Zbuffer
 	int scanlineX = scanline->x;
 	int lineWidth = scanline->width;
 	int width = device->width; //显示器范围  TODO：以后要加上摄像机范围
@@ -439,16 +445,28 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 			{
 				if (zbuffer != NULL)
 					zbuffer[scanlineX] = rhw;//最前面的深度
-
-
-				
+				 			
 				//计算shadow 或者是 rendertextrue
 
-				//point_t interpos = scanline->v.pos;
+				point_t interpos = scanline->v.pos;
 
-				//transform_homogenize_reverse(&device->transform,&interpos, &interpos);//从CVV空间回到主摄像机空间
+				////从CVV空间回到主摄像机空间
+				//transform_homogenize_reverse(&device->transform,&interpos, &interpos);
 
 				//使用转置矩阵 从主摄像机空间回到世界空间
+ 				point_t worldpos = scanline->v.worldPos;
+				//worldpos.w = 1;
+
+
+				//再回到阴影相机的深度空间
+				camera *shadow_camera = &cameras[0];
+				matrix_apply(&worldpos, &worldpos, &shadow_camera->view);
+				matrix_apply(&worldpos, &worldpos, &shadow_camera->projection_trans);
+
+				transform_homogenize(&device->transform, &worldpos, &worldpos);
+
+				//device->shadowbuffer[y*width + x] = z;
+
 
 
 				//准备像素阶段的数据   将用于模型的顶点结构转换为用于像素阶段的v2f结构
@@ -456,6 +474,13 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 				vf.color = scanline->v.color;
 				vf.pos = scanline->v.pos;
 				vf.normal = scanline->v.normal;
+
+				//scanlineY*width + scanlineX]
+				int shadowY  =(int)(worldpos.y + 0.5);
+
+				int shadowX  = (int)(worldpos.x + 0.5);
+
+				float pcfDepth = device->shadowbuffer[shadowY*shadow_camera->width + shadowX];
 
 				//point_t pos;//位置
 
@@ -486,23 +511,23 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 					G = CMID(G, 0, 255);
 					B = CMID(B, 0, 255);
 
-					//根据深度图，计算深度，是否要产生阴影
+					//在像素阶段 根据深度图，计算深度，是否要产生阴影
 					if (device->shadowbuffer != NULL)
 					{
 						float z = scanline->v.shadowPos_z;
-						float buffZ = device->shadowbuffer[scanlineY*width + scanlineX];
-						if (buffZ > 0)
-						{
-							buffZ = buffZ;
-						}
+						//float pcfDepth = device->shadowbuffer[scanlineY*width + scanlineX];
+						//if (pcfDepth < 0)
+						//{
+						//	pcfDepth = pcfDepth;
+						//}
 
 
-						if (buffZ >0 && z > buffZ && buffZ !=0)
+ 						if (pcfDepth >0 && z > pcfDepth && pcfDepth !=0)
 						{
 							//printf("nowZ========%f------oldZ==========%f\n", z, device->shadowbuffer[scanlineY*width + scanlineX]);
-							R *= 0.5f;
-							G *= 0.5f;
-							B *= 0.5f;
+							R *= 0.3f;
+							G *= 0.3f;
+							B *= 0.3f;
 						}
 					}
 		
@@ -605,7 +630,6 @@ void device_draw_scanline_shadow(device_t *device, scanline_t *scanline, float s
 
 #pragma region 计算阴影颜色 
 
-				//float shadow = new vector();
 
 				//根据深度图，写入深度图  TODO: 以后这块分离为pass = 顶点+像素
 				if (device->shadowbuffer != NULL) 
@@ -623,21 +647,23 @@ void device_draw_scanline_shadow(device_t *device, scanline_t *scanline, float s
 					//	device->shadowbuffer[scanlineY*width + scanlineX] = device->shadowbuffer[scanlineY*width + scanlineX];
 					//}
 
-					if ( device->shadowbuffer[scanlineY*width + scanlineX] <0) {
-						device->shadowbuffer[scanlineY*width + scanlineX] = z;
+					int index = scanlineY * width + scanlineX;
+
+					if ( device->shadowbuffer[index] <=0) {
+						device->shadowbuffer[index] = z;
 					}
-					if (z < device->shadowbuffer[scanlineY*width + scanlineX] && device->shadowbuffer[scanlineY*width + scanlineX] != 0) {
-						device->shadowbuffer[scanlineY*width + scanlineX] = z;
+					if (z < device->shadowbuffer[index] && device->shadowbuffer[index] != 0) {
+						device->shadowbuffer[index] = z;
 					}
 				}
 #pragma endregion
 
 				//计算shadow 或者是 rendertextrue
 
-				point_t interpos = scanline->v.pos;
+				//point_t interpos = scanline->v.pos;
 
 
-				transform_homogenize_reverse(&device->transform, &interpos, &interpos);//从CVV空间回到主摄像机空间
+				//transform_homogenize_reverse(&device->transform, &interpos, &interpos);//从CVV空间到屏幕
 
 				//使用转置矩阵 从主摄像机空间回到世界空间
 
@@ -728,8 +754,8 @@ void device_render_trap_shadow(device_t *device, trapezoid_t *trap, float surfac
 	for (j = top; j < bottom; j++)  //从top到bottom 每一个y轴像素一个扫描线
 	{
 		if (j >= 0 && j < device->height)
-		{
-			// 按照Y坐标计算出当前扫描线的X坐标，并且插值 颜色、深度
+		{   
+			// 通过Y坐标差---得到当前边的斜率，插值---颜色、深度 坐标
 			trapezoid_edge_interp(device, trap, (float)j + 0.5f);
 
 			// 根据左右两边的端点，初始化计算出扫描线的起点和步长   包括扫描线的x y  z  w的步长 
@@ -772,6 +798,7 @@ void device_render_trap(device_t *device, trapezoid_t *trap, float surfaceLight)
 }
 
 
+//查询这个三角面的阴影深度图
 void device_draw_primitive_shadow(device_t *device, vertex_t *v1, vertex_t *v2, vertex_t *v3)
 {
 	//1--------物体空间------------------------------
@@ -790,20 +817,20 @@ void device_draw_primitive_shadow(device_t *device, vertex_t *v1, vertex_t *v2, 
 	matrix_apply(&world_pos2, &v2->pos, &transform.model);
 	matrix_apply(&world_pos3, &v3->pos, &transform.model);
 
-	// 背面剔除
-	//if (device->cull > 0)
-	//{
-	//	float cullValue = CullCalcutate(&world_pos1, &world_pos2, &world_pos3, &device->curCamera.eye);
-	//	if (device->cull == 1)
-	//	{
-	//		if (cullValue <= 0)
-	//			return;
-	//	}
-	//	else if (device->cull == 2) {
-	//		if (cullValue > 0)
-	//			return;
-	//	}
-	//}
+	 //背面剔除
+	if (device->cull > 0)
+	{
+		float cullValue = CullCalcutate(&world_pos1, &world_pos2, &world_pos3, &device->curCamera.eye);
+		if (device->cull == 1)
+		{
+			if (cullValue <= 0)
+				return;
+		}
+		else if (device->cull == 2) {
+			if (cullValue > 0)
+				return;
+		}
+	}
 
 	// 这里的裁剪不准确，只要有顶点不满足，则剔除，可以完善为具体判断几个点在 cvv内以及同cvv相交平面的坐标比例
 	// 进行进一步精细裁剪，将一个分解为几个完全处在 cvv内的三角形
@@ -820,10 +847,10 @@ void device_draw_primitive_shadow(device_t *device, vertex_t *v1, vertex_t *v2, 
 
 
 	//法线转换到世界空间
-	vector_t world_normal1, world_normal2, world_normal3;
+	/*vector_t world_normal1, world_normal2, world_normal3;
 	matrix_apply(&world_normal1, &v1->normal, &transform.model);
 	matrix_apply(&world_normal2, &v2->normal, &transform.model);
-	matrix_apply(&world_normal3, &v3->normal, &transform.model);
+	matrix_apply(&world_normal3, &v3->normal, &transform.model);*/
 	//阴影预备
 	//DisVertexToLight(lightPosition, &world_pos1);
 

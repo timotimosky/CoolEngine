@@ -37,10 +37,6 @@ void screen_update(LPCSTR);							// 显示FrameBuffer
 													// win32 event handler
 static LRESULT screen_events(HWND, UINT, WPARAM, LPARAM);
 
-namespace {
-	camera cameras[MAX_NUM_CAMERA];
-	camera camera_main;
-}
 
 
 //一个解析mesh网格的函数
@@ -342,6 +338,7 @@ void CreateCamera(device_t* device,int width, int height)
 {
 	//初始化主摄像机
 	camera_main.eye = { 0, 3, -10, 1 };
+
 	camera_main.eyeTarget = { 0, 0, 0, 1};
 	camera_main.worldup = { 0, 1, 0, 1 };
 
@@ -374,11 +371,6 @@ void InitDevice(device_t* device,camera& curCamera)
 	device->transform.view = curCamera.view;
 	device->curCamera = curCamera;
 
-	if ((device)->shadowbuffer != NULL) {
-		for (int y = 0; y < (device)->height; y++)
-			for (int x = 0; x < (device)->width; x++)
-				(device)->shadowbuffer[y * (device)->width + x] = 0;
-	}
 }
 
 
@@ -396,11 +388,12 @@ int main(void)
 
 	TCHAR *title = _T("coolRender -- ")_T("Left/Right: rotation, Up/Down: forward/backward, Space: switch state");
 
-	if (screen_init(800, 600, title)) //初始化WINDOWS窗口并设置标题
-		return -1;
-
 	int width = 800;
 	int height = 600;
+
+	if (screen_init(width, height, title)) //初始化WINDOWS窗口并设置标题
+		return -1;
+
 
 	device_init(&device, width, height, screen_fb); //设备初始
 
@@ -425,12 +418,6 @@ int main(void)
 
 		screen_dispatch(); //分发msg
 		device_clear(&device, 1); //清空缓冲
-
-		//if ((&device)->shadowbuffer != NULL) {
-		//	for (int y = 0; y < (&device)->height; y++)
-		//		for (int x = 0; x < (&device)->width; x++)
-		//			(&device)->shadowbuffer[y * (&device)->width + x] = 0;
-		//}
 		//device_clear(&device); // Zbuffer frameBuffer
 
 		if (screen_keys[VK_UP]) camera_main.eye.z += 0.01f; //摄像机前进  pos -= 0.01f;
@@ -445,6 +432,8 @@ int main(void)
 		camera_update(&camera_main); //摄像机不断更新矩阵
 		//动态灯光 阴影
 		camera_updateShadow(&cameras[0], &camera_main);
+		cameras[0].width = width;
+		cameras[0].height = height;
 
 		if (screen_keys[VK_F1])
 		{
@@ -475,11 +464,6 @@ int main(void)
 			kbhit = 0;
 		}
 
-		sprintf(out, "%3.1f", fps);
-		//strcpy(out, renderType);//将第一个字符串p拷贝到q中  
-		strcat(out, renderType);//将第二个字符串h拼接到q之后
-
-		type = (LPCSTR)out;
 
 		//渲染一个立方体 
 	//	draw_box(&device, alpha);
@@ -497,14 +481,19 @@ int main(void)
 		}
 
 
-		////2.先渲染阴影的深度缓冲
+		////2.先重置阴影的深度缓冲
 		InitDevice(&device, cameras[0]);
 
+		if ((&device)->shadowbuffer != NULL) {
+			for (int y = 0; y < (&device)->height; y++)
+				for (int x = 0; x < (&device)->width; x++)
+					(&device)->shadowbuffer[y * (&device)->width + x] = 0;
+		}
 
-
+		//渲染阴影的深度缓冲
 		for (int i = 0; i < Scene_render_Objs.size(); i++)
 		{
-			draw_Object_Shadow(Scene_render_Objs[i], &device);
+			draw_Object_Shadow(Scene_render_Objs[i], &device); 
 		}
 
 		int y,x;
@@ -515,8 +504,6 @@ int main(void)
 				dst[0] = 0.0f;
 		}
 
-		//if ((&device)->zbuffer != NULL)
-		//	memset((&device)->zbuffer, 0, (&device)->width * (&device)->height * sizeof(float));
 		//3.渲染物体
 		InitDevice(&device, camera_main);
 
@@ -524,6 +511,14 @@ int main(void)
 		{
 			draw_Object(Scene_render_Objs[i], &device);
 		}
+
+		sprintf(out, "%3.1f", fps);
+		//strcpy(out, renderType);//将第一个字符串p拷贝到q中  
+		strcat(out, renderType);//将第二个字符串h拼接到q之后
+		char c[8];
+		itoa(device.cull, c, 16);
+		strcat(out, c);
+		type = (LPCSTR)out;
 
 
 		//真正的渲染函数
