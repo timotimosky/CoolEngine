@@ -211,7 +211,7 @@ void matrix_World2Obj(matrix_t *m, vector_t rot, vector_t pos, float scale)
 	//欧拉角 根据基向量 转矩阵 
 	//采用正旋 X-Y-Z轴的顺序， 根据矩阵乘法可结合来叠加成一个矩阵
 	//右乘
-	void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos,float scale)
+	void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos)
 	{
 		float rot_x = rot.x;
 		float rot_y = rot.y;

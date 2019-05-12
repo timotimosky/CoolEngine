@@ -5,6 +5,7 @@
 
 camera cameras[MAX_NUM_CAMERA];
 camera camera_main;
+camera shadowCamera;
 
 //位运算：
 //  a != b----->a = a | b, a 或者 b 只要有一个为 1, 那么，a 的最终结果就为 1
@@ -265,20 +266,10 @@ int trapezoid_init_triangle(trapezoid_t *trap, const vertex_t *p1, const vertex_
 //按照Y坐标计算出左右两条边纵坐标等于Y的顶点
 void trapezoid_edge_interp(device_t *device, trapezoid_t *trap, float y ) {
 
-	//梯度
-	float t1 = (y - trap->left.v1.pos.y) / (trap->left.v2.pos.y - trap->left.v1.pos.y);
-	//float worldti = (y - trap->left.v1.worldPos.y) / (trap->left.v2.worldPos.y - trap->left.v1.pos.y);
-
+	float t1 = (y - trap->left.v1.pos.y) / (trap->left.v2.pos.y - trap->left.v1.pos.y);	//梯度
 	vertex_interp(device->render_state, &trap->left.v, &trap->left.v1, &trap->left.v2, t1); //三角形左边的斜线 决定扫描线左边起点
-																  //梯度
-	//float t2 = (y - trap->right.v1.pos.y) / (trap->right.v2.pos.y - trap->right.v1.pos.y);
-
-	//vertex_interp(&trap->right.v, &trap->right.v1, &trap->right.v2, t2);//三角形右边的斜线 决定扫描线右边终点
-																	//梯度
-	//float t1 = (y - trap->left.v1.worldPos.y) / (trap->left.v2.worldPos.y - trap->left.v1.worldPos.y);
-//	vertex_interp(&trap->left.v, &trap->left.v1, &trap->left.v2, t1); //三角形左边的斜线 决定扫描线左边起点
-																	  //梯度
-	float t2 = (y - trap->right.v1.pos.y) / (trap->right.v2.pos.y - trap->right.v1.pos.y);
+																
+	float t2 = (y - trap->right.v1.pos.y) / (trap->right.v2.pos.y - trap->right.v1.pos.y); //梯度
 	vertex_interp(device->render_state,&trap->right.v, &trap->right.v1, &trap->right.v2, t2);//三角形右边的斜线 决定扫描线右边终点
 
 }
@@ -465,9 +456,6 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 
 				transform_homogenize(&device->transform, &worldpos, &worldpos);
 
-				//device->shadowbuffer[y*width + x] = z;
-
-
 
 				//准备像素阶段的数据   将用于模型的顶点结构转换为用于像素阶段的v2f结构
 				v2f vf;
@@ -515,19 +503,13 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 					if (device->shadowbuffer != NULL)
 					{
 						float z = scanline->v.shadowPos_z;
-						//float pcfDepth = device->shadowbuffer[scanlineY*width + scanlineX];
-						//if (pcfDepth < 0)
-						//{
-						//	pcfDepth = pcfDepth;
-						//}
-
 
  						if (pcfDepth >0 && z > pcfDepth && pcfDepth !=0)
 						{
 							//printf("nowZ========%f------oldZ==========%f\n", z, device->shadowbuffer[scanlineY*width + scanlineX]);
-							R *= 0.3f;
-							G *= 0.3f;
-							B *= 0.3f;
+							R = R * 0.7;
+							G = G * 0.7 ;
+							B = B * 0.7 ;
 						}
 					}
 		
@@ -540,7 +522,28 @@ void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceL
 					float u = scanline->v.tc.u;//* pixRhw;
 					float v = scanline->v.tc.v;//* pixRhw;
 					IUINT32 cc = device_texture_read(device, u, v);
-					framebuffer[scanlineX] = cc;
+
+					//在像素阶段 根据深度图，计算深度，是否要产生阴影
+					if (device->shadowbuffer != NULL)
+					{
+						float z = scanline->v.shadowPos_z;
+
+						if (pcfDepth > 0 && z > pcfDepth && pcfDepth != 0)
+						{
+							int R = (cc & (0xff0000)) >> 16;
+							int G = (cc & (0x00ff00)) >> 8;
+							int B = (cc & (0x0000ff));
+							R *= 0.7;
+							G *= 0.7;
+							B *= 0.7;
+							int rgb = (R << 16) | (G << 8) | (B);
+							framebuffer[scanlineX] = rgb;
+						}
+						else
+							framebuffer[scanlineX] = cc;
+					}
+					else 
+						framebuffer[scanlineX] = cc;
 				}
 
 				//顶点插值
@@ -761,8 +764,6 @@ void device_render_trap_shadow(device_t *device, trapezoid_t *trap, float surfac
 			// 根据左右两边的端点，初始化计算出扫描线的起点和步长   包括扫描线的x y  z  w的步长 
 			trapezoid_init_scan_line(device->render_state, trap, &scanline, j);
 
-			//TODO: Z buffer 需要在下一个摄像机之前清空
-
 			//绘制扫描线，通过步长得到最终值
 			device_draw_scanline_shadow(device, &scanline, surfaceLight);
 		}
@@ -841,9 +842,9 @@ void device_draw_primitive_shadow(device_t *device, vertex_t *v1, vertex_t *v2, 
 	matrix_apply(&project_pos2, &v2->pos, &((&transform)->mvp));
 	matrix_apply(&project_pos3, &v3->pos, &((&transform)->mvp));
 
-	if (transform_check_cvv(&project_pos1) != 0) return;
-	if (transform_check_cvv(&project_pos2) != 0) return;
-	if (transform_check_cvv(&project_pos3) != 0) return;
+	//if (transform_check_cvv(&project_pos1) != 0) return;
+	//if (transform_check_cvv(&project_pos2) != 0) return;
+	//if (transform_check_cvv(&project_pos3) != 0) return;
 
 
 	//法线转换到世界空间
@@ -862,7 +863,7 @@ void device_draw_primitive_shadow(device_t *device, vertex_t *v1, vertex_t *v2, 
 
 	//灯光参数，用于乘基本颜色     (0-1)之间 被用作颜色的亮度 
 	float surfaceLight = 0; //表面灯光
-	float v1Light = 0;
+	//float v1Light = 0;
 
 	transform_t shadow_transform = device->transform;
 
@@ -904,9 +905,9 @@ void device_draw_primitive_shadow(device_t *device, vertex_t *v1, vertex_t *v2, 
 		t2.shadowPos_z = shadow_view_pos2.z;
 		t3.shadowPos_z = shadow_view_pos3.z;
 
-		//vertex_rhw_init(&t1);	// 初始化 w
-		//vertex_rhw_init(&t2);	// 初始化 w
-		//vertex_rhw_init(&t3);	// 初始化 w
+		vertex_rhw_init(&t1);	// 初始化 w
+		vertex_rhw_init(&t2);	// 初始化 w
+		vertex_rhw_init(&t3);	// 初始化 w
 
 		//TODO:这里的插值颜色，要三个顶点决定
 

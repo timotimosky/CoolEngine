@@ -190,7 +190,7 @@ void matrix_set_translate(matrix_t *m, float x, float y, float z);
 // Ëõ·Å±ä»»
 void matrix_set_scale(matrix_t *m, float x, float y, float z);
 
-void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos,float scale);
+void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos);
 
 void matrix_World2Obj(matrix_t *m, vector_t rot, vector_t pos, float scale);
 

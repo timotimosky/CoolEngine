@@ -76,7 +76,9 @@ typedef struct
 
 	point_t pos;
 	vector_t axis;
-	float scale;
+	float scaleX;
+	float scaleY;
+	float scaleZ;
 	vertex_t* mesh;
 
 	IUINT32 texture[256][256]; //Œ∆¿Ì

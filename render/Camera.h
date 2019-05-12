@@ -3,7 +3,7 @@
 #include "shaderStruct.h"
 #include "renderMath.h"
 
-extern void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos, float scale);
+extern void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos);
 
 typedef enum {
 	perspective, //м╦йс

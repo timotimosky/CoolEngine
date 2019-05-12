@@ -33,6 +33,7 @@
 
 extern camera cameras[MAX_NUM_CAMERA];
 extern camera camera_main;
+extern camera shadowCamera;
 
 typedef struct {
 

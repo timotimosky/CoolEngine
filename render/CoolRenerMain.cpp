@@ -195,15 +195,15 @@ void draw_Object_Shadow(Object_t Cube, device_t *device)
 	device->transform.model = Cube.model;
 	transform_update(&device->transform);
 
+	//shadowCamera.transform.mvp = (&device->transform)->mvp;
+
 	//直接渲染三角形
 	for (int i = 0; i < Cube.mesh_num; i += 3)
 	{
-		//以后只有改变的时候，才去动态缩放一次
 		vertex_t v1 = (Cube.mesh)[i];
 		vertex_t v2 = (Cube.mesh)[i + 1];
 		vertex_t v3 = (Cube.mesh)[i + 2];
 
-	
 		device_draw_primitive_shadow(device, &v1, &v2, &v3);
 	}
 }
@@ -232,7 +232,7 @@ void draw_Object(const Object_t& Cube, device_t *device)
 void draw_box(device_t *device, float theta)
 {
 	matrix_t m;
-	matrix_Obj2World(&m,  vector_t(0, theta, beta,1), vector_t(2, 4, 5,1), 1);
+	matrix_Obj2World(&m,  vector_t(0, theta, beta,1), vector_t(2, 4, 5,1));
 	//matrix_set_rotate(&m, -3, -0.5, 1, theta,0,0,0); 
 
 	device->transform.model = m;
@@ -298,7 +298,9 @@ void Create_Obj()
 	ground.axis = { 0, 0, 0, 0 };
 	ground.mesh = ground_mesh;
 	ground.mesh_num = 4;
-	ground.scale = 9;
+	ground.scaleX = 9;
+	ground.scaleY = 1;
+	ground.scaleZ = 4;
 	//ground.theta = 0;
 
 	//初始化一个物体
@@ -307,7 +309,9 @@ void Create_Obj()
 	Cube.axis = { 0, 0, 0, 0 };
 	Cube.mesh = box_mesh;
 	Cube.mesh_num = 34;
-	Cube.scale = 3;
+	Cube.scaleX = 3;
+	Cube.scaleY = 3;
+	Cube.scaleZ = 3;
 	//Cube.theta = 1;  //当前物体的旋转弧度。  1 就是 180度
 
 	Scene_render_Objs.push_back(Cube);
@@ -324,8 +328,8 @@ void Init_Obj(Object_t& Cube)
 //axis.x 绕X轴的旋转角度
 
 //物体转世界坐标系  	//平移-> 旋转-》缩放 
-	matrix_set_scale(&s, Cube.scale, Cube.scale, Cube.scale);
-	matrix_Obj2World(&r, Cube.axis, Cube.pos, Cube.scale);
+	matrix_set_scale(&s, Cube.scaleX, Cube.scaleY, Cube.scaleZ);
+	matrix_Obj2World(&r, Cube.axis, Cube.pos);
 	matrix_set_identity(&t);
 	t.m[3][0] = Cube.pos.x;
 	t.m[3][1] = Cube.pos.y;
