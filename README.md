@@ -7,17 +7,19 @@
 此外不需要任何其他配置
 ===
 
-参考了这个作者的开源项目
+参考了大神韦易笑的开源项目
 ===
 作者的博客 http://www.skywind.me
 
 与原作不同的地方：
 ===
 * 从C改为了C++
-* 尽量靠近Unity的设计，比如transfrom、camera等、顶点排序顺序、X-Y-Z轴朝向
+* 尽量靠近Unity的设计，增加了object、transfrom、camera等、顶点排序顺序、X-Y-Z轴朝向
+* 支持多相机
+* 增加了多个物体同时渲染
 * 增加光照模式：平面着色和高氏着色 、顶点光照、面法线光照
 * 增加了摄像机的正面剔除/背面剔除
-* 增加了光照阴影
+* 增加了点光源阴影
 
 特性
 ===
@@ -33,7 +35,6 @@
 色彩填充：RENDER_STATE_COLOR
 ![]
 (https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/render2.png)
-
 
 
 
