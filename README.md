@@ -30,18 +30,10 @@
 
 演示
 ===
-
-纹理填充：RENDER_STATE_TEXTURE
-![](https://raw.githubusercontent.com/skywind3000/mini3d/master/images/mini_1.png)
-
 色彩填充：RENDER_STATE_COLOR
 ![]
-(https://github.com/timotimosky/CoolEngine/raw/master/images/render2.png)
-线框绘制：RENDER_STATE_WIREFRAME
-![](https://raw.githubusercontent.com/skywind3000/mini3d/master/images/mini_2.png)
+(https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/render2.png)
 
-增加光照和二次线性插值（朋友给 Mini3D 增加的光照效果截图）
-![](https://raw.githubusercontent.com/skywind3000/mini3d/master/images/mini_3.png)
 
 
 
