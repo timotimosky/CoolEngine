@@ -36,7 +36,7 @@
 
 色彩填充：RENDER_STATE_COLOR
 ![]
-(https://github.com/timotimosky/CoolEngine.git/master//images/render2.png)
+(https://github.com/timotimosky/CoolEngine/raw/master/images/render2.png)
 线框绘制：RENDER_STATE_WIREFRAME
 ![](https://raw.githubusercontent.com/skywind3000/mini3d/master/images/mini_2.png)
 
