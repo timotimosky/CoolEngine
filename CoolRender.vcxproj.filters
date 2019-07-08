@@ -28,6 +28,12 @@
     <Filter Include="源文件\HScene">
       <UniqueIdentifier>{67f3dc85-3a83-46fc-b33f-68bfa5c71f3e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Raytracer">
+      <UniqueIdentifier>{21ef9b5b-c275-4531-9e71-26710a14604a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Raytracer">
+      <UniqueIdentifier>{d481cd71-35fd-43a9-80c7-91468b182931}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\CMaterail.cpp">
@@ -37,9 +43,6 @@
       <Filter>源文件\HObject</Filter>
     </ClCompile>
     <ClCompile Include="render\Camera.cpp">
-      <Filter>源文件\HScene</Filter>
-    </ClCompile>
-    <ClCompile Include="render\objectManager.cpp">
       <Filter>源文件\HScene</Filter>
     </ClCompile>
     <ClCompile Include="render\Pipline.cpp">
@@ -57,6 +60,18 @@
     <ClCompile Include="render\CoolRenerMain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="render\Lights.cpp">
+      <Filter>源文件\HScene</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Raytracer.cpp">
+      <Filter>源文件\Raytracer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Primitive.cpp">
+      <Filter>源文件\HScene</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Scene.cpp">
+      <Filter>源文件\HScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\UObject.h">
@@ -64,9 +79,6 @@
     </ClInclude>
     <ClInclude Include="render\CMaterail.h">
       <Filter>头文件\HObject</Filter>
-    </ClInclude>
-    <ClInclude Include="render\objectManager.h">
-      <Filter>头文件\HScene</Filter>
     </ClInclude>
     <ClInclude Include="render\Camera.h">
       <Filter>头文件\HScene</Filter>
@@ -83,7 +95,16 @@
     <ClInclude Include="render\ShadingCalculate.h">
       <Filter>头文件\Shading</Filter>
     </ClInclude>
-    <ClInclude Include="Lights.h">
+    <ClInclude Include="render\Lights.h">
+      <Filter>头文件\HScene</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Raytracer.h">
+      <Filter>头文件\Raytracer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Primitive.h">
+      <Filter>头文件\HScene</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Scene.h">
       <Filter>头文件\HScene</Filter>
     </ClInclude>
   </ItemGroup>

@@ -46,30 +46,6 @@ void vertex_add(vertex_t *y, const vertex_t *x);
 
 
 //物体
-typedef struct {
-	unsigned long mesh_num;
-	int* material_ids; //只存储ID引用
-	int texture_id;
-	bool shadow;  //是否开启产生阴影  TODO：以后加入是否接受阴影
-
-	bool dirty;
-	point_t pos; //位置
-	vector_t scale; //缩放
-	vector_t axis;
-	matrix_t model2View;
-
-	//也也可以用链表
-	//struct
-	//{
-		//int data;   // 数据域
-		//struct node *next;   // 指针域
-	//} *node;
-
-	//mesh[0]和mesh[]不占用空间，且地址紧跟在结构后面，而vertex_t *data作为指针，占用4个字节，地址不在结构之后
-	vertex_t mesh[0]; //起始地址 可变数组   vertex_t data[0]，vertex_t *data, vertex_t data[]都可以 
-} object_t;
-
-
 typedef struct
 {
 	unsigned long mesh_num;//..
@@ -79,10 +55,22 @@ typedef struct
 	float scaleX;
 	float scaleY;
 	float scaleZ;
+
+	//mesh[0]和mesh[]不占用空间，且地址紧跟在结构后面，而vertex_t *data作为指针，占用4个字节，地址不在结构之后
+	//vertex_t mesh[0]; //起始地址 可变数组   vertex_t data[0]，vertex_t *data, vertex_t data[]都可以 
 	vertex_t* mesh;
 
 	IUINT32 texture[256][256]; //纹理
 	matrix_t model;         // 物体矩阵  由三个弧度计算出来
+
+
 	materal m_materal; //材质
+
+	//TODO：以后增加
+
+	//int* material_ids; //只存储ID引用
+
+	//int texture_id;
+	//bool shadow;  //是否开启产生阴影  TODO：以后加入是否接受阴影
 }
 Object_t;

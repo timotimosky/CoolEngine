@@ -11,12 +11,12 @@
 ===
 作者的博客 http://www.skywind.me
 
-与原作不同的地方：
+
 ===
 * 从C改为了C++
 * 尽量靠近Unity的设计，增加了object、transfrom、camera等、顶点排序顺序、X-Y-Z轴朝向
 * 支持多相机
-* 增加了多个物体同时渲染
+* 增加了多个物体同时渲染 :支持多个默认形状：平面/立方体/球形
 * 增加光照模式：平面着色和高氏着色 、顶点光照、面法线光照
 * 增加了摄像机的正面剔除/背面剔除
 * 增加了点光源阴影
@@ -37,17 +37,17 @@
 (https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/render2.png)
 
 
-
-基础作业
+后续计划
 =======
 * 提供更多渲染模式
 * 实现二次线性差值的纹理读取
+* 从jpg、bmp/TGA文件加载纹理
+* 加载Obj
+* 附带光线跟踪
 
 进阶作业
 =======
 * 优化顶点计算性能
 * 优化 draw_scanline 性能
-* 从 BMP/TGA 文件加载纹理
 * 载入 BSP 场景并实现漫游
 * 场景组织、层次细节、动态光照
-* 光线跟踪版

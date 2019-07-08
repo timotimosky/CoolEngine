@@ -121,12 +121,12 @@ vector_t operator+(const vector_t& value)
 	return ncolor_t;
 }
 
-vector_t operator-(const vector_t* value)
+vector_t operator-(const vector_t& value)
 {
 	vector_t ncolor_t;
-	ncolor_t.x = x - value->x;
-	ncolor_t.y = y - value->y;
-	ncolor_t.z = z - value->z;
+	ncolor_t.x = x - value.x;
+	ncolor_t.y = y - value.y;
+	ncolor_t.z = z - value.z;
 
 	return ncolor_t;
 }

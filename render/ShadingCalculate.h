@@ -1,5 +1,5 @@
 #pragma once
-#include "objectManager.h"
+#include "Scene.h"
 
 //导入模型解析
 

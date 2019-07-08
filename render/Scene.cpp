@@ -1,4 +1,4 @@
-#include "objectManager.h"
+#include "Scene.h"
 
 
 //储存所有渲染物体
