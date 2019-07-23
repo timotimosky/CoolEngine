@@ -206,7 +206,7 @@ color_t Phong(transform_t* mainTrans, vector_t *posInObj, vector_t *normal, vect
 	diffuseColor = diffuseColor* diffuse;
 
 	//反射向量
-	vector_t  vReflect = (*normalInView) * (2 * vector_dotproduct(normalInView, lightDirInView)) - lightDirInView;
+	vector_t  vReflect = (*normalInView) * (2 * vector_dotproduct(normalInView, lightDirInView)) - *lightDirInView;
 	vector_normalize(&vReflect);
 	//再通过反射计算高光
 

@@ -31,8 +31,11 @@
     <Filter Include="头文件\Raytracer">
       <UniqueIdentifier>{21ef9b5b-c275-4531-9e71-26710a14604a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Raytracer">
+    <Filter Include="Raytracer">
       <UniqueIdentifier>{d481cd71-35fd-43a9-80c7-91468b182931}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Raytracer\H">
+      <UniqueIdentifier>{b9e527fd-4287-4047-9f1f-f2c2f549c6ac}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,14 +66,20 @@
     <ClCompile Include="render\Lights.cpp">
       <Filter>源文件\HScene</Filter>
     </ClCompile>
-    <ClCompile Include="render\Raytracer.cpp">
-      <Filter>源文件\Raytracer</Filter>
-    </ClCompile>
-    <ClCompile Include="render\Primitive.cpp">
-      <Filter>源文件\HScene</Filter>
-    </ClCompile>
     <ClCompile Include="render\Scene.cpp">
       <Filter>源文件\HScene</Filter>
+    </ClCompile>
+    <ClCompile Include="raytracer1\raytracer.cpp">
+      <Filter>Raytracer</Filter>
+    </ClCompile>
+    <ClCompile Include="raytracer1\scene.cpp">
+      <Filter>Raytracer</Filter>
+    </ClCompile>
+    <ClCompile Include="raytracer1\surface.cpp">
+      <Filter>Raytracer</Filter>
+    </ClCompile>
+    <ClCompile Include="raytracer1\testapp.h">
+      <Filter>Raytracer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -98,14 +107,20 @@
     <ClInclude Include="render\Lights.h">
       <Filter>头文件\HScene</Filter>
     </ClInclude>
-    <ClInclude Include="render\Raytracer.h">
-      <Filter>头文件\Raytracer</Filter>
-    </ClInclude>
-    <ClInclude Include="render\Primitive.h">
-      <Filter>头文件\HScene</Filter>
-    </ClInclude>
     <ClInclude Include="render\Scene.h">
       <Filter>头文件\HScene</Filter>
+    </ClInclude>
+    <ClInclude Include="raytracer1\common.h">
+      <Filter>Raytracer\H</Filter>
+    </ClInclude>
+    <ClInclude Include="raytracer1\raytracer.h">
+      <Filter>Raytracer\H</Filter>
+    </ClInclude>
+    <ClInclude Include="raytracer1\scene.h">
+      <Filter>Raytracer\H</Filter>
+    </ClInclude>
+    <ClInclude Include="raytracer1\surface.h">
+      <Filter>Raytracer\H</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

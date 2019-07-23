@@ -6,7 +6,16 @@
 #include "CMaterail.h"
 #include "UObject.h"
 #include "Camera.h"
+//#include "../raytracer1/common.h"
 
+#include <stdlib.h>
+#include "../raytracer1/common.h"
+#include "../raytracer1/raytracer.h"
+#include "../raytracer1/scene.h"
+#include "../raytracer1/surface.h"
+
+
+//#include "../raytracer1/testapp.h"
 #pragma comment( lib,"winmm.lib" )
 #ifdef _MSC_VER
 #pragma comment(lib, "gdi32.lib") //gdi绘图
@@ -37,7 +46,8 @@ void screen_update(LPCSTR);							// 显示FrameBuffer
 													// win32 event handler
 static LRESULT screen_events(HWND, UINT, WPARAM, LPARAM);
 
-
+#define SCRWIDTH	800
+#define SCRHEIGHT	600
 
 //一个解析mesh网格的函数
 void GetMesh(vertex_t* meshPtr)
@@ -45,6 +55,62 @@ void GetMesh(vertex_t* meshPtr)
 	//TODO:
 
 }
+
+//extern Pixel* buffer;
+LPVOID ptr;
+
+Raytracer::Surface* surface = 0;
+Pixel* buffer = 0;
+Raytracer::Engine* tracer = 0;
+
+void Set2RayTracer()
+{
+	ptr = buffer;
+}
+
+int RaytracerIT()
+{
+	int cc;
+	// prepare output canvas
+	surface = new Raytracer::Surface(SCRWIDTH, SCRHEIGHT);
+	buffer = surface->GetBuffer();
+	surface->Clear(0);
+	surface->InitCharset();
+	surface->Print("timings:", 2, 2, 0xffffffff);
+	// prepare renderer
+	tracer = new Raytracer::Engine();
+	tracer->GetScene()->InitScene();
+	tracer->SetTarget(surface->GetBuffer(), SCRWIDTH, SCRHEIGHT);
+	int tpos = 60;
+	// go
+	while (1)
+	{
+		int fstart = GetTickCount();
+		tracer->InitRender();
+		// while (!tracer->RenderTiles()) DrawWindow();
+		while (!tracer->Render())
+		{
+
+		}
+		//DrawWindow();
+		int ftime = GetTickCount() - fstart;
+		char t[] = "00:00.000";
+		t[6] = (ftime / 100) % 10 + '0';
+		t[7] = (ftime / 10) % 10 + '0';
+		t[8] = (ftime % 10) + '0';
+		int secs = (ftime / 1000) % 60;
+		int mins = (ftime / 60000) % 100;
+		t[3] = ((secs / 10) % 10) + '0';
+		t[4] = (secs % 10) + '0';
+		t[1] = (mins % 10) + '0';
+		t[0] = ((mins / 10) % 10) + '0';
+		surface->Print(t, tpos, 2, 0xffffffff);
+		tpos += 100;
+	}
+	return 1;
+}
+
+
 
 // 初始化窗口并设置标题
 int screen_init(int w, int h, const TCHAR *title)
@@ -55,7 +121,7 @@ int screen_init(int w, int h, const TCHAR *title)
 
 	RECT rect = { 0, 0, w, h };
 	int wx, wy, sx, sy;
-	LPVOID ptr;
+
 	HDC hDC;
 
 	screen_close();
@@ -523,8 +589,8 @@ int main(void)
 		itoa(device.cull, c, 16);
 		strcat(out, c);
 		type = (LPCSTR)out;
-
-
+		Set2RayTracer();
+		RaytracerIT();
 		//真正的渲染函数
 		screen_update(type);
 
