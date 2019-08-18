@@ -69,18 +69,6 @@
     <ClCompile Include="render\Scene.cpp">
       <Filter>源文件\HScene</Filter>
     </ClCompile>
-    <ClCompile Include="raytracer1\raytracer.cpp">
-      <Filter>Raytracer</Filter>
-    </ClCompile>
-    <ClCompile Include="raytracer1\scene.cpp">
-      <Filter>Raytracer</Filter>
-    </ClCompile>
-    <ClCompile Include="raytracer1\surface.cpp">
-      <Filter>Raytracer</Filter>
-    </ClCompile>
-    <ClCompile Include="raytracer1\testapp.h">
-      <Filter>Raytracer</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\UObject.h">
@@ -109,18 +97,6 @@
     </ClInclude>
     <ClInclude Include="render\Scene.h">
       <Filter>头文件\HScene</Filter>
-    </ClInclude>
-    <ClInclude Include="raytracer1\common.h">
-      <Filter>Raytracer\H</Filter>
-    </ClInclude>
-    <ClInclude Include="raytracer1\raytracer.h">
-      <Filter>Raytracer\H</Filter>
-    </ClInclude>
-    <ClInclude Include="raytracer1\scene.h">
-      <Filter>Raytracer\H</Filter>
-    </ClInclude>
-    <ClInclude Include="raytracer1\surface.h">
-      <Filter>Raytracer\H</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -68,47 +68,47 @@ void Set2RayTracer()
 	ptr = buffer;
 }
 
-int RaytracerIT()
-{
-	int cc;
-	// prepare output canvas
-	surface = new Raytracer::Surface(SCRWIDTH, SCRHEIGHT);
-	buffer = surface->GetBuffer();
-	surface->Clear(0);
-	surface->InitCharset();
-	surface->Print("timings:", 2, 2, 0xffffffff);
-	// prepare renderer
-	tracer = new Raytracer::Engine();
-	tracer->GetScene()->InitScene();
-	tracer->SetTarget(surface->GetBuffer(), SCRWIDTH, SCRHEIGHT);
-	int tpos = 60;
-	// go
-	while (1)
-	{
-		int fstart = GetTickCount();
-		tracer->InitRender();
-		// while (!tracer->RenderTiles()) DrawWindow();
-		while (!tracer->Render())
-		{
-
-		}
-		//DrawWindow();
-		int ftime = GetTickCount() - fstart;
-		char t[] = "00:00.000";
-		t[6] = (ftime / 100) % 10 + '0';
-		t[7] = (ftime / 10) % 10 + '0';
-		t[8] = (ftime % 10) + '0';
-		int secs = (ftime / 1000) % 60;
-		int mins = (ftime / 60000) % 100;
-		t[3] = ((secs / 10) % 10) + '0';
-		t[4] = (secs % 10) + '0';
-		t[1] = (mins % 10) + '0';
-		t[0] = ((mins / 10) % 10) + '0';
-		surface->Print(t, tpos, 2, 0xffffffff);
-		tpos += 100;
-	}
-	return 1;
-}
+//int RaytracerIT()
+//{
+//	int cc;
+//	// prepare output canvas
+//	surface = new Raytracer::Surface(SCRWIDTH, SCRHEIGHT);
+//	buffer = surface->GetBuffer();
+//	surface->Clear(0);
+//	surface->InitCharset();
+//	surface->Print("timings:", 2, 2, 0xffffffff);
+//	// prepare renderer
+//	tracer = new Raytracer::Engine();
+//	tracer->GetScene()->InitScene();
+//	tracer->SetTarget(surface->GetBuffer(), SCRWIDTH, SCRHEIGHT);
+//	int tpos = 60;
+//	// go
+//	while (1)
+//	{
+//		int fstart = GetTickCount();
+//		tracer->InitRender();
+//		// while (!tracer->RenderTiles()) DrawWindow();
+//		while (!tracer->Render())
+//		{
+//
+//		}
+//		//DrawWindow();
+//		int ftime = GetTickCount() - fstart;
+//		char t[] = "00:00.000";
+//		t[6] = (ftime / 100) % 10 + '0';
+//		t[7] = (ftime / 10) % 10 + '0';
+//		t[8] = (ftime % 10) + '0';
+//		int secs = (ftime / 1000) % 60;
+//		int mins = (ftime / 60000) % 100;
+//		t[3] = ((secs / 10) % 10) + '0';
+//		t[4] = (secs % 10) + '0';
+//		t[1] = (mins % 10) + '0';
+//		t[0] = ((mins / 10) % 10) + '0';
+//		surface->Print(t, tpos, 2, 0xffffffff);
+//		tpos += 100;
+//	}
+//	return 1;
+//}
 
 
 
@@ -590,7 +590,7 @@ int main(void)
 		strcat(out, c);
 		type = (LPCSTR)out;
 		Set2RayTracer();
-		RaytracerIT();
+		//RaytracerIT();
 		//真正的渲染函数
 		screen_update(type);
 
