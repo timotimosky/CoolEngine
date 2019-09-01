@@ -69,6 +69,7 @@
     <ClCompile Include="render\Scene.cpp">
       <Filter>源文件\HScene</Filter>
     </ClCompile>
+    <ClCompile Include="render\tgaimage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\UObject.h">
@@ -98,5 +99,6 @@
     <ClInclude Include="render\Scene.h">
       <Filter>头文件\HScene</Filter>
     </ClInclude>
+    <ClInclude Include="render\tgaimage.h" />
   </ItemGroup>
 </Project>
