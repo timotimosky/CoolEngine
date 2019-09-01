@@ -67,9 +67,11 @@ protected:
     int height;
     int bytespp;
 
-    bool   load_rle_data(std::ifstream &in);
+    bool load_rle_data(std::ifstream &in);
     bool unload_rle_data(std::ofstream &out);
 public:
+
+	//»Ò¶È RBG  RGBA
     enum Format {
         GRAYSCALE=1, RGB=3, RGBA=4
     };

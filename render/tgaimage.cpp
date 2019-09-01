@@ -63,6 +63,8 @@ bool TGAImage::read_tga_file(const char *filename) {
     }
     unsigned long nbytes = bytespp*width*height;
     data = new unsigned char[nbytes];
+
+	//1:// 有颜色映射的图像  2:// 无颜色映射，RGB图像
     if (3==header.datatypecode || 2==header.datatypecode) {
         in.read((char *)data, nbytes);
         if (!in.good()) {
@@ -70,7 +72,9 @@ bool TGAImage::read_tga_file(const char *filename) {
             std::cerr << "an error occured while reading the data\n";
             return false;
         }
-    } else if (10==header.datatypecode||11==header.datatypecode) {
+    } 
+	// 9:游程长度编码的解码（RLE），带颜色映射   10:// 游程长度编码的解码（RLE）
+	else if (10==header.datatypecode||11==header.datatypecode) {
         if (!load_rle_data(in)) {
             in.close();
             std::cerr << "an error occured while reading the data\n";
