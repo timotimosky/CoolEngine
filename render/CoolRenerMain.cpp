@@ -8,14 +8,22 @@
 #include "Camera.h"
 
 //#include "../raytracer1/common.h"
+#include <string>
 
 #include <stdlib.h>
 #include "../raytracer1/common.h"
 #include "../raytracer1/raytracer.h"
 #include "../raytracer1/scene.h"
 #include "../raytracer1/surface.h"
-
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include "tgaimage.h"
+
+<<<<<<< HEAD
+#include <iostream>
+=======
+>>>>>>> f3b6847aa1d9bb27560ac96ba6a85fee937425ea
 using namespace std;
 
 //#include "../raytracer1/testapp.h"
@@ -325,6 +333,65 @@ void draw_box(device_t *device, float theta)
 	draw_plane(device, 3, 7, 4, 0);
 }
 
+void load_texture(std::string filename, const char* suffix, TGAImage& img) {
+	//std::string texfile(filename);
+	//size_t dot = texfile.find_last_of(".");
+	//if (dot != std::string::npos) {
+	//	texfile = texfile.substr(0, dot) + std::string(suffix);
+
+	//	//load tga
+	//	bool ifload = img.read_tga_file(texfile.c_str());
+
+		bool ifload = img.read_tga_file(filename.c_str());
+		std::cerr << "texture file " << filename << " loading " << (ifload ? "ok" : "failed") << std::endl;
+		img.flip_vertically();
+	//}
+}
+
+void Load_Tga()
+{
+	TGAImage diffusemap_;
+	TGAImage normalmap_;
+	TGAImage specularmap_;
+	string filename = "obj/floor_diffuse.tga";
+	/*load_texture(filename, "_diffuse.tga", diffusemap_);
+	load_texture(filename, "_nm_tangent.tga", normalmap_);
+	load_texture(filename, "_spec.tga", specularmap_);*/
+
+	load_texture("obj/floor_diffuse.tga", "_diffuse.tga", diffusemap_);
+	load_texture("obj/floor_nm_tangent.tga", "_nm_tangent.tga", normalmap_);
+	load_texture("obj/floor_spec.tga", "_spec.tga", specularmap_);
+}
+
+
+void Load_Model()
+{
+	char** argv;
+	int argc = 2;
+	string obj = "obj/floor.obj";
+	char* filename = (char*)obj.c_str();
+
+	std::ifstream in = ifstream();
+	in.open(filename, std::ifstream::in);
+
+	if (in.fail())
+	{
+		cout << "no file-------" << endl;
+		return;
+	}
+
+	//for (int m = 1; m < argc; m++) {
+	//	model = new Model(argv[m]);
+	//	Shader shader;
+	//	for (int i = 0; i < model->nfaces(); i++) {
+	//		for (int j = 0; j < 3; j++) {
+	//			shader.vertex(i, j);
+	//		}
+	//		triangle(shader.varying_tri, shader, frame, zbuffer);
+	//	}
+	//	delete model;
+	//}
+}
 
 //初始化一个纹理
 void init_texture(device_t *device) {
@@ -479,7 +546,7 @@ int main(void)
 	if (screen_init(width, height, title)) //初始化WINDOWS窗口并设置标题
 		return -1;
 
-
+	Load_Tga();
 	device_init(&device, width, height, screen_fb); //设备初始
 
 	CreateCamera(&device, width, height);//初始化主摄像机
