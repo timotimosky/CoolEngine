@@ -6,6 +6,7 @@
 #include "CMaterail.h"
 #include "UObject.h"
 #include "Camera.h"
+
 //#include "../raytracer1/common.h"
 
 #include <stdlib.h>
@@ -14,6 +15,8 @@
 #include "../raytracer1/scene.h"
 #include "../raytracer1/surface.h"
 
+#include <iostream>
+using namespace std;
 
 //#include "../raytracer1/testapp.h"
 #pragma comment( lib,"winmm.lib" )
@@ -226,10 +229,18 @@ void screen_update(LPCSTR type) {
 	HDC hDC = GetDC(screen_handle); 
 	//HDC设备上下文是一种包含有关某个设备（如显示器或打印机）的绘制属性信息的 Windows 数据结构。所有绘制调用都通过设备上下文对象进行，这些对象封装了用于绘制线条、形状和文本的 Windows API。
 
+	string str="aaaaaaaaaa";
+	string c = str + "1111";
+	const char* p = str.data();
+	//strlen(*abc);
+
+
 	//设备上下文绘图有很多种方法  SetPixel非常非常慢 自己维护一个Color数组然后用BitBlt比较快
 	BitBlt(hDC, 0, 0, screen_w, screen_h, screen_dc, 0, 0, SRCCOPY);
 	TextOut(hDC, 0, 20, type, strlen(type));
 	ReleaseDC(screen_handle, hDC);
+
+
 }
 
 
@@ -442,10 +453,14 @@ void InitDevice(device_t* device,camera& curCamera)
 	device->curCamera = curCamera;
 
 }
-
+void TestReference();
+void TestReset();
+void TestReset2();
 
 int main(void)
 {
+	//TestReference();
+	TestReset2();
 	device_t device;
 	//5种模式： 线框、填充、透视顶点插值颜色、透视面法线、透视顶点法线  
 	int states[] = { RENDER_STATE_WIREFRAME,RENDER_STATE_TEXTURE, RENDER_STATE_COLOR, RENDER_STATE_surfaceNormal_color ,RENDER_STATE_verterNormal_color };
@@ -585,6 +600,9 @@ int main(void)
 		sprintf(out, "%3.1f", fps);
 		//strcpy(out, renderType);//将第一个字符串p拷贝到q中  
 		strcat(out, renderType);//将第二个字符串h拼接到q之后
+
+		//string outText = out;
+
 		char c[8];
 		itoa(device.cull, c, 16);
 		strcat(out, c);
@@ -609,12 +627,9 @@ void Control(WPARAM wParam, LPARAM lParam)
 	int mouse_x = (int)LOWORD(lParam);
 	int mouse_y = (int)HIWORD(lParam);
 	int button = (int)wParam;
-
+	HDC hDC = GetDC(screen_handle);
 	if (button&MK_LBUTTON)
 	{
-	//	TextOut(, 0, 16, "3D渲染demo", strlen("3D渲染demo"));
+		TextOut(hDC, 0, 16, "3D渲染demo", strlen("3D渲染demo"));
 	}
 }
-
-
-
