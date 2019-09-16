@@ -14,7 +14,7 @@
     <ProjectGuid>{433E9031-0101-4ADF-A6DA-283375FD1898}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CoolRender</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
     <ProjectName>CoolRender</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -22,7 +22,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -89,6 +89,7 @@
     <ClCompile Include="render\Camera.cpp" />
     <ClCompile Include="render\CMaterail.cpp" />
     <ClCompile Include="render\CoolRenerMain.cpp" />
+    <ClCompile Include="render\geometry.cpp" />
     <ClCompile Include="render\LibPngHelper.cpp" />
     <ClCompile Include="render\Lights.cpp" />
     <ClCompile Include="render\Model.cpp" />
@@ -103,6 +104,7 @@
   <ItemGroup>
     <ClInclude Include="render\Camera.h" />
     <ClInclude Include="render\CMaterail.h" />
+    <ClInclude Include="render\geometry.h" />
     <ClInclude Include="render\LibPngHelper.h" />
     <ClInclude Include="render\Lights.h" />
     <ClInclude Include="render\LineDrawTest.h" />
@@ -113,6 +115,7 @@
     <ClInclude Include="render\shaderStruct.h" />
     <ClInclude Include="render\ShadingCalculate.h" />
     <ClInclude Include="render\tgaimage.h" />
+    <ClInclude Include="render\TriangleDrawTest.h" />
     <ClInclude Include="render\UObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

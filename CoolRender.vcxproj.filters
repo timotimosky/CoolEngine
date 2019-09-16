@@ -73,6 +73,7 @@
     <ClCompile Include="render\CoolRenerMain.cpp" />
     <ClCompile Include="render\LibPngHelper.cpp" />
     <ClCompile Include="render\Model.cpp" />
+    <ClCompile Include="render\geometry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\UObject.h">
@@ -108,5 +109,7 @@
     <ClInclude Include="render\LineDrawTest.h">
       <Filter>Test</Filter>
     </ClInclude>
+    <ClInclude Include="render\TriangleDrawTest.h" />
+    <ClInclude Include="render\geometry.h" />
   </ItemGroup>
 </Project>

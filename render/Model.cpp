@@ -69,7 +69,7 @@ std::vector<int> Model::face(int idx) {
 	return face;
 }
 
-vector_t Model::vert(int i) {
+Vec3f Model::vert(int i) {
 	return verts_[i];
 }
 
