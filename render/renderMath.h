@@ -70,6 +70,30 @@ struct matrix_t {
 
 
 } ;
+
+
+
+struct Vec2f {
+	float x, y;
+
+	Vec2f()
+	{
+		x = 0;
+		y = 0;
+	}
+};
+
+struct Vec3i {
+	int x, y, z;
+
+	Vec3i()
+	{
+		x = 0;
+		y = 0;
+		z = 0;
+	}
+};
+
 struct vector_t { float x, y, z, w;
 
 vector_t()
