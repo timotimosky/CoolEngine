@@ -13,6 +13,37 @@ Model::Model(const char* filename) : verts_(), faces_(), norms_(), uv_(), diffus
 		return;
 	}
 
+	// .obj文件中，每一行都有表明该行意义的标志符。对obj的读取中，处理以下标志符
+	/*
+
+	"v"--点的坐标，三维模型为x, y, z的顺序；程序中的结构存储：
+	 typedef struct ObjVector3
+	 {
+			 ObjFloat x;
+			 ObjFloat y;
+			 ObjFloat z;
+		 } ObjVector3;
+
+
+	"vt"--纹理坐标，程序中结构存储：
+
+	 typedef struct ObjVector2
+	 {
+		 ObjFloat x;
+		 ObjFloat y;
+	 } ObjVector2;
+
+
+
+
+	 "vn"--法向量坐标，程序中与“v”的存储结构相同
+
+	"f"--面所用到的点坐标/纹理坐标/法向量坐标的索引，
+	  以vec3数据结构挨个存储3个索引， 分别为 点坐标/纹理坐标/法向量坐标的索引，
+	*/
+
+
+
 	std::string line;
 	while (!in.eof()) {
 		std::getline(in, line);
@@ -40,6 +71,7 @@ Model::Model(const char* filename) : verts_(), faces_(), norms_(), uv_(), diffus
 			std::vector<Vec3i> f;
 			Vec3i tmp;
 			iss >> trash;
+			//istringstream  通过>>操作符 按顺序 读取字符串  以空格为分类
 			while (iss >> tmp[0] >> trash >> tmp[1] >> trash >> tmp[2]) {
 				for (int i = 0; i < 3; i++) tmp[i]--; // in wavefront obj all indices start at 1, not zero
 				f.push_back(tmp);
