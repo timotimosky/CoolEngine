@@ -80,9 +80,9 @@ Model::Model(const char* filename) : verts_(), faces_(), norms_(), uv_(), diffus
 		}
 	}
 	std::cerr << "# v# " << verts_.size() << " f# " << faces_.size() << " vt# " << uv_.size() << " vn# " << norms_.size() << std::endl;
-	load_texture(filename, "_diffuse.tga", diffusemap_);
-	load_texture(filename, "_nm_tangent.tga", normalmap_);
-	load_texture(filename, "_spec.tga", specularmap_);
+	//load_texture(filename, "_diffuse.tga", diffusemap_);
+	//load_texture(filename, "_nm_tangent.tga", normalmap_);
+	//load_texture(filename, "_spec.tga", specularmap_);
 }
 
 Model::~Model() {}
@@ -97,7 +97,8 @@ int Model::nfaces() {
 
 std::vector<int> Model::face(int idx) {
 	std::vector<int> face;
-	for (int i = 0; i < (int)faces_[idx].size(); i++) face.push_back(faces_[idx][i][0]);
+	for (int i = 0; i < (int)faces_[idx].size(); i++) 
+		face.push_back(faces_[idx][i][0]);
 	return face;
 }
 
