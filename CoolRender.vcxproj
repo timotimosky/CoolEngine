@@ -100,6 +100,7 @@
     <ClCompile Include="render\ShadingCalculate.cpp" />
     <ClCompile Include="render\tgaimage.cpp" />
     <ClCompile Include="render\UObject.cpp" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\Camera.h" />
@@ -117,6 +118,7 @@
     <ClInclude Include="render\tgaimage.h" />
     <ClInclude Include="render\TriangleDrawTest.h" />
     <ClInclude Include="render\UObject.h" />
+    <ClInclude Include="Shader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

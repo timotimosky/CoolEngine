@@ -2,6 +2,8 @@
 #include "shaderStruct.h"
 #include "ShadingCalculate.h"
 #include "Camera.h"
+#include "Model.h"
+#include "../Shader.h"
 //在渲染中，rhw 是摄像机空间转CVV空间的时候，摄像机空间坐标w的负数的倒数。
 //用于摄像机空间转cvv的时候，一个是从4维缩放到3维，另一个是同时恰好实现了近大远小的效果。
 
@@ -40,18 +42,18 @@ typedef struct {
 	transform_t  transform;
 	int width;                  // 窗口宽度
 	int height;                 // 窗口高度
-	camera curCamera;
+	//camera curCamera;
 								//最后输出到屏幕的像素  800*600*32
 	IUINT32 **framebuffer;      // 像素缓存：framebuffer[x] 代表第x行      framebuffer[x][y] 代表第x行第y个像素
 
 								//每个像素的深度 800*600*4   32位系统里，char 1位  short 2位   float int long 都是4位 只有double是8位
 	float **zbuffer;            // 深度缓存：zbuffer[y] 为第 y行指针      zbuffer[x][y] 代表第x行第y个像素
 	float *shadowbuffer;        // 阴影缓存  以后跟深度是同一个缓冲
-	IUINT32 **texture;          // 纹理：同样是每行索引
-	int tex_width;              // 纹理宽度
-	int tex_height;             // 纹理高度
-	float max_u;                // 纹理最大宽度：tex_width - 1
-	float max_v;                // 纹理最大高度：tex_height - 1
+//	IUINT32 **texture;          // 纹理：同样是每行索引
+	//int tex_width;              // 纹理宽度
+	//int tex_height;             // 纹理高度
+	//float max_u;                // 纹理最大宽度：tex_width - 1
+	//float max_v;                // 纹理最大高度：tex_height - 1
 	int render_state;           // 渲染状态
 	IUINT32 background;         // 背景颜色
 	IUINT32 foreground;         // 线框颜色
@@ -96,24 +98,24 @@ void device_pixel(device_t *device, int x, int y, IUINT32 color);
 // 绘制线段 2.光栅化2D直线（布雷森漢姆直線演算法、吴小林直线算法等） 起点-终点，寻找线段上离二维栅格最近的像素点
 void device_draw_line(device_t *device, int x1, int y1, int x2, int y2, IUINT32 c);
 
-void device_draw_primitive_shadow(device_t *device, vertex_t *v1, vertex_t *v2, vertex_t *v3);
+void device_draw_primitive_shadow(device_t *device, Shader *mShader, vertex_t *v1, vertex_t *v2, vertex_t *v3);
 
 void device_render_trap_shadow(device_t *device, trapezoid_t *trap, float surfaceLight);
 
 // 根据坐标读取纹理
-IUINT32 device_texture_read(const device_t *device, float u, float v);
+IUINT32 device_texture_read(const Shader *mShader, float u, float v);
 
 // 绘制扫描线
-void device_draw_scanline(device_t *device, scanline_t *scanline, float surfaceLight);
+void device_draw_scanline(device_t *device, Shader *mShader, scanline_t *scanline, float surfaceLight);
 
 // 主渲染函数   渲染一个三角形
-void device_render_trap(device_t *device, trapezoid_t *trap, float surfaceLight);
+void device_render_trap(device_t *device, Shader* mShader, trapezoid_t *trap, float surfaceLight);
 
 // 根据 render_state 绘制原始三角形   
-void device_draw_primitive(device_t *device, vertex_t *v1, vertex_t *v2, vertex_t *v3);
+void device_draw_primitive(device_t *device, Shader *mShader, vertex_t *v1, vertex_t *v2, vertex_t *v3);
 
 // 设置当前纹理
-void device_set_texture(device_t *device, void *bits, long pitch, int w, int h);
+void device_set_texture(Shader *mShader, void *bits, long pitch, int w, int h);
 
 //void vert_shader(device_t *device, a2v *av, v2f *vf);
 

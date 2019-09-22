@@ -1,35 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <None Include="README.md" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="头文件">
       <UniqueIdentifier>{b31b3cfe-a625-4cfa-a513-fae959dcada1}</UniqueIdentifier>
     </Filter>
     <Filter Include="源文件">
       <UniqueIdentifier>{ea3d81e0-b492-439b-ab44-06aea43559f9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\HScene">
-      <UniqueIdentifier>{f53b490d-7bc3-4b84-8a0a-8dd469f6afe6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\HObject">
-      <UniqueIdentifier>{1c0d3ee3-b00e-4e6d-ae12-d3902a13c1c9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\Shading">
-      <UniqueIdentifier>{a5fde386-5686-4326-a3c4-d9909e7e7c24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\HObject">
-      <UniqueIdentifier>{ab484034-ba9f-42c2-9bcd-ccea2a955d35}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\Shading">
-      <UniqueIdentifier>{2c41c9b2-4bf1-46d1-9dfe-aaeb1f46d345}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\HScene">
-      <UniqueIdentifier>{67f3dc85-3a83-46fc-b33f-68bfa5c71f3e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\Raytracer">
-      <UniqueIdentifier>{21ef9b5b-c275-4531-9e71-26710a14604a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Raytracer">
       <UniqueIdentifier>{d481cd71-35fd-43a9-80c7-91468b182931}</UniqueIdentifier>
@@ -42,74 +18,103 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="render\CMaterail.cpp">
-      <Filter>源文件\HObject</Filter>
-    </ClCompile>
+    <ClCompile Include="render\CoolRenerMain.cpp" />
     <ClCompile Include="render\UObject.cpp">
-      <Filter>源文件\HObject</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="render\Camera.cpp">
-      <Filter>源文件\HScene</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="render\Pipline.cpp">
-      <Filter>源文件\Shading</Filter>
-    </ClCompile>
-    <ClCompile Include="render\renderMath.cpp">
-      <Filter>源文件\Shading</Filter>
-    </ClCompile>
-    <ClCompile Include="render\shaderStruct.cpp">
-      <Filter>源文件\Shading</Filter>
-    </ClCompile>
-    <ClCompile Include="render\ShadingCalculate.cpp">
-      <Filter>源文件\Shading</Filter>
+    <ClCompile Include="render\CMaterail.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="render\Lights.cpp">
-      <Filter>源文件\HScene</Filter>
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Pipline.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="render\renderMath.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="render\Scene.cpp">
-      <Filter>源文件\HScene</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="render\tgaimage.cpp" />
-    <ClCompile Include="render\CoolRenerMain.cpp" />
-    <ClCompile Include="render\LibPngHelper.cpp" />
-    <ClCompile Include="render\Model.cpp" />
-    <ClCompile Include="render\geometry.cpp" />
+    <ClCompile Include="render\shaderStruct.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="render\ShadingCalculate.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="render\geometry.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="render\LibPngHelper.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Model.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="render\tgaimage.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="render\UObject.h">
-      <Filter>头文件\HObject</Filter>
-    </ClInclude>
-    <ClInclude Include="render\CMaterail.h">
-      <Filter>头文件\HObject</Filter>
-    </ClInclude>
-    <ClInclude Include="render\Camera.h">
-      <Filter>头文件\HScene</Filter>
-    </ClInclude>
-    <ClInclude Include="render\Pipline.h">
-      <Filter>头文件\Shading</Filter>
-    </ClInclude>
-    <ClInclude Include="render\renderMath.h">
-      <Filter>头文件\Shading</Filter>
-    </ClInclude>
-    <ClInclude Include="render\shaderStruct.h">
-      <Filter>头文件\Shading</Filter>
-    </ClInclude>
-    <ClInclude Include="render\ShadingCalculate.h">
-      <Filter>头文件\Shading</Filter>
-    </ClInclude>
-    <ClInclude Include="render\Lights.h">
-      <Filter>头文件\HScene</Filter>
-    </ClInclude>
-    <ClInclude Include="render\Scene.h">
-      <Filter>头文件\HScene</Filter>
-    </ClInclude>
-    <ClInclude Include="render\tgaimage.h" />
-    <ClInclude Include="render\LibPngHelper.h" />
-    <ClInclude Include="render\Model.h" />
     <ClInclude Include="render\LineDrawTest.h">
       <Filter>Test</Filter>
     </ClInclude>
-    <ClInclude Include="render\TriangleDrawTest.h" />
-    <ClInclude Include="render\geometry.h" />
+    <ClInclude Include="render\Pipline.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render\renderMath.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render\shaderStruct.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ShadingCalculate.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render\UObject.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render\CMaterail.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Lights.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Scene.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Camera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render\geometry.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render\LibPngHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Model.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render\tgaimage.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render\TriangleDrawTest.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md">
+      <Filter>源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -15,8 +15,6 @@ typedef enum {
 	vector_t eye; //当前坐标   //C的结构体里的基本元素可以 用 =赋值。但复合结构不行
 	vector_t eyeTarget; //看向的焦点
 
-	int cull;   // 0:不裁剪;1:裁剪反面;2:裁剪正面
-
 	matrix_t view_matrix_r;
 
 	matrix_t view;          // 摄影机坐标变换 世界到摄像机坐标变换矩阵  TODO:以后分离到每个摄像机管理

@@ -27,7 +27,4 @@ typedef struct {
 	int displacement_tex_id;
 	char *alpha_texname;              /* map_d */
 	int alpha_tex_id;
-
-
-	int cull;  //лчЁЩ
 } materal;
