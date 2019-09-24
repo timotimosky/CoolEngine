@@ -69,6 +69,14 @@ struct vec<3, T> {
 		return i <= 0 ? x : (1 == i ? y : z); 
 	}
 
+	//vec<3, T>& operator=(vec<3, T> fu) {
+	//	
+	//	x = fu.x;
+	//	y = fu.y;
+	//	z = fu.z;
+	//	return this*;
+	//}
+
 	const T& operator[](const size_t i) const 
 	{ 
 		assert(i < 3); 

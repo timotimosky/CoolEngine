@@ -85,7 +85,7 @@ void device_pixel(device_t *device, int x, int y, IUINT32 color);
 // 绘制线段 2.光栅化2D直线（布雷森漢姆直線演算法、吴小林直线算法等） 起点-终点，寻找线段上离二维栅格最近的像素点
 void device_draw_line(device_t *device, int x1, int y1, int x2, int y2, IUINT32 c);
 
-void device_draw_primitive_shadow(device_t *device, Shader *mShader, vertex_t *v1, vertex_t *v2, vertex_t *v3);
+//void device_draw_primitive_shadow(device_t *device, Shader *mShader, vertex_t *v1, vertex_t *v2, vertex_t *v3);
 
 void device_render_trap_shadow(device_t *device, trapezoid_t *trap, float surfaceLight);
 
@@ -105,6 +105,8 @@ void device_draw_primitive(device_t *device, Shader *mShader, vertex_t *v1, vert
 void device_set_texture(Shader *mShader, void *bits, long pitch, int w, int h);
 
 //void vert_shader(device_t *device, a2v *av, v2f *vf);
+
+void triangle(device_t* device, Shader* mShader, mat<3, 3, float> v3);
 
 void frag_shader(device_t *device, v2f *vf, color_t *color);
 
