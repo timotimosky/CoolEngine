@@ -17,6 +17,10 @@ public:
 
 	Model *mModel; //暂时保存一份引用
 
+	transform_t transform;
+
+	int render_state;
+
 	//屏幕分辨率
 
 	int tex_width;              // 纹理宽度
@@ -26,6 +30,7 @@ public:
 	Vec2f _uv;  //UV  // 纹理最大宽度：tex_width - 1  // 纹理最大高度：tex_height - 1
 	Vec3f _verter; //顶点
 
+		//每个摄像机都走单独的渲染管线，下面用于缓存摄像机影响渲染管线的参数
 	int cull;   // 0:不裁剪;1:裁剪反面;2:裁剪正面
 
 	virtual Vec4f vertex(int iface, int nthvert);
