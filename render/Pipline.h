@@ -106,7 +106,7 @@ void device_set_texture(Shader *mShader, void *bits, long pitch, int w, int h);
 
 //void vert_shader(device_t *device, a2v *av, v2f *vf);
 
-void triangle(device_t* device, Shader* mShader, mat<3, 3, float> v3);
+void triangle(device_t* device, Shader* mShader, Vec3f* px1, Vec3f* px2, Vec3f* px3); //mat<3, 3, float> v3);
 
 void frag_shader(device_t *device, v2f *vf, color_t *color);
 
