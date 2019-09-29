@@ -30,10 +30,10 @@ Vec3f Shader::vertex(Vec3f iface, int nthvert) {
 
 	point_t world_pos1,
 		//world_pos2, world_pos3, //世界坐标
-// 光栅化坐标，在一个2D平面上，对应到屏幕上真正的像素了（本应该通过当前的采样方式来对应，这里直接是按屏幕像素大小缩放）	
-raster_pos1,
-//raster_pos2, raster_pos3,
-project_pos1 ;
+	// 光栅化坐标，在一个2D平面上，对应到屏幕上真正的像素了（本应该通过当前的采样方式来对应，这里直接是按屏幕像素大小缩放）	
+	raster_pos1,
+	//raster_pos2, raster_pos3,
+	project_pos1 ;
 		//project_pos2, project_pos3; //投影坐标 cvv空间
 
 	//2--------世界空间----------计算光照---------------------------------如果是烘焙 没法考虑摄像机遮挡，所以在这里直接计算---//
@@ -67,7 +67,7 @@ project_pos1 ;
 
 
 	//法线转换到世界空间
-	vector_t world_normal1, world_normal2, world_normal3;
+	Vec4f world_normal1, world_normal2, world_normal3;
 	matrix_apply(&world_normal1, &v1->normal, &transform.model);
 	//阴影预备
 	//DisVertexToLight(lightPosition, &world_pos1);

@@ -20,75 +20,13 @@ float interp(float x1, float x2, float t)
 	return x1 + (x2 - x1) * t;
 }
 
-// | v |
-float vector_length(const vector_t *v) {
-	float sq = v->x * v->x + v->y * v->y + v->z * v->z;
-	return (float)sqrt(sq);
-}
-
-//齐次坐标的第二个功效就是区分向量跟点.  w为1则为点.  w为0则为向量。  因为w作用是位移，向量位移没什么意义。
-// z = x + y  w一直为1
-void vector_add(vector_t *z, const vector_t *x, const vector_t *y)
-{
-	z->x = x->x + y->x;
-	z->y = x->y + y->y;
-	z->z = x->z + y->z;
-	//z->w = 1.0;
-}
-
-// z = x - y
-void vector_sub(vector_t *z, const vector_t *x, const vector_t *y)
-{
-	z->x = x->x - y->x;
-	z->y = x->y - y->y;
-	z->z = x->z - y->z;
-	//z->w = 1.0;
-}
-
-
-void vector_scale(vector_t *z, float scale)
-{
-	z->x = z->x * scale;
-	z->y = z->y * scale;
-	z->z = z->z * scale;
-}
-
-// 矢量点乘
-float vector_dotproduct(const vector_t *x, const vector_t *y)
-{
-	return x->x * y->x + x->y * y->y + x->z * y->z;
-}
-
-
-// 矢量叉乘  如果 x y 标准化，那算出来的叉乘Z也是标准化的xy平面的法线。 否则的话，要标准化一次Z
-void vector_crossproduct(vector_t *z, const vector_t *x, const vector_t *y)
-{
-
-	z->x = x->y * y->z - x->z * y->y;
-	z->y = x->z * y->x - x->x * y->z;
-	z->z = x->x * y->y - x->y * y->x;
-	z->w = 1.0f;
-}
-
 // 矢量lerp插值，t取值 [0, 1]
-void vector_interp(vector_t *z, const vector_t *x1, const vector_t *x2, float t)
+void vector_interp(Vec4f *z, const Vec4f *x1, const Vec4f *x2, float t)
 {
 	z->x = interp(x1->x, x2->x, t);
 	z->y = interp(x1->y, x2->y, t);
 	z->z = interp(x1->z, x2->z, t);
 	z->w = interp(x1->w, x2->w, t);//这是深度插值。  非线性插值，用的 1/Z
-}
-
-// 矢量归一化  注意归一化，不涉及W。 只有四维向三维投影的时候，W归一化才有用
-void vector_normalize(vector_t *v)
-{
-	float length = vector_length(v);
-	if (length != 0.0f) {
-		float inv = 1.0f / length;
-		v->x *= inv;
-		v->y *= inv;
-		v->z *= inv;
-	}
 }
 // c = a * b
 //void matrix_mul(matrix_t *c, const matrix_t *left , const matrix_t *right) {         
@@ -116,7 +54,7 @@ void vector_normalize(vector_t *v)
 //}
 
 //向量 右乘矩阵 
-void matrix_apply(vector_t *y, const vector_t *x, const matrix_t *m) {
+void matrix_apply(Vec4f *y, const Vec4f *x, const matrix_t *m) {
 	float X = x->x, Y = x->y, Z = x->z, W = x->w;
 	y->x = X * m->m[0][0] + Y * m->m[1][0] + Z * m->m[2][0] + W * m->m[3][0];
 	y->y = X * m->m[0][1] + Y * m->m[1][1] + Z * m->m[2][1] + W * m->m[3][1];
@@ -163,7 +101,7 @@ void matrix_set_scale(matrix_t *m, float x, float y, float z) {
 
 //A坐标系转到B坐标系   任何两个矩阵之间的交换都可以
 //欧拉角 根据基向量 转矩阵 采用Y-X-Z轴的顺序 根据矩阵乘法可结合来叠加成一个矩阵
-void matrix_World2Obj(matrix_t *m, vector_t rot, vector_t pos, float scale)
+void matrix_World2Obj(matrix_t *m, Vec4f rot, Vec4f pos, float scale)
 {
 
 	float rot_x = rot.x;
@@ -211,7 +149,7 @@ void matrix_World2Obj(matrix_t *m, vector_t rot, vector_t pos, float scale)
 	//欧拉角 根据基向量 转矩阵 
 	//采用正旋 X-Y-Z轴的顺序， 根据矩阵乘法可结合来叠加成一个矩阵
 	//右乘
-	void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos)
+	void matrix_Obj2World(matrix_t *m, Vec4f rot, Vec4f pos)
 	{
 		float rot_x = rot.x;
 		float rot_y = rot.y;
@@ -268,11 +206,10 @@ void matrix_World2Obj(matrix_t *m, vector_t rot, vector_t pos, float scale)
 void matrix_set_rotate(matrix_t *m, float x, float y, float z, float theta, float xOffset,float yOffest, float zOffset)
 {
 	//三角函数用的是弧度，不是角度
-	vector_t vec = { x, y, z, 1.0f }; //转换为齐次坐标  w=1代表是一个点.   w=0代表是向量.  因为w用于位移,向量位移无意义
+	Vec4f vec = { x, y, z, 1.0f }; //转换为齐次坐标  w=1代表是一个点.   w=0代表是向量.  因为w用于位移,向量位移无意义
 
-									  //计算四元数的四个参数之前，先要把旋转轴标准化为单位向量
-	vector_normalize(&vec);
-
+	//计算四元数的四个参数之前，先要把旋转轴标准化为单位向量
+	vec.normalize();
 	//这里是计算出四元数的四个参数
 	//设四元数Q（x, y, z, w）表示向量a（xa, ya, za）经过theta角旋转后的结果，则x、y、z和w分别为：
 	x = vec.x * (float)sin(theta * 0.5f); //(x,y,z)是一个向量

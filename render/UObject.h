@@ -13,7 +13,7 @@ typedef struct {
 				 
 	texcoord_t tc; //纹理坐标
 	color_t color; //颜色       
-	vector_t normal; //给寄存器增加法线    将这个合并 float rhw 合并到;  //该顶点的之前的w的倒数， 也就是缩放大小
+	Vec4f normal; //给寄存器增加法线    将这个合并 float rhw 合并到;  //该顶点的之前的w的倒数， 也就是缩放大小
 	point_t worldPos;  //之前在世界坐标的位置 这个在shader中才需要
 	float vertexLight; //顶点灯光的强度
 	float shadowPos_z; //投影摄像机的光栅化位置 这个在shader中才需要
@@ -51,7 +51,7 @@ typedef struct
 	unsigned long mesh_num;//..
 
 	point_t pos;
-	vector_t axis;
+	Vec4f axis;
 	float scaleX;
 	float scaleY;
 	float scaleZ;

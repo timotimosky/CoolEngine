@@ -60,23 +60,23 @@ color_t operator+(color_t value)
 } ; //颜色
 
 //typedef struct {
-//	vector_t pos;
+//	Vec4f pos;
 //	color_t color;
-//	vector_t normal;
-//	vector_t tangent;
-//	vector_t binormal;
+//	Vec4f normal;
+//	Vec4f tangent;
+//	Vec4f binormal;
 //	texcoord_t texcoord;
 //} a2v;
 //
 //
 //typedef struct {
-//	vector_t pos;
+//	Vec4f pos;
 //	texcoord_t texcoord;
 //	color_t color;
-//	vector_t normal;
-//	vector_t storage0;
-//	vector_t storage1;
-//	vector_t storage2;
+//	Vec4f normal;
+//	Vec4f storage0;
+//	Vec4f storage1;
+//	Vec4f storage2;
 //} v2f;
 
 
@@ -84,22 +84,22 @@ typedef struct { float u, v; } texcoord_t; //纹理
 
 
 typedef struct {
-	vector_t pos; //位置
+	Vec4f pos; //位置
 	color_t color; //颜色
-	vector_t normal; //法线
-	vector_t tangent; //切线
-	vector_t binormal; //副法线
+	Vec4f normal; //法线
+	Vec4f tangent; //切线
+	Vec4f binormal; //副法线
 	texcoord_t texcoord; //uv坐标
 } a2v;
 
 typedef struct {
-	vector_t pos;
+	Vec4f pos;
 	texcoord_t texcoord;
 	color_t color;
-	vector_t normal;
-	vector_t storage0;
-	vector_t storage1;
-	vector_t storage2;
+	Vec4f normal;
+	Vec4f storage0;
+	Vec4f storage1;
+	Vec4f storage2;
 } v2f;
 
 //=====================================================================
@@ -130,9 +130,9 @@ transform_t;
 void transform_update(transform_t *ts);
 //void transform_update(transform_t *ts, object_simple Obj);
 
-void transform_apply(const transform_t *ts, vector_t *posInCVV, const vector_t *posInObj);
+void transform_apply(const transform_t *ts, Vec4f *posInCVV, const Vec4f *posInObj);
 
 
-void transform_applyVP(const transform_t *ts, vector_t *posInCVV, const vector_t *posInWorld);
+void transform_applyVP(const transform_t *ts, Vec4f *posInCVV, const Vec4f *posInWorld);
 
 #endif

@@ -54,7 +54,7 @@ typedef struct {
 }
 device_t;
 
-int transform_check_cvv(const vector_t *v);
+int transform_check_cvv(const Vec4f *v);
 
 void transform_homogenize_reverse(const transform_t *ts, point_t *x, const point_t *y);
 

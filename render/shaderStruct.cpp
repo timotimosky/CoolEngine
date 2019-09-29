@@ -17,14 +17,14 @@ void transform_update(transform_t *ts) {
 // w 也要参与到坐标变换的计算  到时候在CVV的时候， x,y,z,w要除以W，此刻 w=1,投影到屏幕坐标了
 //得到在屏幕上的坐标. (假设屏幕的Z值是1)
 
-void transform_apply(const transform_t *ts, vector_t *posInCVV, const vector_t *posInObj) {
+void transform_apply(const transform_t *ts, Vec4f *posInCVV, const Vec4f *posInObj) {
 	 
 	//拿到MVP矩阵，从物体坐标转到CVV坐标
 	matrix_apply(posInCVV, posInObj, &ts->mvp);
 }
 
 
-void transform_applyVP(const transform_t *ts, vector_t *posInCVV, const vector_t *posInObj) {
+void transform_applyVP(const transform_t *ts, Vec4f *posInCVV, const Vec4f *posInObj) {
 
 	//拿到MVP矩阵，从物体坐标转到CVV坐标
 	matrix_apply(posInCVV, posInObj, &ts->vp);

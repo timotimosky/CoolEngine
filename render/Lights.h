@@ -7,13 +7,13 @@ struct PointLight
 {
 	PointLight() { ZeroMemory(this, sizeof(this)); }
 
-	vector_t ambient;
-	vector_t diffuse;
-	vector_t specular;
+	Vec4f ambient;
+	Vec4f diffuse;
+	Vec4f specular;
 
-	vector_t position;//光源位置
+	Vec4f position;//光源位置
 
-	vector_t att;     //衰减系数
+	Vec4f att;     //衰减系数
 
 	float range;      //光照范围
 };
@@ -27,8 +27,8 @@ typedef struct {
 
 //方向光 位置无所谓
 typedef struct {
-	vector_t dir;
-	vector_t ambi;
+	Vec4f dir;
+	Vec4f ambi;
 	//color_t ambi;
 	//color_t diff;
 	//color_t spec;

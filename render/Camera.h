@@ -3,7 +3,7 @@
 #include "shaderStruct.h"
 #include "renderMath.h"
 
-extern void matrix_Obj2World(matrix_t *m, vector_t rot, vector_t pos);
+extern void matrix_Obj2World(matrix_t *m, Vec4f rot, Vec4f pos);
 
 typedef enum {
 	perspective, //透视
@@ -12,8 +12,8 @@ typedef enum {
 
  struct  camera
 {
-	vector_t eye; //当前坐标   //C的结构体里的基本元素可以 用 =赋值。但复合结构不行
-	vector_t eyeTarget; //看向的焦点
+	Vec4f eye; //当前坐标   //C的结构体里的基本元素可以 用 =赋值。但复合结构不行
+	Vec4f eyeTarget; //看向的焦点
 
 	matrix_t view_matrix_r;
 
@@ -24,11 +24,11 @@ typedef enum {
 
 
 	//仿Unity，还是使用Transform组件的Rotation
-	vector_t rotation;
+	Vec4f rotation;
 
 
-	vector_t front; //朝前向量
-	vector_t worldup;  //朝上
+	Vec4f front; //朝前向量
+	Vec4f worldup;  //朝上
 
 
 
@@ -60,7 +60,7 @@ typedef enum {
 
 void CameraInit();
 
-void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *at, const vector_t *up);
+void matrix_set_lookat(matrix_t *m, const Vec4f *eye, const Vec4f *at, const Vec4f *up);
 
 void matrix_set_perspective(matrix_t *m, float fovy, float aspect, float zn, float zf);
 

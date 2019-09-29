@@ -3,17 +3,12 @@
 
 
 //计算逆矩阵
-void matrix_set_lookat_r(matrix_t *m, const vector_t *eye, const vector_t *eyeTarget, const vector_t *up)
+void matrix_set_lookat_r(matrix_t *m, const Vec4f *eye, const Vec4f *eyeTarget, const Vec4f *up)
 {
 	//获取摄像机坐标系的3个基向量 因为当前项目设计为Unity的左手坐标系，所有叉乘也遵循左手法则
-	vector_t xaxis, yaxis, zaxis;
-
-	//zaxis 摄像机Z轴 朝屏幕内
-	vector_sub(&zaxis, eyeTarget, eye); //Z
-	vector_normalize(&zaxis);
-	vector_crossproduct(&xaxis, up, &zaxis);
-	vector_normalize(&xaxis);
-	vector_crossproduct(&yaxis, &zaxis, &xaxis);
+	Vec4f zaxis = (*eyeTarget - *eye).normalize(); //zaxis 摄像机Z轴 朝屏幕内
+	Vec4f xaxis = cross(*up, zaxis).normalize();
+	Vec4f yaxis = cross(zaxis, xaxis);
 
 	//计算 摄像机相对于世界坐标系的旋转 
 	matrix_t rotationM;
@@ -49,17 +44,12 @@ void matrix_set_lookat_r(matrix_t *m, const vector_t *eye, const vector_t *eyeTa
 //因为最开始物体坐标系跟世界坐标系重合，物体的运动就是从世界坐标系 转到其他坐标系，符合现实的状态是，先缩放、再旋转，在平移，
 //而从其他坐标系转到世界坐标系  则是相反  因为 (T*R)的逆矩阵 = （R的逆矩阵）*（T的逆矩阵） 先平移、再旋转，在缩放，
 // 设置摄像机  eye自身坐标 front正前方  up是Y轴
-void matrix_set_lookat(matrix_t *m, const vector_t *eye, const vector_t *eyeTarget, const vector_t *up)
+void matrix_set_lookat(matrix_t *m, const Vec4f *eye, const Vec4f *eyeTarget, const Vec4f *up)
 {
 	//获取摄像机坐标系的3个基向量 因为当前项目设计为Unity的左手坐标系，所有叉乘也遵循左手法则
-	vector_t xaxis, yaxis, zaxis;
-
-	//zaxis 摄像机Z轴 朝屏幕内
-	vector_sub(&zaxis, eyeTarget, eye); //Z
-	vector_normalize(&zaxis);
-	vector_crossproduct(&xaxis, up, &zaxis); 
-	vector_normalize(&xaxis);
-	vector_crossproduct(&yaxis, &zaxis, &xaxis);
+	Vec4f zaxis = (*eyeTarget - *eye).normalize(); //zaxis 摄像机Z轴 朝屏幕内
+	Vec4f xaxis = cross(*up, zaxis).normalize();
+	Vec4f yaxis = cross(zaxis, xaxis);
 
 	//计算 摄像机相对于世界坐标系的旋转 
 	matrix_t rotationM;
@@ -129,7 +119,7 @@ void camera_update(camera* caneraMain)
 	
 	//matrix_World2Obj(&device->transform.view, caneraMain->rotation,caneraMain->pos, 1);
 
-	//vector_t right, eyeTarget, up, front;
+	//Vec4f right, eyeTarget, up, front;
 	//vector_add(&eyeTarget, &caneraMain->eye, &caneraMain->front);
 	//摄像机矩阵 摄像机的位移
 	matrix_set_lookat(&caneraMain->view, &(caneraMain->eye), &caneraMain->eyeTarget, &caneraMain->worldup);
