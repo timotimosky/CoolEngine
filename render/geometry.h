@@ -112,6 +112,14 @@ struct vec<4, T> {
 		return i <= 0 ? x : (1 == i ? y : (2 == i ? z:w));
 	}
 
+	vec<4, T>& operator=(vec<4, T> v) {
+		x = v.x;
+		y = v.y;
+		z = v.z;
+		w = v.w;
+		return *this;
+	}
+
 	template <class U>
 	vec<4, T>& operator=(vec<4, U> v) {
 
@@ -282,7 +290,7 @@ struct dt<1, T> {
 };
 
 /////////////////////////////////////////////////////////////////////////////////
-
+//ÐÐ -ÁÐ
 template<size_t DimRows, size_t DimCols, typename T> 
 class mat {
 	vec<DimCols, T> rows[DimRows];
@@ -395,6 +403,7 @@ typedef vec<3, int>   Vec3i;
 typedef vec<4, float> Vec4f;
 typedef mat<4, 4, float> Matrix;
 typedef Vec4f point_t;
+///typedef vec<5, float> Vec5f;
 #endif //__GEOMETRY_H__
 
 

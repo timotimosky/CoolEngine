@@ -8,8 +8,6 @@
 #include <stdbool.h>
 #include "geometry.h"
 
-
-
 #define PI 3.141592653
 #define angle_to_radian(X) ((X)/180*PI)  //角度转弧度
 #define radian_to_angle(X) ((X)/PI*180)  //弧度转角度
@@ -70,57 +68,6 @@ struct matrix_t {
 
 
 } ;
-
-
-
-
-////不重载也行 使用结构体本身的内存对齐拷贝(但不是按位拷贝)
-//Vec4f& operator=(const Vec4f&  value)
-//{
-//	Vec4f ncolor_t;
-//	this->x = value.x;
-//	this->y = value.y;
-//	this->z = value.z;
-//	this->w = value.w;
-//	return *this;
-//}
-//
-//Vec4f operator*(float value)
-//{
-//	Vec4f ncolor_t;
-//	ncolor_t.x = x * value;
-//	ncolor_t.y = y * value;
-//	ncolor_t.z = z * value;
-//
-//	return ncolor_t;
-//}
-//
-//
-//Vec4f operator+(const Vec4f& value)
-//{
-//	Vec4f ncolor_t;
-//	ncolor_t.x = x + value.x;
-//	ncolor_t.y = y + value.y;
-//	ncolor_t.z = z + value.z;
-//
-//	return ncolor_t;
-//}
-//
-//Vec4f operator-(const Vec4f& value)
-//{
-//	Vec4f ncolor_t;
-//	ncolor_t.x = x - value.x;
-//	ncolor_t.y = y - value.y;
-//	ncolor_t.z = z - value.z;
-//
-//	return ncolor_t;
-//}
-//
-//
-//} ; //使用的3D齐次坐标  其常规坐标为 {x/w, y/w, z/w; }
-//typedef Vec4f point_t;
-
-
 
 //不允许超过上下限 
 float CMIDFloat(float x, float min, float max);
