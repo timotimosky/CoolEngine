@@ -69,19 +69,6 @@ struct matrix_t {
 
 } ;
 
-//不允许超过上下限 
-float CMIDFloat(float x, float min, float max);
-
-//不允许超过上下限
-int CMID(int x, int min, int max);
-
-
-// 计算插值：t 为 [0, 1] 之间的数值 lerp插值
-float interp(float x1, float x2, float t);
-
-// 矢量lerp插值，t取值 [0, 1]
-void vector_interp(Vec4f *z, const Vec4f *x1, const Vec4f *x2, float t);
-
 //void matrix_mul(matrix_t *c, const matrix_t *a, const matrix_t *b);
 
 // 矩阵乘法：   y = x * m   	//向量/点，被转为矩阵后, 矩阵 乘 矩阵.  实现坐标转换
@@ -112,3 +99,4 @@ void matrix_set_rotate(matrix_t *m, float x, float y, float z, float theta, floa
 
 
 
+ 

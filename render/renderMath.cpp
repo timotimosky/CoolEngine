@@ -1,33 +1,5 @@
 #include "renderMath.h"
 
-
-//不允许超过上下限 
-float CMIDFloat(float x, float min, float max)
-{
-	return (x < min) ? min : ((x > max) ? max : x);
-}
-
-
-//不允许超过上下限 int
-int CMID(int x, int min, int max)
-{
-	return (x < min) ? min : ((x > max) ? max : x);
-}
-
-// 计算插值：t 为 [0, 1] 之间的数值 lerp插值
-float interp(float x1, float x2, float t)
-{
-	return x1 + (x2 - x1) * t;
-}
-
-// 矢量lerp插值，t取值 [0, 1]
-void vector_interp(Vec4f *z, const Vec4f *x1, const Vec4f *x2, float t)
-{
-	z->x = interp(x1->x, x2->x, t);
-	z->y = interp(x1->y, x2->y, t);
-	z->z = interp(x1->z, x2->z, t);
-	z->w = interp(x1->w, x2->w, t);//这是深度插值。  非线性插值，用的 1/Z
-}
 // c = a * b
 //void matrix_mul(matrix_t *c, const matrix_t *left , const matrix_t *right) {         
 //	int i, j;

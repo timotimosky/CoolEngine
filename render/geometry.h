@@ -5,7 +5,7 @@
 #include <cassert>
 #include <iostream>
 
-
+//定义基本的 int float  二维/三维/四维 的向量/坐标 的运算
 template<size_t DimCols, size_t DimRows, typename T> class mat;
 
 //定义一个泛型数组
@@ -206,6 +206,21 @@ struct vec<4, T> {
 
 /////////////////////////////////////////////////////////////////////////////////
 
+template<typename T>
+T interp(T x1, T x2, T t) {
+	return x1 + (x2 - x1) * t;
+}
+
+template<typename T>
+//不允许超过上下限 int
+T CMID(T x, T min, T max)
+{
+	return (x < min) ? min : ((x > max) ? max : x);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////
+
 template<size_t DIM, typename T> 
 T operator*(const vec<DIM, T>& lhs, const vec<DIM, T>& rhs) {
 	T ret = T();
@@ -262,6 +277,17 @@ template <typename T>
 vec<4, T> cross(vec<4, T> v1, vec<4, T> v2) { //参数 const指针?
 	return vec<4, T>(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x,1);
 }
+
+// 矢量lerp插值，t取值 [0, 1]
+template <typename T>
+void vector_interp(vec<4, T>* z, const vec<4, T>* x1, const vec<4, T>* x2, float t)
+{
+	z->x = interp(x1->x, x2->x, t);
+	z->y = interp(x1->y, x2->y, t);
+	z->z = interp(x1->z, x2->z, t);
+	z->w = interp(x1->w, x2->w, t);//这是深度插值。  非线性插值，用的 1/Z
+}
+
 
 template <size_t DIM, typename T> 
 std::ostream& operator<<(std::ostream& out, vec<DIM, T>& v) {

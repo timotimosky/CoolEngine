@@ -14,7 +14,7 @@ float ComputeNDotL(const point_t* vertex, const Vec4f* normal, const point_t* li
 	float dot = *normal * lightDirection;
 
 	//float correctionDot = (dot + 1)*0.5f;
-	return CMIDFloat(dot, 0, 1);
+	return CMID(dot, 0.0f, 1.0f);
 }
 
 //计算面中心到摄像机

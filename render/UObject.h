@@ -4,6 +4,8 @@
 #include "CMaterail.h"
 
 
+//我们的结构模型：UObject = Model +Tramsform +materal +shader
+//渲染时的结构  vertex_t edge_t +步长 
 //这里重点说下 pos的W值， 跟color_t的W值的区别
 //pos在坐标系转换中为了统一转换，扩展到了四维。 pos的W值是用于坐标从4维到3维的还原，也就是CVV到光栅化的阶段
 //color_t的W值，是用于记录该顶点/像素点的深度，用于深度剔除
