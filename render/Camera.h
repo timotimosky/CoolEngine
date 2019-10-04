@@ -3,7 +3,7 @@
 #include "shaderStruct.h"
 #include "renderMath.h"
 
-extern void matrix_Obj2World(matrix_t *m, Vec4f rot, Vec4f pos);
+extern void matrix_Obj2World(Matrix44f*m, Vec4f rot, Vec4f pos);
 
 typedef enum {
 	perspective, //透视
@@ -15,10 +15,10 @@ typedef enum {
 	Vec4f eye; //当前坐标   //C的结构体里的基本元素可以 用 =赋值。但复合结构不行
 	Vec4f eyeTarget; //看向的焦点
 
-	matrix_t view_matrix_r;
+	Matrix44f view_matrix_r;
 
-	matrix_t view;          // 摄影机坐标变换 世界到摄像机坐标变换矩阵  TODO:以后分离到每个摄像机管理
-	matrix_t projection_trans;    // 投影变换 ，就是变换到摄像机的远平面-近平面空间内  TODO:以后分离到每个摄像机管理
+	Matrix44f view;          // 摄影机坐标变换 世界到摄像机坐标变换矩阵  TODO:以后分离到每个摄像机管理
+	Matrix44f projection_trans;    // 投影变换 ，就是变换到摄像机的远平面-近平面空间内  TODO:以后分离到每个摄像机管理
 	//物体与相机的距离（z）也是如此！对于具有相似x和y坐标的两个顶点，具有最大z坐标的顶点将比屏幕的中心更多地位于屏幕的中心。     
 	// 另外，如果是透视视图，W负责缩放物体大小，来模拟视觉。远处的物体更小
 
@@ -60,9 +60,9 @@ typedef enum {
 
 void CameraInit();
 
-void matrix_set_lookat(matrix_t *m, const Vec4f *eye, const Vec4f *at, const Vec4f *up);
+void matrix_set_lookat(Matrix44f*m, const Vec4f *eye, const Vec4f *at, const Vec4f *up);
 
-void matrix_set_perspective(matrix_t *m, float fovy, float aspect, float zn, float zf);
+void matrix_set_perspective(Matrix44f*m, float fovy, float aspect, float zn, float zf);
 
 void camera_update(camera * caneraMain);
 void camera_updateShadow(camera * caneraShadow,camera* caneraMain);

@@ -1,79 +1,11 @@
 #include "renderMath.h"
 
-// c = a * b
-//void matrix_mul(matrix_t *c, const matrix_t *left , const matrix_t *right) {         
-//	int i, j;
-//	for (i = 0; i < 4; i++)
-//	{
-//		for (j = 0; j < 4; j++)
-//		{
-//			c->m[i][j] =
-//				(left->m[i][0] * right->m[0][j]) +
-//				(left->m[i][1] * right->m[1][j]) +
-//				(left->m[i][2] * right->m[2][j]) +
-//				(left->m[i][3] * right->m[3][j]);
-//		}
-//	}
-//}
 
-// c = a * f
-//void matrix_scale(matrix_t *c, const matrix_t *a, float f) {
-//	int i, j;
-//	for (i = 0; i < 4; i++) {
-//		for (j = 0; j < 4; j++)
-//			c->m[i][j] = a->m[i][j] * f;
-//	}
-//}
-
-//向量 右乘矩阵 
-void matrix_apply(Vec4f *y, const Vec4f *x, const matrix_t *m) {
-	float X = x->x, Y = x->y, Z = x->z, W = x->w;
-	y->x = X * m->m[0][0] + Y * m->m[1][0] + Z * m->m[2][0] + W * m->m[3][0];
-	y->y = X * m->m[0][1] + Y * m->m[1][1] + Z * m->m[2][1] + W * m->m[3][1];
-	y->z = X * m->m[0][2] + Y * m->m[1][2] + Z * m->m[2][2] + W * m->m[3][2];
-	y->w = X * m->m[0][3] + Y * m->m[1][3] + Z * m->m[2][3] + W * m->m[3][3];
-}
-
-//标准矩阵 4X4 
-void matrix_set_identity(matrix_t *m) {
-	m->m[0][0] = m->m[1][1] = m->m[2][2] = m->m[3][3] = 1.0f;
-	m->m[0][1] = m->m[0][2] = m->m[0][3] = 0.0f;
-	m->m[1][0] = m->m[1][2] = m->m[1][3] = 0.0f;
-	m->m[2][0] = m->m[2][1] = m->m[2][3] = 0.0f;
-	m->m[3][0] = m->m[3][1] = m->m[3][2] = 0.0f;
-}
-
-
-//零矩阵
-void matrix_set_zero(matrix_t *m) {
-	m->m[0][0] = m->m[0][1] = m->m[0][2] = m->m[0][3] = 0.0f;
-	m->m[1][0] = m->m[1][1] = m->m[1][2] = m->m[1][3] = 0.0f;
-	m->m[2][0] = m->m[2][1] = m->m[2][2] = m->m[2][3] = 0.0f;
-	m->m[3][0] = m->m[3][1] = m->m[3][2] = m->m[3][3] = 0.0f;
-}
-
-
-
-// 平移变换 左乘
-void matrix_set_translate(matrix_t *m, float x, float y, float z) {
-	matrix_set_identity(m);
-	m->m[0][3] = x;
-	m->m[1][3] = y;
-	m->m[2][3] = z;
-}
-
-// 缩放变换
-void matrix_set_scale(matrix_t *m, float x, float y, float z) {
-	matrix_set_identity(m);
-	m->m[0][0] = x;
-	m->m[1][1] = y;
-	m->m[2][2] = z;
-}
 
 
 //A坐标系转到B坐标系   任何两个矩阵之间的交换都可以
 //欧拉角 根据基向量 转矩阵 采用Y-X-Z轴的顺序 根据矩阵乘法可结合来叠加成一个矩阵
-void matrix_World2Obj(matrix_t *m, Vec4f rot, Vec4f pos, float scale)
+void matrix_World2Obj(matrix_t<4, 4, float>*m, Vec4f rot, Vec4f pos, float scale)
 {
 
 	float rot_x = rot.x;
@@ -92,28 +24,28 @@ void matrix_World2Obj(matrix_t *m, Vec4f rot, Vec4f pos, float scale)
 	float cosY = (float)cos(-rot_y);
 	float cosZ = (float)cos(-rot_z);
 
-	m->m[0][0] = cosX * cosZ;
-	m->m[0][1] = -sinZ;
-	m->m[0][2] = -sinY * cosZ;
+	(*m)[0][0] = cosX * cosZ;
+	(*m)[0][1] = -sinZ;
+	(*m)[0][2] = -sinY * cosZ;
 
-	m->m[1][0] = cosX * cosY* sinZ - sinX * sinY;
-	m->m[1][1] = cosX * cosZ;
-	m->m[1][2] = -cosX * sinY*sinZ - sinX * cosY;
+	(*m)[1][0] = cosX * cosY* sinZ - sinX * sinY;
+	(*m)[1][1] = cosX * cosZ;
+	(*m)[1][2] = -cosX * sinY*sinZ - sinX * cosY;
 
-	m->m[2][0] = sinX * cosY* sinZ + cosX * sinY;
-	m->m[2][1] = sinX * cosZ;
-	m->m[2][2] = -sinX * sinY * sinZ + cosX * cosY;
+	(*m)[2][0] = sinX * cosY* sinZ + cosX * sinY;
+	(*m)[2][1] = sinX * cosZ;
+	(*m)[2][2] = -sinX * sinY * sinZ + cosX * cosY;
 
 	//平移
-	m->m[0][3] = 0;
-	m->m[1][3] = 0;
-	m->m[2][3] = 0;
+	(*m)[0][3] = 0;
+	(*m)[1][3] = 0;
+	(*m)[2][3] = 0;
 
 
-	m->m[3][0] = 0;
-	m->m[3][1] = 0;
-	m->m[3][2] = 0;
-	m->m[3][3] = 1.0f;
+	(*m)[3][0] = 0;
+	(*m)[3][1] = 0;
+	(*m)[3][2] = 0;
+	(*m)[3][3] = 1.0f;
 }
 
 	//物体旋转，以自身坐标系旋转。最好在3DMAX里做的物体坐标系跟引擎保持一致
@@ -121,7 +53,7 @@ void matrix_World2Obj(matrix_t *m, Vec4f rot, Vec4f pos, float scale)
 	//欧拉角 根据基向量 转矩阵 
 	//采用正旋 X-Y-Z轴的顺序， 根据矩阵乘法可结合来叠加成一个矩阵
 	//右乘
-	void matrix_Obj2World(matrix_t *m, Vec4f rot, Vec4f pos)
+	void matrix_Obj2World(matrix_t<4, 4, float>*m, Vec4f rot, Vec4f pos)
 	{
 		float rot_x = rot.x;
 		float rot_y = rot.y;
@@ -139,30 +71,30 @@ void matrix_World2Obj(matrix_t *m, Vec4f rot, Vec4f pos, float scale)
 		float cosY = (float)cos(rot_y);
 		float cosZ = (float)cos(rot_z);
 
-		m->m[0][0] = cosY * cosZ;
-		m->m[0][1] = cosY * sinZ;
-		m->m[0][2] = -sinY;
+		(*m)[0][0] = cosY * cosZ;
+		(*m)[0][1] = cosY * sinZ;
+		(*m)[0][2] = -sinY;
 
-		m->m[1][0] = sinX * sinY* cosZ - cosX * sinZ;
-		m->m[1][1] = (sinX * sinY*sinZ + cosX * cosZ);
-		m->m[1][2] = sinX * cosY;
+		(*m)[1][0] = sinX * sinY* cosZ - cosX * sinZ;
+		(*m)[1][1] = (sinX * sinY*sinZ + cosX * cosZ);
+		(*m)[1][2] = sinX * cosY;
 
-		m->m[2][0] = cosX * sinY* cosZ + sinX * sinZ;
-		m->m[2][1] = cosX * sinY* sinZ - sinX * cosZ;
-		m->m[2][2] = (-sinX  + cosX * cosY);
+		(*m)[2][0] = cosX * sinY* cosZ + sinX * sinZ;
+		(*m)[2][1] = cosX * sinY* sinZ - sinX * cosZ;
+		(*m)[2][2] = (-sinX  + cosX * cosY);
 
 		//平移
-		m->m[0][3] = 0;
-		m->m[1][3] = 0;
-		m->m[2][3] = 0;
+		(*m)[0][3] = 0;
+		(*m)[1][3] = 0;
+		(*m)[2][3] = 0;
 
-		m->m[3][0] = 0;
-		m->m[3][1] = 0;
-		m->m[3][2] = 0;
-		//m->m[3][0] = xOffset;
-		//m->m[3][1] = yOffest;
-		//m->m[3][2] = zOffset;
-		m->m[3][3] = 1.0f;	
+		(*m)[3][0] = 0;
+		(*m)[3][1] = 0;
+		(*m)[3][2] = 0;
+		//(*m)[3][0] = xOffset;
+		//(*m)[3][1] = yOffest;
+		//(*m)[3][2] = zOffset;
+		(*m)[3][3] = 1.0f;	
 	}
 
 
@@ -175,7 +107,7 @@ void matrix_World2Obj(matrix_t *m, Vec4f rot, Vec4f pos, float scale)
 
 
 //轴角
-void matrix_set_rotate(matrix_t *m, float x, float y, float z, float theta, float xOffset,float yOffest, float zOffset)
+void matrix_set_rotate(matrix_t<4, 4, float>*m, float x, float y, float z, float theta, float xOffset,float yOffest, float zOffset)
 {
 	//三角函数用的是弧度，不是角度
 	Vec4f vec = { x, y, z, 1.0f }; //转换为齐次坐标  w=1代表是一个点.   w=0代表是向量.  因为w用于位移,向量位移无意义
@@ -192,22 +124,22 @@ void matrix_set_rotate(matrix_t *m, float x, float y, float z, float theta, floa
 	float w = (float)cos(theta * 0.5f);
 
 	//这里是用四元数来转化出来的矩阵
-	m->m[0][0] = 1 - 2 * y * y - 2 * z * z;
-	m->m[1][0] = 2 * x * y - 2 * w * z;
-	m->m[2][0] = 2 * x * z + 2 * w * y;
-	m->m[0][1] = 2 * x * y + 2 * w * z;
-	m->m[1][1] = 1 - 2 * x * x - 2 * z * z;
-	m->m[2][1] = 2 * y * z - 2 * w * x;
-	m->m[0][2] = 2 * x * z - 2 * w * y;
-	m->m[1][2] = 2 * y * z + 2 * w * x;
-	m->m[2][2] = 1 - 2 * x * x - 2 * y * y;
+	(*m)[0][0] = 1 - 2 * y * y - 2 * z * z;
+	(*m)[1][0] = 2 * x * y - 2 * w * z;
+	(*m)[2][0] = 2 * x * z + 2 * w * y;
+	(*m)[0][1] = 2 * x * y + 2 * w * z;
+	(*m)[1][1] = 1 - 2 * x * x - 2 * z * z;
+	(*m)[2][1] = 2 * y * z - 2 * w * x;
+	(*m)[0][2] = 2 * x * z - 2 * w * y;
+	(*m)[1][2] = 2 * y * z + 2 * w * x;
+	(*m)[2][2] = 1 - 2 * x * x - 2 * y * y;
 
-	m->m[0][3] = m->m[1][3] = m->m[2][3] = 0.0f;
+	(*m)[0][3] = (*m)[1][3] = (*m)[2][3] = 0.0f;
 
-	m->m[3][0] = xOffset;
-	m->m[3][1] = yOffest;
-	m->m[3][2] = zOffset;
+	(*m)[3][0] = xOffset;
+	(*m)[3][1] = yOffest;
+	(*m)[3][2] = zOffset;
 
 
-	m->m[3][3] = 1.0f;
+	(*m)[3][3] = 1.0f;
 }

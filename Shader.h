@@ -22,7 +22,7 @@ public:
 	transform_t transform;
 
 	//Vec3f varying_tri;
-	mat<3, 3, float> varying_tri; //图元(三角形)缓冲 triangle coordinates (clip coordinates), written by VS, read by FS
+	matrix_t<3, 3, float> varying_tri; //图元(三角形)缓冲 triangle coordinates (clip coordinates), written by VS, read by FS
 
 	int render_state;
 

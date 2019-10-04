@@ -6,7 +6,11 @@
 #include <iostream>
 
 //定义基本的 int float  二维/三维/四维 的向量/坐标 的运算
-template<size_t DimCols, size_t DimRows, typename T> class mat;
+//点、向量、射线、交点等等几何学上的运算和检测，矩阵的变换和求逆
+
+//模板类的声明，定义在后面
+template<size_t DimCols, size_t DimRows, typename T> 
+class matrix_t;
 
 //定义一个泛型数组
 template <size_t DIM, typename T> 
@@ -101,8 +105,8 @@ struct vec<3, T> {
 
 template <typename T>
 struct vec<4, T> {
-	vec() : x(T()), y(T()), z(T()),w(1) {}
-	vec(T X, T Y, T Z) : x(X), y(Y), z(Z), w(1) {}
+	vec() : x(T()), y(T()), z(T()),w(T()) {}
+	vec(T X, T Y, T Z) : x(X), y(Y), z(Z), w(T()) {}
 	vec(T X, T Y, T Z,T W) : x(X), y(Y), z(Z), w(W) {}
 	template <class U>
 	vec<4, T>(const vec<4, U>& v);
@@ -229,6 +233,7 @@ T operator*(const vec<DIM, T>& lhs, const vec<DIM, T>& rhs) {
 }
 
 
+
 template<size_t DIM, typename T>vec<DIM, T> 
 operator+(vec<DIM, T> lhs, const vec<DIM, T>& rhs)
 {
@@ -242,9 +247,9 @@ operator-(vec<DIM, T> lhs, const vec<DIM, T>& rhs) {
 	return lhs;
 }
 
-template<size_t DIM, typename T, typename U> vec<DIM, T> 
-operator*(vec<DIM, T> lhs, const U& rhs) {
-	for (size_t i = DIM; i--; lhs[i] *= rhs);
+template<size_t DIM, typename T> vec<DIM, T> 
+operator*(vec<DIM, T> lhs, const T& rhs) {
+	for (size_t i = DIM; i--; lhs[i] = lhs[i] * rhs);
 	return lhs;
 }
 
@@ -301,7 +306,7 @@ std::ostream& operator<<(std::ostream& out, vec<DIM, T>& v) {
 
 template<size_t DIM, typename T> 
 struct dt {
-	static T det(const mat<DIM, DIM, T>& src) {
+	static T det(const matrix_t<DIM, DIM, T>& src) {
 		T ret = 0;
 		for (size_t i = DIM; i--; ret += src[0][i] * src.cofactor(0, i));
 		return ret;
@@ -310,7 +315,7 @@ struct dt {
 
 template<typename T> 
 struct dt<1, T> {
-	static T det(const mat<1, 1, T>& src) {
+	static T det(const matrix_t<1, 1, T>& src) {
 		return src[0][0];
 	}
 };
@@ -318,10 +323,12 @@ struct dt<1, T> {
 /////////////////////////////////////////////////////////////////////////////////
 //行 -列
 template<size_t DimRows, size_t DimCols, typename T> 
-class mat {
+class matrix_t {
 	vec<DimCols, T> rows[DimRows];
 public:
-	mat() {}
+	matrix_t() {
+		
+	}
 
 	vec<DimCols, T>& operator[] (const size_t idx) {
 		assert(idx < DimRows);
@@ -331,6 +338,12 @@ public:
 	const vec<DimCols, T>& operator[] (const size_t idx) const {
 		assert(idx < DimRows);
 		return rows[idx];
+	}
+
+	 matrix_t<DimRows, DimCols, T>& set_zero(){
+		for (size_t i = DimRows; i--; )
+			for (size_t j = DimCols; j--; (*this)[i][j] = (T)0);
+		return *this;
 	}
 
 	vec<DimRows, T> col(const size_t idx) const {
@@ -344,78 +357,126 @@ public:
 		assert(idx < DimCols);
 		for (size_t i = DimRows; i--; rows[i][idx] = v[i]);
 	}
-
-	static mat<DimRows, DimCols, T> identity() {
-		mat<DimRows, DimCols, T> ret;
-		for (size_t i = DimRows; i--; )
-			for (size_t j = DimCols; j--; ret[i][j] = (i == j));
-		return ret;
-	}
-
+	//计算矩阵行列式
 	T det() const {
 		return dt<DimCols, T>::det(*this);
 	}
 
-	mat<DimRows - 1, DimCols - 1, T> get_minor(size_t row, size_t col) const {
-		mat<DimRows - 1, DimCols - 1, T> ret;
+	//缩小矩阵行列
+	matrix_t<DimRows - 1, DimCols - 1, T> get_minor(size_t row, size_t col) const {
+		matrix_t<DimRows - 1, DimCols - 1, T> ret;
 		for (size_t i = DimRows - 1; i--; )
 			for (size_t j = DimCols - 1; j--; ret[i][j] = rows[i < row ? i : i + 1][j < col ? j : j + 1]);
 		return ret;
 	}
 
+	//代数余子式矩阵
 	T cofactor(size_t row, size_t col) const {
 		return get_minor(row, col).det() * ((row + col) % 2 ? -1 : 1);
 	}
 
-	mat<DimRows, DimCols, T> adjugate() const {
-		mat<DimRows, DimCols, T> ret;
+	//伴随矩阵
+	matrix_t<DimRows, DimCols, T> adjugate() const {
+		matrix_t<DimRows, DimCols, T> ret;
 		for (size_t i = DimRows; i--; )
 			for (size_t j = DimCols; j--; ret[i][j] = cofactor(i, j));
 		return ret;
 	}
 
-	mat<DimRows, DimCols, T> invert_transpose() {
-		mat<DimRows, DimCols, T> ret = adjugate();
+	//逆转置矩阵
+	matrix_t<DimRows, DimCols, T> invert_transpose() {
+		matrix_t<DimRows, DimCols, T> ret = adjugate();
 		T tmp = ret[0] * rows[0];
 		return ret / tmp;
 	}
 
-	mat<DimRows, DimCols, T> invert() {
+	//逆矩阵
+	matrix_t<DimRows, DimCols, T> invert() {
 		return invert_transpose().transpose();
 	}
 
-	mat<DimCols, DimRows, T> transpose() {
-		mat<DimCols, DimRows, T> ret;
+	//转置矩阵
+	matrix_t<DimCols, DimRows, T> transpose() {
+		matrix_t<DimCols, DimRows, T> ret;
 		for (size_t i = DimCols; i--; ret[i] = this->col(i));
 		return ret;
 	}
+
+	//标准矩阵
+	matrix_t<DimRows, DimCols, T>& identity() {
+
+		for (size_t i = DimRows; i--; )
+			for (size_t j = DimCols; j--; (rows)[i][j] = (i == j)); //true =1  false=0
+		return *this;
+	}
 };
 
-/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////向量与矩阵的运算///////////////////////////////////////////////////////
+
 
 template<size_t DimRows, size_t DimCols, typename T> 
-vec<DimRows, T> operator*(const mat<DimRows, DimCols, T>& lhs, const vec<DimCols, T>& rhs) {
+vec<DimRows, T> operator*(const matrix_t<DimRows, DimCols, T>& lhs, const vec<DimCols, T>& rhs) {
 	vec<DimRows, T> ret;
 	for (size_t i = DimRows; i--; ret[i] = lhs[i] * rhs);
 	return ret;
 }
 
+template<size_t DimRows, size_t DimCols, typename T>
+vec<DimRows, T> operator*(const vec<DimCols, T>& rhs, const matrix_t<DimRows, DimCols, T>& lhs) {
+	vec<DimRows, T> ret;
+	for (size_t i = DimRows; i--; ret[i] = lhs[i] * rhs);
+	return ret;
+}
+//向量 右乘矩阵 
+template<size_t DimRows, size_t DimCols, typename T>
+vec<DimRows, T> operator*(const vec<DimCols, T>& rhs, matrix_t<DimRows, DimCols, T>& lhs) {
+	vec<DimRows, T> ret;
+	for (size_t i = DimRows; i--; ret[i] = rhs * lhs.col(i));
+	return ret;
+}
+
+//template<size_t DIM, typename T, typename U> 
+//vec<DIM, T> operator*(vec<DIM, T> lhs, const U& rhs) {
+//		for (size_t i = DIM; i--; lhs[i] *= rhs);
+//		return lhs;
+//	}
+
+
+// TODO: 获得一个缩放矩阵 左乘
+template<size_t DimRows, typename T>
+matrix_t<DimRows, DimRows, T> matrix_set_scale(const vec<DimRows, T>& rhs) {
+	matrix_t<DimRows, DimRows, T> ret = matrix_t<DimRows, DimRows, T>().identity();
+	for (size_t i = DimRows; i--; )
+		ret[i][i] = rhs[i];
+	return ret;
+}
+
+
+// TODO: 获得一个平移变换矩阵 左乘
+template<size_t DimRows, size_t DimCols, typename T>
+matrix_t<DimRows, DimCols, T> matrix_set_translate(const vec<DimRows, T>& rhs) {
+	matrix_t<DimRows, DimCols, T> ret = identity();
+	for (size_t i = DimRows; i--; )
+		 ret[i][DimCols-1] = rhs[i];
+	return ret;
+}
+
 template<size_t R1, size_t C1, size_t C2, typename T>
-mat<R1, C2, T> operator*(const mat<R1, C1, T>& lhs, const mat<C1, C2, T>& rhs) {
-	mat<R1, C2, T> result;
+matrix_t<R1, C2, T> operator*(const matrix_t<R1, C1, T>& lhs, const matrix_t<C1, C2, T>& rhs) {
+	matrix_t<R1, C2, T> result;
 	for (size_t i = R1; i--; )
 		for (size_t j = C2; j--; result[i][j] = lhs[i] * rhs.col(j));
 	return result;
 }
 
 template<size_t DimRows, size_t DimCols, typename T>
-mat<DimCols, DimRows, T> operator/(mat<DimRows, DimCols, T> lhs, const T& rhs) {
+matrix_t<DimCols, DimRows, T> operator/(matrix_t<DimRows, DimCols, T> lhs, const T& rhs) {
 	for (size_t i = DimRows; i--; lhs[i] = lhs[i] / rhs);
 	return lhs;
 }
 
 template <size_t DimRows, size_t DimCols, class T> 
-std::ostream& operator<<(std::ostream& out, mat<DimRows, DimCols, T>& m) {
+std::ostream& operator<<(std::ostream& out, matrix_t<DimRows, DimCols, T>& m) {
 	for (size_t i = 0; i < DimRows; i++) out << m[i] << std::endl;
 	return out;
 }
@@ -427,7 +488,7 @@ typedef vec<2, int>   Vec2i;
 typedef vec<3, float> Vec3f;
 typedef vec<3, int>   Vec3i;
 typedef vec<4, float> Vec4f;
-typedef mat<4, 4, float> Matrix;
+typedef matrix_t<4, 4, float> Matrix44f;
 typedef Vec4f point_t;
 ///typedef vec<5, float> Vec5f;
 #endif //__GEOMETRY_H__

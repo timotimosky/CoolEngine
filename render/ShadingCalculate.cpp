@@ -113,23 +113,20 @@ float calculateGroudShader(const point_t *v1, const point_t *v2, const point_t *
 color_t Lambert(transform_t* mainTrans, Vec4f *v_Obj, Vec4f* normal, Vec4f* lightPos, color_t diffuseColor, color_t ambientColor)
 {
 	//将顶点变换到视图空间  
-	Vec4f*  ObjInView = NULL;
-	transform_apply(mainTrans, ObjInView, v_Obj);
-
+	Vec4f  ObjInView = (*v_Obj) * mainTrans->mv;
 
 	//将顶点变换到相机透视空间  
-	Vec4f*  ObjInCVV = NULL;
-	transform_apply(mainTrans, ObjInCVV, v_Obj);
+	Vec4f  ObjInCVV = (*v_Obj) * mainTrans->mvp;
 
-	Vec4f* normalInView = NULL;
+	//Vec4f* normalInView = NULL;
 	//将法线变换到视图空间
-	matrix_apply(normalInView, normal, &mainTrans->mv);
+	//matrix_apply(normalInView, normal, &mainTrans->mv);
 
-
+	Vec4f normalInView = (*normal) * mainTrans->mv;
 	//TODO:这里把灯光转到视图空间
 
 	// 计算视图空间的灯光方向
-	Vec4f lightDirInView = *lightPos - *ObjInView;
+	Vec4f lightDirInView = *lightPos - ObjInView;
 
 	//-----------------像素阶段------------
 
@@ -145,7 +142,7 @@ color_t Lambert(transform_t* mainTrans, Vec4f *v_Obj, Vec4f* normal, Vec4f* ligh
 
 
 	//根据Lambert模型，法线点乘入射光方向计算漫反射
-	float diffuse = max(0, (*normalInView* lightDirInView));
+	float diffuse = max(0, (normalInView* lightDirInView));
 
 	return ambientColor + diffuseColor * diffuse;
 }
@@ -155,8 +152,6 @@ color_t Lambert(transform_t* mainTrans, Vec4f *v_Obj, Vec4f* normal, Vec4f* ligh
 color_t Phong(transform_t* mainTrans, Vec4f *posInObj, Vec4f *normal, Vec4f* lightPos, Vec4f* cameraPos, color_t diffuseColor, color_t ambientColor, color_t specularColor)
 {
 
-	Vec4f* posInCvv = NULL, *normalInView = NULL, *posInView = NULL;
-
 	//	Output.position = mul(Input.position, matWorldViewProjection);
 	//	Output.normalInView = normalize(mul(Input.normal, matWorldView));
 	//	Output.lightDirInView = normalize(lightPos - mul(Input.position, matWorldView));
@@ -165,20 +160,20 @@ color_t Phong(transform_t* mainTrans, Vec4f *posInObj, Vec4f *normal, Vec4f* lig
 	//	return Output;
 
 	//将顶点变换到视图空间  
-	transform_apply(mainTrans, posInObj, posInView);
-
+	Vec4f  posInView = (*posInObj) * mainTrans->mv;
 
 	//将顶点变换到相机透视空间  
-	transform_apply(mainTrans, posInObj, posInCvv);
+	Vec4f  posInCvv = (*posInObj) * mainTrans->mvp;
+
 
 	//将法线变换到视图空间
-	matrix_apply(normalInView, normal, &mainTrans->mv);
-
+	//matrix_apply(normalInView, normal, &mainTrans->mv);
+	Vec4f normalInView =  (*normal)  * mainTrans->mv;
 	// 计算视图空间的灯光方向
-	Vec4f lightDirInView =  *lightPos- *posInView;
+	Vec4f lightDirInView =  *lightPos- posInView;
 
 	//计算视图控件里摄像机到顶点的方向
-	Vec4f cameraDirInView =  *cameraPos - *posInView;
+	Vec4f cameraDirInView =  *cameraPos - posInView;
 	cameraDirInView.normalize();
 
 	//----------------pix shader-----------------------------------//
@@ -191,11 +186,11 @@ color_t Phong(transform_t* mainTrans, Vec4f *posInObj, Vec4f *normal, Vec4f* lig
 	//
 	//	Out.color = ambientColor + diffuse + specular;
 
-	float diffuse = max(0, (*normalInView* lightDirInView));
+	float diffuse = max(0, (normalInView* lightDirInView));
 	diffuseColor = diffuseColor* diffuse;
 
 	//反射向量
-	Vec4f  vReflect = (*normalInView) * (2 * (*normalInView*lightDirInView)) - lightDirInView;
+	Vec4f  vReflect = (normalInView) * (2 * (normalInView*lightDirInView)) - lightDirInView;
 	vReflect.normalize();
 
 	//再通过反射计算高光

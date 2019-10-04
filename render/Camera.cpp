@@ -3,7 +3,7 @@
 
 
 //计算逆矩阵
-void matrix_set_lookat_r(matrix_t *m, const Vec4f *eye, const Vec4f *eyeTarget, const Vec4f *up)
+void matrix_set_lookat_r(Matrix44f*m, const Vec4f *eye, const Vec4f *eyeTarget, const Vec4f *up)
 {
 	//获取摄像机坐标系的3个基向量 因为当前项目设计为Unity的左手坐标系，所有叉乘也遵循左手法则
 	Vec4f zaxis = (*eyeTarget - *eye).normalize(); //zaxis 摄像机Z轴 朝屏幕内
@@ -11,29 +11,29 @@ void matrix_set_lookat_r(matrix_t *m, const Vec4f *eye, const Vec4f *eyeTarget, 
 	Vec4f yaxis = cross(zaxis, xaxis);
 
 	//计算 摄像机相对于世界坐标系的旋转 
-	matrix_t rotationM;
-	rotationM.m[0][0] = xaxis.x;
-	rotationM.m[1][0] = xaxis.y;
-	rotationM.m[2][0] = xaxis.z;
+	Matrix44f rotationM;
+	rotationM[0][0] = xaxis.x;
+	rotationM[1][0] = xaxis.y;
+	rotationM[2][0] = xaxis.z;
 
-	rotationM.m[0][1] = yaxis.x;
-	rotationM.m[1][1] = yaxis.y;
-	rotationM.m[2][1] = yaxis.z;
+	rotationM[0][1] = yaxis.x;
+	rotationM[1][1] = yaxis.y;
+	rotationM[2][1] = yaxis.z;
 
-	rotationM.m[0][2] = zaxis.x;
-	rotationM.m[1][2] = zaxis.y;
-	rotationM.m[2][2] = zaxis.z;
+	rotationM[0][2] = zaxis.x;
+	rotationM[1][2] = zaxis.y;
+	rotationM[2][2] = zaxis.z;
 
-	rotationM.m[0][3] = rotationM.m[1][3] = rotationM.m[2][3] = 0.0f;
-	rotationM.m[3][0] = rotationM.m[3][1] = rotationM.m[3][2] = 0.0f;
-	rotationM.m[3][3] = 1.0f;
+	rotationM[0][3] = rotationM[1][3] = rotationM[2][3] = 0.0f;
+	rotationM[3][0] = rotationM[3][1] = rotationM[3][2] = 0.0f;
+	rotationM[3][3] = 1.0f;
 
 	//计算 摄像机相对于世界坐标系的位移
-	matrix_t transM;
-	matrix_set_identity(&transM);
-	transM.m[3][0] = -eye->x;
-	transM.m[3][1] = -eye->y;
-	transM.m[3][2] = -eye->z;
+	Matrix44f transM = Matrix44f().identity();
+
+	transM[3][0] = -eye->x;
+	transM[3][1] = -eye->y;
+	transM[3][2] = -eye->z;
 
 	*m = transM * rotationM;
 	//matrix_mul(m, &transM, &rotationM); //世界-》摄像机。 先平移，再旋转
@@ -44,7 +44,7 @@ void matrix_set_lookat_r(matrix_t *m, const Vec4f *eye, const Vec4f *eyeTarget, 
 //因为最开始物体坐标系跟世界坐标系重合，物体的运动就是从世界坐标系 转到其他坐标系，符合现实的状态是，先缩放、再旋转，在平移，
 //而从其他坐标系转到世界坐标系  则是相反  因为 (T*R)的逆矩阵 = （R的逆矩阵）*（T的逆矩阵） 先平移、再旋转，在缩放，
 // 设置摄像机  eye自身坐标 front正前方  up是Y轴
-void matrix_set_lookat(matrix_t *m, const Vec4f *eye, const Vec4f *eyeTarget, const Vec4f *up)
+void matrix_set_lookat(Matrix44f*m, const Vec4f *eye, const Vec4f *eyeTarget, const Vec4f *up)
 {
 	//获取摄像机坐标系的3个基向量 因为当前项目设计为Unity的左手坐标系，所有叉乘也遵循左手法则
 	Vec4f zaxis = (*eyeTarget - *eye).normalize(); //zaxis 摄像机Z轴 朝屏幕内
@@ -52,29 +52,29 @@ void matrix_set_lookat(matrix_t *m, const Vec4f *eye, const Vec4f *eyeTarget, co
 	Vec4f yaxis = cross(zaxis, xaxis);
 
 	//计算 摄像机相对于世界坐标系的旋转 
-	matrix_t rotationM;
-	rotationM.m[0][0] = xaxis.x;
-	rotationM.m[1][0] = xaxis.y;
-	rotationM.m[2][0] = xaxis.z;
+	Matrix44f rotationM;
+	rotationM[0][0] = xaxis.x;
+	rotationM[1][0] = xaxis.y;
+	rotationM[2][0] = xaxis.z;
 
-	rotationM.m[0][1] = yaxis.x;
-	rotationM.m[1][1] = yaxis.y;
-	rotationM.m[2][1] = yaxis.z;
+	rotationM[0][1] = yaxis.x;
+	rotationM[1][1] = yaxis.y;
+	rotationM[2][1] = yaxis.z;
 
-	rotationM.m[0][2] = zaxis.x;
-	rotationM.m[1][2] = zaxis.y;
-	rotationM.m[2][2] = zaxis.z;
+	rotationM[0][2] = zaxis.x;
+	rotationM[1][2] = zaxis.y;
+	rotationM[2][2] = zaxis.z;
 
-	rotationM.m[0][3] = rotationM.m[1][3] = rotationM.m[2][3] = 0.0f;
-	rotationM.m[3][0] = rotationM.m[3][1] = rotationM.m[3][2] = 0.0f;
-	rotationM.m[3][3] = 1.0f;
+	rotationM[0][3] = rotationM[1][3] = rotationM[2][3] = 0.0f;
+	rotationM[3][0] = rotationM[3][1] = rotationM[3][2] = 0.0f;
+	rotationM[3][3] = 1.0f;
 
 	//计算 摄像机相对于世界坐标系的位移
-	matrix_t transM;
-	matrix_set_identity(&transM);
-	transM.m[3][0] = -eye->x;
-	transM.m[3][1] = -eye->y;
-	transM.m[3][2] = -eye->z;
+	Matrix44f transM = Matrix44f();
+	transM.identity();
+	transM[3][0] = -eye->x;
+	transM[3][1] = -eye->y;
+	transM[3][2] = -eye->z;
 
 	*m = transM * rotationM;
 	//matrix_mul(m, &transM, &rotationM); //世界-》摄像机。 先平移，再旋转
@@ -91,15 +91,15 @@ void matrix_set_lookat(matrix_t *m, const Vec4f *eye, const Vec4f *eyeTarget, co
 //zn 近平面Z
 //zf 远平面Z
 //	float aspect = (float)width / ((float)height); 分辨率比例
-void matrix_set_perspective(matrix_t *m, float fovy, float aspect, float zn, float zf)
+void matrix_set_perspective(Matrix44f* m, float fovy, float aspect, float zn, float zf)
 {
 	float fax = 1.0f / (float)tan(fovy * 0.5f);  //cot@
-	matrix_set_zero(m);
-	m->m[0][0] = (float)(fax / aspect);
-	m->m[1][1] = (float)(fax);
-	m->m[2][2] = zf / (zf - zn);
-	m->m[3][2] = -zn * zf / (zf - zn);
-	m->m[2][3] = 1; //令W=1
+	(*m).set_zero();
+	(*m)[0][0] = (float)(fax / aspect);
+	(*m)[1][1] = (float)(fax);
+	(*m)[2][2] = zf / (zf - zn);
+	(*m)[3][2] = -zn * zf / (zf - zn);
+	(*m)[2][3] = 1; //令W=1
 }
 
 

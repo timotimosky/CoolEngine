@@ -54,16 +54,13 @@ typedef struct
 
 	point_t pos;
 	Vec4f axis;
-	float scaleX;
-	float scaleY;
-	float scaleZ;
-
+	Vec4f scale;
 	//mesh[0]和mesh[]不占用空间，且地址紧跟在结构后面，而vertex_t *data作为指针，占用4个字节，地址不在结构之后
 	//vertex_t mesh[0]; //起始地址 可变数组   vertex_t data[0]，vertex_t *data, vertex_t data[]都可以 
 	vertex_t* mesh;
 
 	IUINT32 texture[256][256]; //纹理
-	matrix_t model;         // 物体矩阵  由三个弧度计算出来
+	Matrix44f model;         // 物体矩阵  由三个弧度计算出来
 
 
 	materal m_materal; //材质

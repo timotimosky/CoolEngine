@@ -39,7 +39,8 @@ Vec3f Shader::vertex(Vec3f iface, int nthvert) {
 	//2--------世界空间----------计算光照---------------------------------如果是烘焙 没法考虑摄像机遮挡，所以在这里直接计算---//
 
 	//坐标转到世界空间
-	matrix_apply(&world_pos1, &v1->pos, &transform.model);
+	world_pos1 = v1->pos * transform.model;
+
 
 	//// 背面剔除
 	//if (cull > 0)
@@ -60,15 +61,14 @@ Vec3f Shader::vertex(Vec3f iface, int nthvert) {
 	// 进行进一步精细裁剪，将一个分解为几个完全处在 cvv内的三角形
 
 	//--------------------------------4.CVV空间裁剪(视锥裁剪)-----------------------------
-
-	matrix_apply(&project_pos1, &v1->pos, &((&transform)->mvp));
+	project_pos1 = v1->pos * transform.mvp;
 
 	if (transform_check_cvv(&project_pos1) != 0) return Vec3f();
 
 
 	//法线转换到世界空间
 	Vec4f world_normal1, world_normal2, world_normal3;
-	matrix_apply(&world_normal1, &v1->normal, &transform.model);
+	world_normal1 = v1->normal * transform.model;
 	//阴影预备
 	//DisVertexToLight(lightPosition, &world_pos1);
 
@@ -112,7 +112,7 @@ Vec3f Shader::vertex(Vec3f iface, int nthvert) {
 
 	transform_t shadow_transform = transform;
 
-	matrix_apply(&shadow_view_pos1, &v1->pos, &((&shadow_transform)->mv));
+	shadow_view_pos1 =  v1->pos * shadow_transform.mv;
 
 
 	//TODO：这里以后要改为投影摄像机的成像大小 不用屏幕大小
