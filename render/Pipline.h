@@ -39,7 +39,7 @@ extern camera shadowCamera;
 
 typedef struct {
 
-	transform_t  transform;
+	//transform_t  transform;
 	int width;                  // 窗口宽度
 	int height;                 // 窗口高度
 								//最后输出到屏幕的像素  800*600*32

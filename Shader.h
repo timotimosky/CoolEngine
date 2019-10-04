@@ -8,7 +8,7 @@
 //	virtual Vec4f vertex(int iface, int nthvert) = 0;
 //	virtual bool fragment(Vec3f bar, TGAColor& color) = 0;
 //};
-extern Model* model;
+
 
 //为了并发处理，需要分离为顶点和图元处理器，分别并发
 class Shader//:public IShader

@@ -24,12 +24,12 @@ struct vec {
 	//已放弃使用assert()的原因是，频繁的调用会极大的影响程序的性能，增加额外的开销。
 	T& operator[](const size_t i) 
 	{ 
-		assert(i < DIM); 
+		//assert(i < DIM); 
 		return data_[i]; 
 	}
 	const T& operator[](const size_t i) const 
 	{ 
-		assert(i < DIM); 
+		//assert(i < DIM); 
 
 		return data_[i];
 	}
@@ -51,12 +51,12 @@ struct vec<2, T> {
 	vec<2, T>(const vec<2, U>& v);
 
 	T& operator[](const size_t i) { 
-		assert(i < 2); 
+		//assert(i < 2); 
 		return i <= 0 ? x : y;
 	}
 
 	const T& operator[](const size_t i) const { 
-		assert(i < 2); 
+		//assert(i < 2); 
 		return i <= 0 ? x : y; 
 	}
 	T x, y;
@@ -73,12 +73,12 @@ struct vec<3, T> {
 	vec<3, T>(const vec<3, U>& v);
 
 	T& operator[](const size_t i) { 
-		assert(i < 3); 
+		//assert(i < 3); 
 		return i <= 0 ? x : (1 == i ? y : z); 
 	}
 
 	template <class U>
-	vec<3, T>& operator=(vec<3, U> v) {
+	vec<3, T>& operator=(const vec<3, U>& v) {
 		
 		x = T(v.x + .5f);
 		y = T(v.y + .5f);
@@ -88,7 +88,7 @@ struct vec<3, T> {
 
 	const T& operator[](const size_t i) const 
 	{ 
-		assert(i < 3); 
+		//assert(i < 3); 
 		return i <= 0 ? x : (1 == i ? y : z);
 	}
 	// 矢量归一化  注意归一化，不涉及W。 只有四维向三维投影的时候，W归一化才有用
@@ -112,11 +112,11 @@ struct vec<4, T> {
 	vec<4, T>(const vec<4, U>& v);
 
 	T& operator[](const size_t i) {
-		assert(i < 4);
+		//assert(i < 4);
 		return i <= 0 ? x : (1 == i ? y : (2 == i ? z:w));
 	}
 
-	vec<4, T>& operator=(vec<4, T> v) {
+	vec<4, T>& operator=(const vec<4, T>& v) {
 		x = v.x;
 		y = v.y;
 		z = v.z;
@@ -125,7 +125,7 @@ struct vec<4, T> {
 	}
 
 	template <class U>
-	vec<4, T>& operator=(vec<4, U> v) {
+	vec<4, T>& operator=(const vec<4, U>& v) {
 
 		x = T(v.x + .5f);
 		y = T(v.y + .5f);
@@ -137,7 +137,7 @@ struct vec<4, T> {
 //齐次坐标的第二个功效就是区分向量跟点.  w为1则为点.  w为0则为向量。  因为w作用是位移，向量位移没什么意义。
 // z = x + y  w一直为1
 	template <class U>
-	vec<4, T>& operator+(vec<4, U> v) {
+	vec<4, T>& operator+(const vec<4, U>& v) {
 
 		x = T(v.x + this->x);
 		y = T(v.y + this->y);
@@ -145,7 +145,7 @@ struct vec<4, T> {
 		return *this;
 	}
 
-	vec<4, T>& operator+(vec<4, T> v) {
+	vec<4, T>& operator+(const vec<4, T>& v) {
 
 		x = T(v.x + this->x);
 		y = T(v.y + this->y);
@@ -154,7 +154,7 @@ struct vec<4, T> {
 	}
 
 	template <class U>
-	vec<4, T>& operator-(vec<4, U> u) {
+	vec<4, T>& operator-(const vec<4, U>& u) {
 
 		x = T(this->x - u.x);
 		y = T(this->y - u.y);
@@ -162,7 +162,7 @@ struct vec<4, T> {
 		return *this;
 	}
 
-	vec<4, T>& operator-(vec<4, T> u) {
+	vec<4, T>& operator-(const vec<4, T>& u) {
 
 		x = T(this->x - u.x);
 		y = T(this->y - u.y);
@@ -187,7 +187,7 @@ struct vec<4, T> {
 
 	const T& operator[](const size_t i) const
 	{
-		assert(i < 4);
+	//	assert(i < 4);
 		return i <= 0 ? x : (1 == i ? y : (2 == i ? z : w));
 	}
 
@@ -274,12 +274,12 @@ vec<LEN, T> proj(const vec<DIM, T>& v) {
 }
 
 template <typename T> 
-vec<3, T> cross(vec<3, T> v1, vec<3, T> v2) {
+vec<3, T> cross(const vec<3, T>& v1, const vec<3, T>& v2) {
 	return vec<3, T>(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
 }
 // 矢量叉乘  如果 x y 标准化，那算出来的叉乘Z也是标准化的xy平面的法线。 否则的话，要标准化一次Z
 template <typename T>
-vec<4, T> cross(vec<4, T> v1, vec<4, T> v2) { //参数 const指针?
+vec<4, T> cross(const vec<4, T>& v1, const vec<4, T>& v2) { 
 	return vec<4, T>(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x,1);
 }
 
@@ -331,12 +331,12 @@ public:
 	}
 
 	vec<DimCols, T>& operator[] (const size_t idx) {
-		assert(idx < DimRows);
+		//assert(idx < DimRows);
 		return rows[idx];
 	}
 
 	const vec<DimCols, T>& operator[] (const size_t idx) const {
-		assert(idx < DimRows);
+		//assert(idx < DimRows);
 		return rows[idx];
 	}
 
@@ -347,14 +347,14 @@ public:
 	}
 
 	vec<DimRows, T> col(const size_t idx) const {
-		assert(idx < DimCols);
+		//assert(idx < DimCols);
 		vec<DimRows, T> ret;
 		for (size_t i = DimRows; i--; ret[i] = rows[i][idx]);
 		return ret;
 	}
 
 	void set_col(size_t idx, vec<DimRows, T> v) {
-		assert(idx < DimCols);
+		//assert(idx < DimCols);
 		for (size_t i = DimRows; i--; rows[i][idx] = v[i]);
 	}
 	//计算矩阵行列式
@@ -429,7 +429,7 @@ vec<DimRows, T> operator*(const vec<DimCols, T>& rhs, const matrix_t<DimRows, Di
 }
 //向量 右乘矩阵 
 template<size_t DimRows, size_t DimCols, typename T>
-vec<DimRows, T> operator*(const vec<DimCols, T>& rhs, matrix_t<DimRows, DimCols, T>& lhs) {
+vec<DimRows, T> operator*(const vec<DimCols, T>& rhs,  matrix_t<DimRows, DimCols, T>& lhs) {
 	vec<DimRows, T> ret;
 	for (size_t i = DimRows; i--; ret[i] = rhs * lhs.col(i));
 	return ret;
