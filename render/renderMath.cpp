@@ -1,6 +1,40 @@
 #include "renderMath.h"
 
 
+//结论是“行向量左乘矩阵时，结果是行向量，列向量右乘矩阵时，结果是列向量，反过来是不行的”，在DirectX中使用的是行向量，在OpenGL中使用的是列向量。
+//这里用的右乘
+
+// w 也要参与到坐标变换的计算  到时候在CVV的时候， x,y,z,w要除以W，此刻 w=1,投影到屏幕坐标了
+//得到在屏幕上的坐标. (假设屏幕的Z值是1)
+
+//TODO:需要拆分为 按帧更新、按物体更新
+// 矩阵更新
+void transform_update(transform_t* ts) {
+
+	ts->mv = ts->model * ts->view;
+	ts->vp = ts->view * ts->projection;
+	ts->mvp = ts->mv * ts->projection;
+
+}
+
+Matrix44f& Init_Model_matrix(point_t& pos, Vec4f axis, Vec4f scale)
+{
+	//输入 当前物体原点在世界坐标系中的位置和旋转，  来反推世界矩阵
+	//axis.x 绕X轴的旋转角度
+
+	//物体转世界坐标系  	//平移-> 旋转-》缩放 
+	Matrix44f s = matrix_set_scale(scale);
+	Matrix44f r;
+	Matrix44f t = Matrix44f().identity();
+
+	matrix_Obj2World(&r, axis, pos);
+
+	t[3][0] = pos.x;
+	t[3][1] = pos.y;
+	t[3][2] = pos.z;
+
+	return s * r * t;
+}
 
 
 //A坐标系转到B坐标系   任何两个矩阵之间的交换都可以
@@ -107,18 +141,19 @@ void matrix_World2Obj(matrix_t<4, 4, float>*m, Vec4f rot, Vec4f pos, float scale
 
 
 //轴角
-void matrix_set_rotate(matrix_t<4, 4, float>*m, float x, float y, float z, float theta, float xOffset,float yOffest, float zOffset)
+void matrix_set_rotate(matrix_t<4, 4, float>*m, Vec4f vec, float theta, Vec3f offset)
 {
 	//三角函数用的是弧度，不是角度
-	Vec4f vec = { x, y, z, 1.0f }; //转换为齐次坐标  w=1代表是一个点.   w=0代表是向量.  因为w用于位移,向量位移无意义
-
+	//转换为齐次坐标  w=1代表是一个点.   w=0代表是向量.  因为w用于位移,向量位移无意义
+	vec.w = 1.0f;
 	//计算四元数的四个参数之前，先要把旋转轴标准化为单位向量
 	vec.normalize();
+
 	//这里是计算出四元数的四个参数
 	//设四元数Q（x, y, z, w）表示向量a（xa, ya, za）经过theta角旋转后的结果，则x、y、z和w分别为：
-	x = vec.x * (float)sin(theta * 0.5f); //(x,y,z)是一个向量
-	y = vec.y * (float)sin(theta * 0.5f);
-	z = vec.z * (float)sin(theta * 0.5f);
+	float x = vec.x * (float)sin(theta * 0.5f); //(x,y,z)是一个向量
+	float y = vec.y * (float)sin(theta * 0.5f);
+	float z = vec.z * (float)sin(theta * 0.5f);
 
 	// w 是标量
 	float w = (float)cos(theta * 0.5f);
@@ -136,9 +171,9 @@ void matrix_set_rotate(matrix_t<4, 4, float>*m, float x, float y, float z, float
 
 	(*m)[0][3] = (*m)[1][3] = (*m)[2][3] = 0.0f;
 
-	(*m)[3][0] = xOffset;
-	(*m)[3][1] = yOffest;
-	(*m)[3][2] = zOffset;
+	(*m)[3][0] = offset.x;
+	(*m)[3][1] = offset.y;
+	(*m)[3][2] = offset.z;
 
 
 	(*m)[3][3] = 1.0f;

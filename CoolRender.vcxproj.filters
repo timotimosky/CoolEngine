@@ -19,9 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\CoolRenerMain.cpp" />
-    <ClCompile Include="render\UObject.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="render\Camera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -40,9 +37,6 @@
     <ClCompile Include="render\Scene.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="render\shaderStruct.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="render\ShadingCalculate.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -55,10 +49,10 @@
     <ClCompile Include="render\Model.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
+    <ClCompile Include="render\tgaimage.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="render\tgaimage.cpp">
+    <ClCompile Include="render\Shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -70,9 +64,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="render\renderMath.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="render\shaderStruct.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="render\ShadingCalculate.h">
@@ -102,14 +93,14 @@
     <ClInclude Include="render\Model.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="render\tgaimage.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="render\TriangleDrawTest.h">
       <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Shader.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 #pragma once
-#include "shaderStruct.h"
+#include "Shader.h"
 
 
 typedef struct {

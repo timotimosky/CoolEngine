@@ -1,9 +1,8 @@
 #pragma once
-#include "shaderStruct.h"
 #include "ShadingCalculate.h"
 #include "Camera.h"
 #include "Model.h"
-#include "../Shader.h"
+#include "Shader.h"
 //在渲染中，rhw 是摄像机空间转CVV空间的时候，摄像机空间坐标w的负数的倒数。
 //用于摄像机空间转cvv的时候，一个是从4维缩放到3维，另一个是同时恰好实现了近大远小的效果。
 

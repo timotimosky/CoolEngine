@@ -1,6 +1,6 @@
 #pragma once
 #include <stdbool.h>
-#include "shaderStruct.h"
+#include "Shader.h"
 #include "CMaterail.h"
 
 

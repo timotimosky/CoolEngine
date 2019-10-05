@@ -74,6 +74,13 @@ struct vec<2, T> {
 		return *this;
 	}
 
+	vec<2, T>& operator=(const vec<2, T>& v) {
+
+		x = v.x;
+		y = v.y;
+		return *this;
+	}
+
 	T x, y;
 };
 
