@@ -14,9 +14,8 @@
 
 typedef unsigned int IUINT32;
 
-template<size_t DimCols, size_t DimRows, typename T>
 void matrix_Obj2World(matrix_t<4,4,float> *m, Vec4f rot, Vec4f pos);
-template<size_t DimCols, size_t DimRows, typename T>
+
 void matrix_World2Obj(matrix_t<4, 4, float>*m, Vec4f rot, Vec4f pos, float scale);
 
 //坐标系的变化 = 基坐标的位移+坐标系的旋转   坐标系的旋转 跟 这里坐标系内部向量的旋转是一样的

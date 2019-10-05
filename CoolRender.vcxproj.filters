@@ -109,12 +109,7 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="render\TriangleDrawTest.h">
-      <Filter>头文件</Filter>
+      <Filter>Test</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="README.md">
-      <Filter>源文件</Filter>
-    </None>
   </ItemGroup>
 </Project>

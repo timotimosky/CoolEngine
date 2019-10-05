@@ -83,9 +83,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="README.md" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="render\Camera.cpp" />
     <ClCompile Include="render\CMaterail.cpp" />
     <ClCompile Include="render\CoolRenerMain.cpp" />
