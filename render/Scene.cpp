@@ -16,8 +16,8 @@ void vertex_add(vertex_t *y, const vertex_t *x) {
 	y->worldPos.w += x->worldPos.w;
 
 	y->color.a += x->color.a;
-	y->tc.u += x->tc.u;
-	y->tc.v += x->tc.v;
+	y->tc.x += x->tc.x;
+	y->tc.y += x->tc.y;
 	y->color.r += x->color.r;
 	y->color.g += x->color.g;
 	y->color.b += x->color.b;

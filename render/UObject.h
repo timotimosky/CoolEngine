@@ -13,7 +13,7 @@
 typedef struct {
 	point_t pos;//位置 摄像机
 				 
-	texcoord_t tc; //纹理坐标
+	Vec2f tc; //纹理坐标
 	color_t color; //颜色       
 	Vec4f normal; //给寄存器增加法线    将这个合并 float rhw 合并到;  //该顶点的之前的w的倒数， 也就是缩放大小
 	point_t worldPos;  //之前在世界坐标的位置 这个在shader中才需要

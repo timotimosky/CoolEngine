@@ -59,42 +59,18 @@ color_t operator+(color_t value)
 //}
 } ; //颜色
 
-//typedef struct {
-//	Vec4f pos;
-//	color_t color;
-//	Vec4f normal;
-//	Vec4f tangent;
-//	Vec4f binormal;
-//	texcoord_t texcoord;
-//} a2v;
-//
-//
-//typedef struct {
-//	Vec4f pos;
-//	texcoord_t texcoord;
-//	color_t color;
-//	Vec4f normal;
-//	Vec4f storage0;
-//	Vec4f storage1;
-//	Vec4f storage2;
-//} v2f;
-
-
-typedef struct { float u, v; } texcoord_t; //纹理
-
-
 typedef struct {
 	Vec4f pos; //位置
 	color_t color; //颜色
 	Vec4f normal; //法线
 	Vec4f tangent; //切线
 	Vec4f binormal; //副法线
-	texcoord_t texcoord; //uv坐标
+	Vec2f texcoord; //uv坐标
 } a2v;
 
 typedef struct {
 	Vec4f pos;
-	texcoord_t texcoord;
+	Vec2f texcoord;
 	color_t color;
 	Vec4f normal;
 	Vec4f storage0;

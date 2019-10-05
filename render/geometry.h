@@ -59,6 +59,21 @@ struct vec<2, T> {
 		//assert(i < 2); 
 		return i <= 0 ? x : y; 
 	}
+
+	vec<2, T>& operator-(const vec<2, T>& v) {
+
+		x -= v.x;
+		y -= v.y;
+		return *this;
+	}
+
+	vec<2, T>& operator*(const vec<2, T>& v) {
+
+		x *= v.x;
+		y *= v.y;
+		return *this;
+	}
+
 	T x, y;
 };
 
@@ -215,6 +230,12 @@ T interp(T x1, T x2, T t) {
 	return x1 + (x2 - x1) * t;
 }
 
+
+template<typename T, typename U>
+T interp(const T& x1, const T& x2, U t) {
+	return x1 + (x2 - x1) * t;
+}
+
 template<typename T>
 //不允许超过上下限 int
 T CMID(T x, T min, T max)
@@ -282,17 +303,6 @@ template <typename T>
 vec<4, T> cross(const vec<4, T>& v1, const vec<4, T>& v2) { 
 	return vec<4, T>(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x,1);
 }
-
-// 矢量lerp插值，t取值 [0, 1]
-template <typename T>
-void vector_interp(vec<4, T>* z, const vec<4, T>* x1, const vec<4, T>* x2, float t)
-{
-	z->x = interp(x1->x, x2->x, t);
-	z->y = interp(x1->y, x2->y, t);
-	z->z = interp(x1->z, x2->z, t);
-	z->w = interp(x1->w, x2->w, t);//这是深度插值。  非线性插值，用的 1/Z
-}
-
 
 template <size_t DIM, typename T> 
 std::ostream& operator<<(std::ostream& out, vec<DIM, T>& v) {
