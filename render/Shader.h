@@ -28,42 +28,6 @@ enum Render_State
 	RENDER_STATE_verterNormal_color = 16
 };
 
-
-struct color_t {
-	float r, g, b, a;
-
-	color_t operator*(float value)
-	{
-		color_t ncolor_t;
-		ncolor_t.r = r * value;
-		ncolor_t.g = g * value;
-		ncolor_t.b = b * value;
-		ncolor_t.a = a * value; //TODO:透明值考虑这里以后不计算
-		return ncolor_t;
-	}
-
-
-	color_t operator+(color_t value)
-	{
-		color_t ncolor_t;
-		ncolor_t.r = r + value.r;
-		ncolor_t.g = g + value.g;
-		ncolor_t.b = b + value.b;
-		ncolor_t.a = a + value.a;
-		return ncolor_t;
-	}
-
-	//color_t operator-(color_t* value)
-	//{
-	//	color_t ncolor_t;
-	//	ncolor_t.r = r - value->r;
-	//	ncolor_t.g = g - value->g;
-	//	ncolor_t.b = b - value->b;
-	//	ncolor_t.a = a - value->a;
-	//	return ncolor_t;
-	//}
-}; //颜色
-
 typedef struct {
 	Vec4f pos; //位置
 	color_t color; //颜色

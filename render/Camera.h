@@ -21,15 +21,11 @@ typedef enum {
 	//物体与相机的距离（z）也是如此！对于具有相似x和y坐标的两个顶点，具有最大z坐标的顶点将比屏幕的中心更多地位于屏幕的中心。     
 	// 另外，如果是透视视图，W负责缩放物体大小，来模拟视觉。远处的物体更小
 
-
 	//仿Unity，还是使用Transform组件的Rotation
 	Vec4f rotation;
 
-
 	Vec4f front; //朝前向量
 	Vec4f worldup;  //朝上
-
-
 
 	//宽高
 	int width;
@@ -38,11 +34,10 @@ typedef enum {
 	//Maya Camera的Angle of View是Horizontal FOV的角度
 	//Unity Camera的FOV是Vertical FOV的角度
 	float fov;  //fov缩放时，分辨率缩放，但比例不变
-
 	float zn; //近截面
 	float zf; //远截面
 
-			  //上下左右
+	//上下左右
 	float left;
 	float right;
 	float bottom;
@@ -52,7 +47,7 @@ typedef enum {
 	PROJECTION projection;  //摄像机取景类型
 	bool main;  //是否是主摄像机
 
-				// private
+	// private
 	float aspect; //纵横比；如果是主摄像头，则全屏 = 屏幕高宽比
 };
 

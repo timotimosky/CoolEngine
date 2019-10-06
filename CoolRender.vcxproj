@@ -87,7 +87,6 @@
     <ClCompile Include="render\CMaterail.cpp" />
     <ClCompile Include="render\CoolRenerMain.cpp" />
     <ClCompile Include="render\geometry.cpp" />
-    <ClCompile Include="render\LibPngHelper.cpp" />
     <ClCompile Include="render\Lights.cpp" />
     <ClCompile Include="render\Model.cpp" />
     <ClCompile Include="render\Scene.cpp" />
@@ -101,7 +100,6 @@
     <ClInclude Include="render\Camera.h" />
     <ClInclude Include="render\CMaterail.h" />
     <ClInclude Include="render\geometry.h" />
-    <ClInclude Include="render\LibPngHelper.h" />
     <ClInclude Include="render\Lights.h" />
     <ClInclude Include="render\LineDrawTest.h" />
     <ClInclude Include="render\Model.h" />

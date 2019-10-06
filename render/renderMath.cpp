@@ -14,7 +14,6 @@ void transform_update(transform_t* ts) {
 	ts->mv = ts->model * ts->view;
 	ts->vp = ts->view * ts->projection;
 	ts->mvp = ts->mv * ts->projection;
-
 }
 
 Matrix44f& Init_Model_matrix(point_t& pos, Vec4f axis, Vec4f scale)

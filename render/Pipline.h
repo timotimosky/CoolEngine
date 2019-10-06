@@ -38,7 +38,6 @@ extern camera shadowCamera;
 
 typedef struct {
 
-	//transform_t  transform;
 	int width;                  // 窗口宽度
 	int height;                 // 窗口高度
 								//最后输出到屏幕的像素  800*600*32
@@ -48,6 +47,8 @@ typedef struct {
 	float **zbuffer;            // 深度缓存：zbuffer[y] 为第 y行指针      zbuffer[x][y] 代表第x行第y个像素
 	float *shadowbuffer;        // 阴影缓存  以后跟深度是同一个缓冲
 	int render_state;           // 渲染状态
+
+	//TODO:这些都转移到 摄像机的设置
 	IUINT32 background;         // 背景颜色
 	IUINT32 foreground;         // 线框颜色
 }
@@ -98,7 +99,7 @@ void device_draw_scanline(device_t *device, Shader *mShader, scanline_t *scanlin
 void device_render_trap(device_t *device, Shader* mShader, trapezoid_t *trap, float surfaceLight);
 
 // 根据 render_state 绘制原始三角形   
-void device_draw_primitive(device_t *device, Shader *mShader, vertex_t *v1, vertex_t *v2, vertex_t *v3);
+void device_draw_primitive(device_t *device, Shader *mShader,  vertex_t* v1, vertex_t* v2, vertex_t* v3);
 
 // 设置当前纹理
 void device_set_texture(Shader *mShader, void *bits, long pitch, int w, int h);

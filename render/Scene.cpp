@@ -5,22 +5,13 @@
 vector<Object_t> Scene_render_Objs;
 
 void vertex_add(vertex_t *y, const vertex_t *x) {
-	y->pos.x += x->pos.x;
-	y->pos.y += x->pos.y;
-	y->pos.z += x->pos.z;
-	y->pos.w += x->pos.w;
 
-	y->worldPos.x += x->worldPos.x;
-	y->worldPos.y += x->worldPos.y;
-	y->worldPos.z += x->worldPos.z;
-	y->worldPos.w += x->worldPos.w;
+	y->pos += x->pos;
+	y->worldPos += x->worldPos;
+	y->tc += x->tc;
 
-	y->color.a += x->color.a;
-	y->tc.x += x->tc.x;
-	y->tc.y += x->tc.y;
-	y->color.r += x->color.r;
-	y->color.g += x->color.g;
-	y->color.b += x->color.b;
+	y->color += x->color;
+
 	y->shadowPos_z += x->shadowPos_z;
 }
 //·½Ïò¹â

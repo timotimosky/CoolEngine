@@ -67,10 +67,22 @@ struct vec<2, T> {
 		return *this;
 	}
 
+	vec<2, T>& operator+=(const vec<2, T>& v) {
+
+		x += v.x;
+		y += v.y;
+		return *this;
+	}
+
 	vec<2, T>& operator*(const vec<2, T>& v) {
 
 		x *= v.x;
 		y *= v.y;
+		return *this;
+	}
+	vec<2, T>& operator*=(T f) {
+		x *= f;
+		y *= f;
 		return *this;
 	}
 
@@ -146,6 +158,14 @@ struct vec<4, T> {
 		return *this;
 	}
 
+	vec<4, T>& operator*=(T f) {
+		x *= f;
+		y *= f;
+		z *= f;
+		w *= f;
+		return *this;
+	}
+
 	template <class U>
 	vec<4, T>& operator=(const vec<4, U>& v) {
 
@@ -159,19 +179,21 @@ struct vec<4, T> {
 //齐次坐标的第二个功效就是区分向量跟点.  w为1则为点.  w为0则为向量。  因为w作用是位移，向量位移没什么意义。
 // z = x + y  w一直为1
 	template <class U>
-	vec<4, T>& operator+(const vec<4, U>& v) {
+	vec<4, T>& operator+=(const vec<4, U>& v) {
 
-		x = T(v.x + this->x);
-		y = T(v.y + this->y);
-		z = T(v.z + this->z);
+		x += T(v.x);
+		y += T(v.y);
+		z += T(v.z);
+		w += T(v.w);
 		return *this;
 	}
 
-	vec<4, T>& operator+(const vec<4, T>& v) {
+	vec<4, T>& operator+=(const vec<4, T>& v) {
 
-		x = T(v.x + this->x);
-		y = T(v.y + this->y);
-		z = T(v.z + this->z);
+		x += (v.x);
+		y += (v.y);
+		z += (v.z);
+		w += (v.w);
 		return *this;
 	}
 
@@ -507,6 +529,7 @@ typedef vec<3, int>   Vec3i;
 typedef vec<4, float> Vec4f;
 typedef matrix_t<4, 4, float> Matrix44f;
 typedef Vec4f point_t;
+typedef Vec4f color_t;
 ///typedef vec<5, float> Vec5f;
 #endif //__GEOMETRY_H__
 
