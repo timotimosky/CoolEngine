@@ -66,9 +66,6 @@
     <ClInclude Include="render\ShadingCalculate.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="render\UObject.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="render\CMaterail.h">
       <Filter>头文件</Filter>
     </ClInclude>

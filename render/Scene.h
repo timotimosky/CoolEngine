@@ -2,7 +2,6 @@
 #define objectManager_h
 #include <vector>
 #include "Shader.h"
-#include "UObject.h"
 #include "Lights.h"
 using namespace std;
 //用于集成物体的模型、网格、动画、材质、贴图

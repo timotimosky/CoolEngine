@@ -14,13 +14,13 @@
 
 
 //计算法线余弦
-float ComputeNDotL(const point_t* vertex, const Vec4f* normal, const point_t* lightPosition);
+float ComputeNDotL(const point_t* vertex, const Vec4f& normal, const point_t* lightPosition);
 
 //计算顶点到灯光的距离,用于产生阴影
 //float DisVertexToLight(const point_t *Light, Vec4f* VertertPosInWorld);
 
 //顶点
-float calculateVertexLight(const point_t *v1,  Vec4f* normal);
+float calculateVertexLight(const point_t *v1,  Vec4f& normal);
 //平面
 float calculateGroudShader(const point_t *v1, const point_t *v2, const point_t *v3);
 
@@ -32,7 +32,7 @@ float CullCalcutate(const point_t *v1, const point_t *v2, const point_t *v3, con
 //1.Lambert模型（理想漫反射模型：各向同性） Idiffuse = Kd*Id*cosθ
 
 //1.顶点Shader
-float calculateVertexLight(const point_t *v1, Vec4f* normal);
+float calculateVertexLight(const point_t *v1, Vec4f& normal);
 //2.平面Shader
 float calculateGroudShader(const point_t *v1, const point_t *v2, const point_t *v3);
 

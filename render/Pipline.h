@@ -62,9 +62,7 @@ int transform_check_cvv(const Vec4f *v);
 
 void transform_homogenize_reverse(const transform_t *ts, point_t *x, const point_t *y);
 
-void transform_homogenize(const transform_t *ts, point_t *y, const point_t *x);
-
-void vertex_rhw_init(vertex_t *v);
+void transform_homogenize(const transform_t *ts, point_t *y, const point_t &x);
 
 //这里是顶点插值
 void vertex_interp(int render_state, vertex_t *y, const vertex_t *x1, const vertex_t *x2, float t);
