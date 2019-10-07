@@ -38,7 +38,7 @@ transform_t;
 // ¾ØÕó¸üÐÂ
 void transform_update(transform_t* ts);
 
-Matrix44f& Init_Model_matrix(point_t& pos, Vec4f axis, Vec4f scale);
+Matrix44f& Init_Model_matrix(point_t& pos, Vec4f& axis, Vec4f& scale);
 
 void matrix_Obj2World(matrix_t<4,4,float> *m, Vec4f rot, Vec4f pos);
 

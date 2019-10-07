@@ -16,7 +16,7 @@ void transform_update(transform_t* ts) {
 	ts->mvp = ts->mv * ts->projection;
 }
 
-Matrix44f& Init_Model_matrix(point_t& pos, Vec4f axis, Vec4f scale)
+Matrix44f& Init_Model_matrix(point_t& pos, Vec4f& axis, Vec4f& scale)
 {
 	//输入 当前物体原点在世界坐标系中的位置和旋转，  来反推世界矩阵
 	//axis.x 绕X轴的旋转角度
