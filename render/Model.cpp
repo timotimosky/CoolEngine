@@ -42,8 +42,6 @@ Model::Model(const char* filename) : verts_(), faces_(), norms_(), uv_(), diffus
 	  以vec3数据结构挨个存储3个索引， 分别为 点坐标/纹理坐标/法向量坐标的索引，
 	*/
 
-
-
 	std::string line;
 	while (!in.eof()) {
 		std::getline(in, line);
