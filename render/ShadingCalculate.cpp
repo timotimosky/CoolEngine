@@ -2,13 +2,13 @@
 
 // 计算光向量和法线向量之间角度的余弦  
 // 返回0到1之间的值  
-float ComputeNDotL(const point_t* vertex, const Vec4f& normal, const point_t* lightPosition)
+float ComputeNDotL(const point_t& vertex, const Vec4f& normal, const point_t& lightPosition)
 {
 	//TODO:这里的如果简单计算夹角，用 灯光位置-物体顶点位置 的矢量   
 	//如果是 计算反射，则要用 物体顶点位置-灯光位置 的矢量
 	//vector_sub(&lightDirection, vertex , lightPosition);
 
-	Vec4f lightDirection = *lightPosition - *vertex;
+	Vec4f lightDirection = lightPosition - vertex;
 	lightDirection.normalize();
 
 	float dot = normal * lightDirection;
@@ -18,12 +18,12 @@ float ComputeNDotL(const point_t* vertex, const Vec4f& normal, const point_t* li
 }
 
 //计算面中心到摄像机
-float ComputeCameraToVertor(point_t* vertex, const Vec4f* normal, const point_t *camera_pos)
+float ComputeCameraToVertor(const point_t& vertex, const Vec4f& normal, const point_t& camera_pos)
 {
-	Vec4f  CameraToVertor=  *camera_pos- *vertex;
+	Vec4f  CameraToVertor=  camera_pos- vertex;
 	CameraToVertor.normalize();
 
-	float dot = *normal *CameraToVertor;
+	float dot = normal * CameraToVertor;
 
 	return dot; 
 }
@@ -43,7 +43,7 @@ float calculateVertexLight(const point_t *v1, Vec4f& normal)
 {
 	normal.normalize();
 	//灯光参数，用于乘基本颜色     (0-1)之间 被用作颜色的亮度
-	float surfaceLight = ComputeNDotL(v1, normal, &dirLight.dir); //表面灯光
+	float surfaceLight = ComputeNDotL(*v1, normal, dirLight.dir); //表面灯光
 
 	return surfaceLight;
 
@@ -68,7 +68,7 @@ float CullCalcutate(const point_t *v1, const point_t *v2, const point_t *v3, con
 	surfaceNormal.normalize();
 
 	//剔除参数 
-	float cull = ComputeCameraToVertor(&center, &surfaceNormal, camera_pos); 
+	float cull = ComputeCameraToVertor(center, surfaceNormal, *camera_pos); 
 
 	return cull;
 
@@ -101,7 +101,7 @@ float calculateGroudShader(const point_t *v1, const point_t *v2, const point_t *
 	surfaceNormal.normalize();
 
 	//灯光参数，用于乘基本颜色     (0-1)之间 被用作颜色的亮度 
-	float surfaceLight = ComputeNDotL(&center, surfaceNormal, &dirLight.dir); //表面灯光
+	float surfaceLight = ComputeNDotL(center, surfaceNormal, dirLight.dir); //表面灯光
 	//printf("surfaceLight当前%f", surfaceLight);
 	return surfaceLight;
 

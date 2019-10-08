@@ -100,15 +100,13 @@ void device_draw_scanline(device_t *device, Shader *mShader, scanline_t *scanlin
 // 主渲染函数   渲染一个三角形
 void device_render_trap(device_t *device, Shader* mShader, trapezoid_t *trap, float surfaceLight);
 
-// 根据 render_state 绘制原始三角形   
+// 根据 render_state 绘制图元: 原始三角形   
 void device_draw_primitive(device_t *device, Shader *mShader,  vertex_t* v1, vertex_t* v2, vertex_t* v3);
 
 // 设置当前纹理
 void device_set_texture(Shader *mShader, void *bits, long pitch, int w, int h);
 
 //void vert_shader(device_t *device, a2v *av, v2f *vf);
-
-void triangle(device_t* device, Shader* mShader, Vec3f* px1, Vec3f* px2, Vec3f* px3); //mat<3, 3, float> v3);
 
 void frag_shader(device_t *device, v2f *vf, color_t *color);
 

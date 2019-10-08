@@ -2,6 +2,19 @@
 #include "ShadingCalculate.h"
 #include "Pipline.h"
 
+Shader::Shader()
+{
+	v1 = new vertex_t();
+	v2 = new vertex_t();
+	v3 = new vertex_t();
+}
+
+Shader::~Shader()
+{
+	delete(v1);
+	delete(v2);
+	delete(v3);
+}
 
 
 //IShader::~IShader() {}
@@ -44,6 +57,10 @@ void Shader::vertex_shader(vertex_t* v1,int nfaces_index,int vertex_index)
 
 	v1->tc = mModel->uv(nfaces_index, vertex_index);
 
+	Vec3f vNormal = mModel->normal(nfaces_index, vertex_index);
+
+	v1->normal = Vec4f(vNormal.x, vNormal.y, vNormal.z,1);
+
 	v1->worldPos = v1->pos * transform.model;
 	//投影坐标 cvv空间
 	v1->project_pos = v1->pos * transform.mvp;
@@ -54,6 +71,8 @@ void Shader::vertex_shader(vertex_t* v1,int nfaces_index,int vertex_index)
 
 void Shader::frag_shader(vertex_t& frag_Vertex_t, IUINT32& color)
 {
+
+	float surfaceLight = ComputeNDotL(frag_Vertex_t.worldPos, frag_Vertex_t.world_normal, dirLight.dir);
 
 	//前期用于坐标转换，后期用于存储深度
 	float rhw = frag_Vertex_t.pos.w; 
@@ -97,7 +116,9 @@ void Shader::frag_shader(vertex_t& frag_Vertex_t, IUINT32& color)
 			int R = mTgacolor.bgra[2] - '0' + 48;
 			int G = mTgacolor.bgra[1] - '0' + 48;
 			int B = mTgacolor.bgra[0] - '0' + 48;
-
+			R *= surfaceLight;
+			G *= surfaceLight;
+			B *= surfaceLight;
 			color = (R << 16) | (G << 8) | (B);
 		}
 
