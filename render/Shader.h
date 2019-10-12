@@ -55,7 +55,8 @@ typedef struct {
 //pos在坐标系转换中为了统一转换，扩展到了四维。 pos的W值是用于坐标从4维到3维的还原，也就是CVV到光栅化的阶段
 //color_t的W值，是用于记录该顶点/像素点的深度，用于深度剔除
 
-typedef struct {
+typedef class {
+public:
 	point_t pos;//位置 摄像机
 
 	Vec2f tc; //纹理坐标
@@ -95,8 +96,9 @@ void vertex_add(vertex_t* y, const vertex_t* x);
 
 
 //物体
-typedef struct
+typedef class
 {
+public:
 	unsigned long mesh_num;//..
 
 	point_t pos;

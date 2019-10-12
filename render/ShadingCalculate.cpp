@@ -113,16 +113,21 @@ float calculateGroudShader(const point_t *v1, const point_t *v2, const point_t *
 color_t Lambert(transform_t* mainTrans, Vec4f *v_Obj, Vec4f* normal, Vec4f* lightPos, color_t diffuseColor, color_t ambientColor)
 {
 	//将顶点变换到视图空间  
-	Vec4f  ObjInView = (*v_Obj) * mainTrans->mv;
+	Vec4f  ObjInView;
+	cross(ObjInView,(*v_Obj) , mainTrans->mv);
 
 	//将顶点变换到相机透视空间  
-	Vec4f  ObjInCVV = (*v_Obj) * mainTrans->mvp;
-
+	Vec4f  ObjInCVV;
+		//= (*v_Obj) * mainTrans->mvp;
+	cross(ObjInCVV, (*v_Obj), mainTrans->mvp);
 	//Vec4f* normalInView = NULL;
 	//将法线变换到视图空间
 	//matrix_apply(normalInView, normal, &mainTrans->mv);
 
-	Vec4f normalInView = (*normal) * mainTrans->mv;
+	Vec4f normalInView;
+		//= (*normal) * mainTrans->mv;
+
+	cross(normalInView, (*normal), mainTrans->mv);
 	//TODO:这里把灯光转到视图空间
 
 	// 计算视图空间的灯光方向
@@ -160,15 +165,21 @@ color_t Phong(transform_t* mainTrans, Vec4f *posInObj, Vec4f *normal, Vec4f* lig
 	//	return Output;
 
 	//将顶点变换到视图空间  
-	Vec4f  posInView = (*posInObj) * mainTrans->mv;
+	Vec4f  posInView;
+		//= (*posInObj) * mainTrans->mv;
 
+	cross(posInView, (*posInObj), mainTrans->mv);
 	//将顶点变换到相机透视空间  
-	Vec4f  posInCvv = (*posInObj) * mainTrans->mvp;
-
+	Vec4f  posInCvv;
+		//= (*posInObj) * mainTrans->mvp;
+	cross(posInCvv, (*posInObj), mainTrans->mvp);
 
 	//将法线变换到视图空间
 	//matrix_apply(normalInView, normal, &mainTrans->mv);
-	Vec4f normalInView =  (*normal)  * mainTrans->mv;
+	Vec4f normalInView;
+		//=  (*normal)  * mainTrans->mv;
+	cross(normalInView, (*normal), mainTrans->mv);
+
 	// 计算视图空间的灯光方向
 	Vec4f lightDirInView =  *lightPos- posInView;
 

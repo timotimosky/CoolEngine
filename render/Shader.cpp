@@ -61,12 +61,14 @@ void Shader::vertex_shader(vertex_t* v1,int nfaces_index,int vertex_index)
 
 	v1->normal = Vec4f(vNormal.x, vNormal.y, vNormal.z,1);
 
-	v1->worldPos = v1->pos * transform.model;
+	//v1->worldPos = v1->pos * transform.model;
+	cross(v1->worldPos ,v1->pos , transform.model);
 	//投影坐标 cvv空间
-	v1->project_pos = v1->pos * transform.mvp;
+//	v1->project_pos = v1->pos * transform.mvp;
+	cross(v1->project_pos, v1->pos, transform.mvp);
 	//法线转换到世界空间
-	v1->world_normal = v1->normal * transform.model;
-
+	//v1->world_normal = v1->normal * transform.model;
+	cross(v1->world_normal, v1->normal, transform.model);
 }
 
 void Shader::frag_shader(vertex_t& frag_Vertex_t, IUINT32& color)

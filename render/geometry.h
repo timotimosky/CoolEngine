@@ -385,6 +385,7 @@ public:
 		return *this;
 	}
 
+	 //慎用，性能差
 	vec<DimRows, T> col(const size_t idx) const {
 		//assert(idx < DimCols);
 		vec<DimRows, T> ret;
@@ -453,32 +454,11 @@ public:
 //////////////////////////向量与矩阵的运算///////////////////////////////////////////////////////
 
 
-template<size_t DimRows, size_t DimCols, typename T> 
-vec<DimRows, T> operator*(const matrix_t<DimRows, DimCols, T>& lhs, const vec<DimCols, T>& rhs) {
-	vec<DimRows, T> ret;
-	for (size_t i = DimRows; i--; ret[i] = lhs[i] * rhs);
-	return ret;
-}
-
+//向量的矩阵变换
 template<size_t DimRows, size_t DimCols, typename T>
-vec<DimRows, T> operator*(const vec<DimCols, T>& rhs, const matrix_t<DimRows, DimCols, T>& lhs) {
-	vec<DimRows, T> ret;
+void  cross(vec<DimRows, T>& ret,const vec<DimCols, T>& rhs, const matrix_t<DimRows, DimCols, T>& lhs) {
 	for (size_t i = DimRows; i--; ret[i] = lhs[i] * rhs);
-	return ret;
 }
-//向量 右乘矩阵 
-template<size_t DimRows, size_t DimCols, typename T>
-vec<DimRows, T> operator*(const vec<DimCols, T>& rhs,  matrix_t<DimRows, DimCols, T>& lhs) {
-	vec<DimRows, T> ret;
-	for (size_t i = DimRows; i--; ret[i] = rhs * lhs.col(i));
-	return ret;
-}
-
-//template<size_t DIM, typename T, typename U> 
-//vec<DIM, T> operator*(vec<DIM, T> lhs, const U& rhs) {
-//		for (size_t i = DIM; i--; lhs[i] *= rhs);
-//		return lhs;
-//	}
 
 
 // TODO: 获得一个缩放矩阵 左乘
@@ -500,13 +480,38 @@ matrix_t<DimRows, DimCols, T> matrix_set_translate(const vec<DimRows, T>& rhs) {
 	return ret;
 }
 
+//性能差，慎用
 template<size_t R1, size_t C1, size_t C2, typename T>
 matrix_t<R1, C2, T> operator*(const matrix_t<R1, C1, T>& lhs, const matrix_t<C1, C2, T>& rhs) {
 	matrix_t<R1, C2, T> result;
-	for (size_t i = R1; i--; )
-		for (size_t j = C2; j--; result[i][j] = lhs[i] * rhs.col(j));
+
+	for (size_t i = R1; i--;)
+		//for (size_t j = C2; j--; result[i][j] = lhs[i] * rhs.col(j));
+		for (size_t j = C2; j--;)
+		{
+			for (int k = 0; k < C1; k++)
+			{
+					result[i][j] += lhs[i][k] * rhs[k][j];
+			}
+		}
 	return result;
 }
+//void matrix_mul(Matrix44f*c, const Matrix44f*left , const Matrix44f*right) {
+//	int i, j;
+//	for (i = 0; i < 4; i++)
+//	{
+//		for (j = 0; j < 4; j++)
+//		{
+//			c[i][j] =
+//				(left[i][0] * right[0][j]) +
+//				(left[i][1] * right[1][j]) +
+//				(left[i][2] * right[2][j]) +
+//				(left[i][3] * right[3][j]);
+//		}
+//	}
+//}
+
+
 
 template<size_t DimRows, size_t DimCols, typename T>
 matrix_t<DimCols, DimRows, T> operator/(matrix_t<DimRows, DimCols, T> lhs, const T& rhs) {
@@ -530,7 +535,8 @@ typedef vec<4, float> Vec4f;
 typedef matrix_t<4, 4, float> Matrix44f;
 typedef Vec4f point_t;
 typedef Vec4f color_t;
-///typedef vec<5, float> Vec5f;
+
+
 #endif //__GEOMETRY_H__
 
 

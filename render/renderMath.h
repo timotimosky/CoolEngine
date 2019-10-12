@@ -21,6 +21,9 @@ typedef struct {
 
 	float screen_width, screen_height;             // 屏幕大小
 
+	Vec4f worldPos;
+	Vec4f worldRot;
+	Vec4f worldScale;
 	//貌似没有模型矩阵
 
 	Matrix44f model;         // 物体-世界矩阵，每个物体都有自己的物体矩阵。TODO: 以后分离到每个物体管理
