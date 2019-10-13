@@ -1,5 +1,4 @@
-#ifndef __GEOMETRY_H__
-#define __GEOMETRY_H__
+#pragma once
 #include <cmath>
 #include <vector>
 #include <cassert>
@@ -255,7 +254,7 @@ struct vec<4, T> {
 /////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-T interp(T x1, T x2, T t) {
+T interp(T& x1, T& x2, T& t) {
 	return x1 + (x2 - x1) * t;
 }
 
@@ -284,15 +283,15 @@ T operator*(const vec<DIM, T>& lhs, const vec<DIM, T>& rhs) {
 
 
 
-template<size_t DIM, typename T>vec<DIM, T> 
-operator+(vec<DIM, T> lhs, const vec<DIM, T>& rhs)
+template<size_t DIM, typename T>
+vec<DIM, T> operator+(vec<DIM, T> lhs, const vec<DIM, T>& rhs)
 {
 	for (size_t i = DIM; i--; lhs[i] += rhs[i]);
 	return lhs;
 }
 
-template<size_t DIM, typename T>vec<DIM, T> 
-operator-(vec<DIM, T> lhs, const vec<DIM, T>& rhs) {
+template<size_t DIM, typename T>
+vec<DIM, T> operator-(vec<DIM, T> lhs, const vec<DIM, T>& rhs) {
 	for (size_t i = DIM; i--; lhs[i] -= rhs[i]);
 	return lhs;
 }
@@ -536,8 +535,6 @@ typedef matrix_t<4, 4, float> Matrix44f;
 typedef Vec4f point_t;
 typedef Vec4f color_t;
 
-
-#endif //__GEOMETRY_H__
 
 
 
