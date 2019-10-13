@@ -64,11 +64,11 @@ void transform_homogenize_reverse(const transform_t *ts, point_t *x, const point
 
 void transform_homogenize(const transform_t *ts, point_t *y, const point_t &x);
 
-//这里是顶点插值
+//插值  计算每个像素点的过渡的差值  包括坐标x,y,z,w 颜色rpg
 void vertex_interp(int render_state, vertex_t *y, const vertex_t *x1, const vertex_t *x2, float t);
 
-//这是扫描线的像素插值  计算每个像素点的过渡的差值  包括坐标x,y,z,w 颜色rpg
-void vertex_division(int render_state, vertex_t *y, const vertex_t *x1, const vertex_t *x2, float width);
+////这是扫描线的像素插值  计算每个像素点的过渡的差值  包括坐标x,y,z,w 颜色rpg
+//void vertex_division(int render_state, vertex_t *y, const vertex_t *x1, const vertex_t *x2, float width);
 
 // 根据三角形拆分为 0-2 个三角形，并且返回合法三角形的数量
 int trapezoid_init_triangle(trapezoid_t *trap, const vertex_t *p1, const vertex_t *p2, const vertex_t *p3);

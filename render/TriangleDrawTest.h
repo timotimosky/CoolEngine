@@ -64,24 +64,24 @@ void triangle1(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, const TGAColor& co
 }
 
 //渲染三角形: 跟上面一样，但代码更短
-void triangle2(Vec2f t0, Vec2i t1, Vec2i t2, TGAImage& image, const TGAColor& color) {
+void triangle2(Vec2f t0, Vec2f t1, Vec2f t2, TGAImage& image, const TGAColor& color) {
 	// sort the vertices, t0, t1, t2 lower−to−upper (bubblesort yay!) 
 	if (t0.y > t1.y) std::swap(t0, t1);
 	if (t0.y > t2.y) std::swap(t0, t2);
 	if (t1.y > t2.y) std::swap(t1, t2);
 	int total_height = t2.y - t0.y;//110
 
-	Vec2i T2_T0 = t2 - t0;
-	Vec2i T1_T0 = t1 - t0;
-	Vec2i T2_T1 = (t2 - t1);
+	Vec2f T2_T0 = t2 - t0;
+	Vec2f T1_T0 = t1 - t0;
+	Vec2f T2_T1 = (t2 - t1);
 
 	for (int i = 0; i < total_height; i++) {
 		bool second_half = i > T1_T0.y || t1.y == t0.y; //是否属于上半三角形
 		int segment_height = second_half ? T2_T1.y : T1_T0.y;
 		float alpha = (float)i / total_height;
 		float beta = (float)(i - (second_half ? T1_T0.y : 0)) / segment_height; // be careful: with above conditions no division by zero here 
-		Vec2i A = t0 + T2_T0 * alpha;
-		Vec2i B = second_half ? t1 + (T2_T1) * beta : t0 + (T1_T0) * beta;
+		Vec2f A = t0 + T2_T0 * alpha;
+		Vec2f B = second_half ? t1 + (T2_T1) * beta : t0 + (T1_T0) * beta;
 		if (A.x > B.x) std::swap(A, B);
 		for (int j = A.x; j <= B.x; j++) {
 			image.set(j, t0.y + i, color); // attention, due to int casts t0.y+i != A.y 
@@ -136,9 +136,9 @@ void Testtriangle(TGAImage& image)
 
 void Testtriangle2(TGAImage& image) {
 
-	Vec2i t0[3] = { Vec2i(10, 70),   Vec2i(50, 160),  Vec2i(70, 80) };
-	Vec2i t1[3] = { Vec2i(180, 50),  Vec2i(150, 1),   Vec2i(70, 180) };
-	Vec2i t2[3] = { Vec2i(180, 150), Vec2i(120, 160), Vec2i(130, 180) };
+	Vec2f t0[3] = { Vec2f(10, 70),   Vec2f(50, 160),  Vec2f(70, 80) };
+	Vec2f t1[3] = { Vec2f(180, 50),  Vec2f(150, 1),   Vec2f(70, 180) };
+	Vec2f t2[3] = { Vec2f(180, 150), Vec2f(120, 160), Vec2f(130, 180) };
 	triangle2(t0[0], t0[1], t0[2], image, red);
 	triangle2(t1[0], t1[1], t1[2], image, white);
 	triangle2(t2[0], t2[1], t2[2], image, green);
@@ -169,8 +169,8 @@ int TestTrianglemain() {
 	start = clock();
 	///for(int i=0; i<10000;i++)
 		//Testtriangle(image);
-	//Testtriangle2(image);
-	Testtriangle3(image);
+	Testtriangle2(image);
+	//Testtriangle3(image);
 
 	finish = clock();
 	duration = (double)(finish - start) / CLOCKS_PER_SEC;

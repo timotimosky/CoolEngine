@@ -118,9 +118,9 @@ void Shader::frag_shader(vertex_t& frag_Vertex_t, IUINT32& color)
 			int R = mTgacolor.bgra[2] - '0' + 48;
 			int G = mTgacolor.bgra[1] - '0' + 48;
 			int B = mTgacolor.bgra[0] - '0' + 48;
-			R *= surfaceLight;
-			G *= surfaceLight;
-			B *= surfaceLight;
+			//R *= surfaceLight;
+			//G *= surfaceLight;
+			//B *= surfaceLight;
 			color = (R << 16) | (G << 8) | (B);
 		}
 
