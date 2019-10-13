@@ -59,7 +59,7 @@ void Shader::vertex_shader(vertex_t* v1,int nfaces_index,int vertex_index)
 
 	Vec3f vNormal = mModel->normal(nfaces_index, vertex_index);
 
-	v1->normal = Vec4f(vNormal.x, vNormal.y, vNormal.z,1);
+	v1->normal = Vec4f(vNormal.x, vNormal.y, vNormal.z,0);
 
 	//v1->worldPos = v1->pos * transform.model;
 	cross(v1->worldPos ,v1->pos , transform.model);

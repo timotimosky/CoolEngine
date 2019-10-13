@@ -489,7 +489,11 @@ public:
 //向量的矩阵变换
 template<size_t DimRows, size_t DimCols, typename T>
 void  cross(vec<DimRows, T>& ret,const vec<DimCols, T>& rhs, const matrix_t<DimRows, DimCols, T>& lhs) {
-	for (size_t i = DimRows; i--; ret[i] = lhs[i] * rhs);
+	for (size_t i = DimRows; i--; ret[i] = 
+		//lhs[i] * rhs[i]);
+		lhs.col(i) * rhs);
+		
+		
 }
 
 
@@ -518,14 +522,14 @@ matrix_t<R1, C2, T> operator*(const matrix_t<R1, C1, T>& lhs, const matrix_t<C1,
 	matrix_t<R1, C2, T> result;
 
 	for (size_t i = R1; i--;)
-		//for (size_t j = C2; j--; result[i][j] = lhs[i] * rhs.col(j));
-		for (size_t j = C2; j--;)
-		{
-			for (int k = 0; k < C1; k++)
-			{
-					result[i][j] += lhs[i][k] * rhs[k][j];
-			}
-		}
+		for (size_t j = C2; j--; result[i][j] = lhs[i] * rhs.col(j));
+		//for (size_t j = C2; j--;)
+		//{
+		//	for (int k = 0; k < C1; k++)
+		//	{
+		//			result[i][j] += lhs[i][k] * rhs[k][j];
+		//	}
+		//}
 	return result;
 }
 //void matrix_mul(Matrix44f*c, const Matrix44f*left , const Matrix44f*right) {
