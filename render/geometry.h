@@ -23,13 +23,12 @@ struct vec {
 	//已放弃使用assert()的原因是，频繁的调用会极大的影响程序的性能，增加额外的开销。
 	T& operator[](const size_t i) 
 	{ 
-		//assert(i < DIM); 
+		assert(i < DIM); 
 		return data_[i]; 
 	}
 	const T& operator[](const size_t i) const 
 	{ 
-		//assert(i < DIM); 
-
+		assert(i < DIM); 
 		return data_[i];
 	}
 //private:
@@ -58,53 +57,6 @@ struct vec<2, T> {
 		//assert(i < 2); 
 		return i <= 0 ? x : y; 
 	}
-
-	//vec<2, T> operator-(const vec<2, T>& v) {
-	//	vec<2, T> retvec;
-	//	retvec.x = this->x-v.x;
-	//	retvec.y = this->y-v.y;
-	//	return retvec;
-	//}
-
-	//vec<2, T>& operator+=(const vec<2, T>& v) {
-
-	//	x += v.x;
-	//	y += v.y;
-	//	return *this;
-	//}
-
-	//vec<2, T> operator*(const vec<2, T>& v) {
-	//	vec<2, T> retvec;
-	//	retvec.x = this->x * v.x;
-	//	retvec.y = this->y * v.y;
-	//	return retvec;
-	//}
-	//vec<2, T>& operator*=(T f) {
-	//	x *= f;
-	//	y *= f;
-	//	return *this;
-	//}
-
-	//vec<2, T> operator*(float f) {
-	//	vec<2, T> retvec;
-	//	retvec.x = x * f;
-	//	retvec.y = y * f;
-	//	return retvec;
-	//}
-
-	//vec<2, T> operator*(T f) {
-	//	vec<2, T> retvec;
-	//	retvec.x = x*f;
-	//	retvec.y = y*f;
-	//	return retvec;
-	//}
-
-	//vec<2, T>& operator=(const vec<2, T>& v) {
-
-	//	x = v.x;
-	//	y = v.y;
-	//	return *this;
-	//}
 
 	T x, y;
 };
@@ -171,80 +123,9 @@ struct vec<4, T> {
 		return *this;
 	}
 
-	/*vec<4, T>& operator*=(T f) {
-		x *= f;
-		y *= f;
-		z *= f;
-		w *= f;
-		return *this;
-	}
-
-	template <class U>
-	vec<4, T>& operator=(const vec<4, U>& v) {
-
-		x = T(v.x + .5f);
-		y = T(v.y + .5f);
-		z = T(v.z + .5f);
-		w = T(v.w + .5f);
-		return *this;
-	}*/
-	
-//齐次坐标的第二个功效就是区分向量跟点.  w为1则为点.  w为0则为向量。  因为w作用是位移，向量位移没什么意义。
-// z = x + y  w一直为1
-//	template <class U>
-	/*vec<4, T>& operator+=(const vec<4, U>& v) {
-
-		x += T(v.x);
-		y += T(v.y);
-		z += T(v.z);
-		w += T(v.w);
-		return *this;
-	}
-
-	vec<4, T>& operator+=(const vec<4, T>& v) {
-
-		x += (v.x);
-		y += (v.y);
-		z += (v.z);
-		w += (v.w);
-		return *this;
-	}
-
-	template <class U>
-	vec<4, T> operator-(const vec<4, U>& u) {
-
-		x = T(this->x - u.x);
-		y = T(this->y - u.y);
-		z = T(this->z - u.z);
-		return *this;
-	}
-
-	vec<4, T> operator-(const vec<4, T>& u) {
-		vec<4, T> retVec;
-		retVec.x = T(retVec.x - u.x);
-		retVec.y = T(retVec.y - u.y);
-		retVec.z = T(retVec.z - u.z);
-		return retVec;
-	}
-
-	vec<4, T> operator*(float u) {
-		vec<4, T> retVec;
-		retVec.x = T(retVec.x * u);
-		retVec.y = T(retVec.y * u);
-		retVec.z = T(retVec.z * u);
-		return retVec;
-	}*/
-
-	////矢量点乘
-	//template <class U>
-	//float operator*(vec<4, U> v) {
-	//	return x * v.x + y * v.y + z * v.z;
-	//}
-
-
 	const T& operator[](const size_t i) const
 	{
-	//	assert(i < 4);
+		assert(i < 4);
 		return i <= 0 ? x : (1 == i ? y : (2 == i ? z : w));
 	}
 
@@ -271,7 +152,6 @@ template<typename T>
 T interp(T& x1, T& x2, T& t) {
 	return x1 + (x2 - x1) * t;
 }
-
 
 template<typename T, typename U>
 T interp(const T& x1, const T& x2, U t) {
@@ -487,13 +367,16 @@ public:
 
 
 //向量的矩阵变换
-template<size_t DimRows, size_t DimCols, typename T>
-void  cross(vec<DimRows, T>& ret,const vec<DimCols, T>& rhs, const matrix_t<DimRows, DimCols, T>& lhs) {
-	for (size_t i = DimRows; i--; ret[i] = 
-		//lhs[i] * rhs[i]);
-		lhs.col(i) * rhs);
-		
-		
+template<typename T>
+void  cross(vec<4, T>& ret,const vec<4, T>& left, const matrix_t<4, 4, T>& right) {
+	for (size_t i = 4; i--;)
+	{
+		ret[i] = 0;
+		for (size_t colindex = 4; colindex--;)
+		{
+			ret[i] += right[colindex][i] * left[colindex];
+		}
+	}
 }
 
 
