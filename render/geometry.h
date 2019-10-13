@@ -59,38 +59,52 @@ struct vec<2, T> {
 		return i <= 0 ? x : y; 
 	}
 
-	vec<2, T>& operator-(const vec<2, T>& v) {
+	//vec<2, T> operator-(const vec<2, T>& v) {
+	//	vec<2, T> retvec;
+	//	retvec.x = this->x-v.x;
+	//	retvec.y = this->y-v.y;
+	//	return retvec;
+	//}
 
-		x -= v.x;
-		y -= v.y;
-		return *this;
-	}
+	//vec<2, T>& operator+=(const vec<2, T>& v) {
 
-	vec<2, T>& operator+=(const vec<2, T>& v) {
+	//	x += v.x;
+	//	y += v.y;
+	//	return *this;
+	//}
 
-		x += v.x;
-		y += v.y;
-		return *this;
-	}
+	//vec<2, T> operator*(const vec<2, T>& v) {
+	//	vec<2, T> retvec;
+	//	retvec.x = this->x * v.x;
+	//	retvec.y = this->y * v.y;
+	//	return retvec;
+	//}
+	//vec<2, T>& operator*=(T f) {
+	//	x *= f;
+	//	y *= f;
+	//	return *this;
+	//}
 
-	vec<2, T>& operator*(const vec<2, T>& v) {
+	//vec<2, T> operator*(float f) {
+	//	vec<2, T> retvec;
+	//	retvec.x = x * f;
+	//	retvec.y = y * f;
+	//	return retvec;
+	//}
 
-		x *= v.x;
-		y *= v.y;
-		return *this;
-	}
-	vec<2, T>& operator*=(T f) {
-		x *= f;
-		y *= f;
-		return *this;
-	}
+	//vec<2, T> operator*(T f) {
+	//	vec<2, T> retvec;
+	//	retvec.x = x*f;
+	//	retvec.y = y*f;
+	//	return retvec;
+	//}
 
-	vec<2, T>& operator=(const vec<2, T>& v) {
+	//vec<2, T>& operator=(const vec<2, T>& v) {
 
-		x = v.x;
-		y = v.y;
-		return *this;
-	}
+	//	x = v.x;
+	//	y = v.y;
+	//	return *this;
+	//}
 
 	T x, y;
 };
@@ -157,7 +171,7 @@ struct vec<4, T> {
 		return *this;
 	}
 
-	vec<4, T>& operator*=(T f) {
+	/*vec<4, T>& operator*=(T f) {
 		x *= f;
 		y *= f;
 		z *= f;
@@ -173,12 +187,12 @@ struct vec<4, T> {
 		z = T(v.z + .5f);
 		w = T(v.w + .5f);
 		return *this;
-	}
+	}*/
 	
 //齐次坐标的第二个功效就是区分向量跟点.  w为1则为点.  w为0则为向量。  因为w作用是位移，向量位移没什么意义。
 // z = x + y  w一直为1
-	template <class U>
-	vec<4, T>& operator+=(const vec<4, U>& v) {
+//	template <class U>
+	/*vec<4, T>& operator+=(const vec<4, U>& v) {
 
 		x += T(v.x);
 		y += T(v.y);
@@ -197,7 +211,7 @@ struct vec<4, T> {
 	}
 
 	template <class U>
-	vec<4, T>& operator-(const vec<4, U>& u) {
+	vec<4, T> operator-(const vec<4, U>& u) {
 
 		x = T(this->x - u.x);
 		y = T(this->y - u.y);
@@ -205,27 +219,27 @@ struct vec<4, T> {
 		return *this;
 	}
 
-	vec<4, T>& operator-(const vec<4, T>& u) {
-
-		x = T(this->x - u.x);
-		y = T(this->y - u.y);
-		z = T(this->z - u.z);
-		return *this;
+	vec<4, T> operator-(const vec<4, T>& u) {
+		vec<4, T> retVec;
+		retVec.x = T(retVec.x - u.x);
+		retVec.y = T(retVec.y - u.y);
+		retVec.z = T(retVec.z - u.z);
+		return retVec;
 	}
 
-	vec<4, T>& operator*(float u) {
+	vec<4, T> operator*(float u) {
+		vec<4, T> retVec;
+		retVec.x = T(retVec.x * u);
+		retVec.y = T(retVec.y * u);
+		retVec.z = T(retVec.z * u);
+		return retVec;
+	}*/
 
-		x = T(this->x * u);
-		y = T(this->y * u);
-		z = T(this->z * u);
-		return *this;
-	}
-
-	//矢量点乘
-	template <class U>
-	float operator*(vec<4, U> v) {
-		return x * v.x + y * v.y + z * v.z;
-	}
+	////矢量点乘
+	//template <class U>
+	//float operator*(vec<4, U> v) {
+	//	return x * v.x + y * v.y + z * v.z;
+	//}
 
 
 	const T& operator[](const size_t i) const
@@ -281,13 +295,19 @@ T operator*(const vec<DIM, T>& lhs, const vec<DIM, T>& rhs) {
 	return ret;
 }
 
-
+template<size_t DIM, typename T>
+vec<DIM, T>& operator+=(vec<DIM, T>& lhs, const vec<DIM, T>& rhs)
+{
+	for (size_t i = DIM; i--; lhs[i] += rhs[i]);
+	return lhs;
+}
 
 template<size_t DIM, typename T>
 vec<DIM, T> operator+(vec<DIM, T> lhs, const vec<DIM, T>& rhs)
 {
-	for (size_t i = DIM; i--; lhs[i] += rhs[i]);
-	return lhs;
+	vec<DIM, T> retVec;
+	for (size_t i = DIM; i--; retVec[i]= lhs[i] + rhs[i]);
+	return retVec;
 }
 
 template<size_t DIM, typename T>
@@ -301,6 +321,19 @@ operator*(vec<DIM, T> lhs, const T& rhs) {
 	for (size_t i = DIM; i--; lhs[i] = lhs[i] * rhs);
 	return lhs;
 }
+template<size_t DIM, typename T, typename U> vec<DIM, T>
+	operator*(vec<DIM, T> lhs, const U& rhs) {
+		for (size_t i = DIM; i--; lhs[i] = lhs[i] * rhs);
+		return lhs;
+	}
+
+//template<size_t DIM, typename T>
+//vec<DIM, T> operator*(const vec<DIM, T>& lhs, float f) {
+//	vec<DIM, T> ret = vec<DIM, T>();
+//	for (size_t i = DIM; i--; ret[i] = lhs[i] * f);
+//	return ret;
+//}
+
 
 template<size_t DIM, typename T, typename U> vec<DIM, T> 
 operator/(vec<DIM, T> lhs, const U& rhs) {
