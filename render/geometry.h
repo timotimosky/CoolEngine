@@ -158,6 +158,11 @@ T interp(const T& x1, const T& x2, U t) {
 	return x1 + (x2 - x1) * t;
 }
 
+template<typename T, typename U>
+T GetStep(const T& x1, const T& x2, U t) {
+	return (x2 - x1) * t;
+}
+
 template<typename T>
 //不允许超过上下限 int
 T CMID(T x, T min, T max)
@@ -361,6 +366,15 @@ public:
 			for (size_t j = DimCols; j--; (rows)[i][j] = (i == j)); //true =1  false=0
 		return *this;
 	}
+
+	////对MyMatrix添加 = 重载:
+	//template <class Expr>
+	//Matrix44f& operator=(Expr const& x)
+	//{
+	//	for (unsigned i = 0; i < 50000; i++)
+	//		(*this) = x;
+	//	return   *this;
+	//}
 };
 
 //////////////////////////向量与矩阵的运算///////////////////////////////////////////////////////
@@ -374,7 +388,7 @@ void  cross(vec<4, T>& ret,const vec<4, T>& left, const matrix_t<4, 4, T>& right
 		ret[i] = 0;
 		for (size_t colindex = 4; colindex--;)
 		{
-			ret[i] += right[colindex][i] * left[colindex];
+			ret[i] += left[colindex]* right[colindex][i];
 		}
 	}
 }
@@ -405,6 +419,7 @@ matrix_t<R1, C2, T> operator*(const matrix_t<R1, C1, T>& lhs, const matrix_t<C1,
 	matrix_t<R1, C2, T> result;
 
 	for (size_t i = R1; i--;)
+		//模板嵌套可以再编译时计算,节约运行时间
 		//for (size_t j = C2; j--; result[i][j] = lhs[i] * rhs.col(j)); //0.622	
 		for (size_t j = C2; j--;) //优化后：0.592
 		{
@@ -422,11 +437,11 @@ void multiply(matrix_t<R1, C2, T>& result, const matrix_t<R1, C1, T>& lhs, const
 	for (size_t i = R1; i--;)
 		for (size_t j = C2; j--;) //优化后：0.592
 		{
-			result[i][j] = lhs[i] * rhs[j];
-			//for (int k = 0; k < C1; k++)
-			//{
-			//	result[i][j] += lhs[i][k] * rhs[k][j];
-			//}
+			//result[i][j] = lhs[i] * rhs[j];
+			for (int k = 0; k < C1; k++)
+			{
+				result[i][j] += lhs[i][k] * rhs[k][j];
+			}
 		}
 }
 
@@ -473,3 +488,50 @@ void matrix_mul(matrix_t<4, 4, T>& c, const matrix_t<4, 4, T>& left, const matri
 
 
 
+//struct  DJLplus
+//{
+//	static float apply(float a, float b)
+//	{
+//		return   a + b;
+//	}
+//};
+//
+//
+//struct  DJLminus
+//{
+//	static  float apply(float   a, float   b)
+//	{
+//		return   a - b;
+//	}
+//};
+//template   <class   L, class OpTag, class R>
+//struct  Expression
+//{
+//	Expression(L const& l, R const& r): l(l), r(r) {}
+//	float  operator[](unsigned index)  const;
+//
+//	L const& l;
+//	R const& r;
+//};
+//
+//
+//template   <class  L, class R>
+//Expression <L, DJLplus, R>   operator+(L   const& l, R   const& r)
+//{
+//	return   Expression <L, DJLplus, R>(l, r);
+//}
+//template   <class   L, class   R>
+//Expression <L, DJLminus, R>   operator-(L   const& l, R   const& r)
+//{
+//	return  Expression <L, DJLminus, R>(l, r);
+//}
+
+
+////对MyMatrix添加 = 重载:
+//template   <class   Expr>
+//Matrix44f & Matrix44f::operator=(Expr   const& x)
+//{
+//	for (unsigned i = 0; i < 50000; i++)
+//		(*this) = x;
+//	return   *this;
+//}

@@ -21,11 +21,9 @@ int TestMathmain() {
 	matrix_t<4, 4, float> C;
 	for (int i = 0; i < 100000; i++)
 	{
-		//Testtriangle(image);
-		//C = A * B; // 0.613  0.622
-		//Testtriangle3(image);
-		multiply(C, A, B); //0.59
-		//matrix_mul(C, A, B);
+		//C = A * B; // 0.613  0.622  //0.554
+		//multiply(C, A, B); //0.59   //0.33-0.31
+		matrix_mul(C, A, B); //0.40
 	}
 
 	finish = clock();

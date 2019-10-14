@@ -106,6 +106,9 @@ void device_draw_primitive(device_t *device, Shader *mShader,  vertex_t* v1, ver
 // 设置当前纹理
 void device_set_texture(Shader *mShader, void *bits, long pitch, int w, int h);
 
+//这里获取X轴的step
+void AllGetStep(int render_state, vertex_t* y, const vertex_t* x1, const vertex_t* x2, float t);
+
 //void vert_shader(device_t *device, a2v *av, v2f *vf);
 
 void frag_shader(device_t *device, v2f *vf, color_t *color);
