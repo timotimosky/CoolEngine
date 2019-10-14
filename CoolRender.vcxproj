@@ -22,7 +22,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -103,6 +103,7 @@
     <ClInclude Include="render\geometry.h" />
     <ClInclude Include="render\Lights.h" />
     <ClInclude Include="render\LineDrawTest.h" />
+    <ClInclude Include="render\mathTest.h" />
     <ClInclude Include="render\Model.h" />
     <ClInclude Include="render\Scene.h" />
     <ClInclude Include="render\Pipline.h" />

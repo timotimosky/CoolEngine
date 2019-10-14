@@ -93,5 +93,8 @@
     <ClInclude Include="render\Shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="render\mathTest.h">
+      <Filter>Test</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

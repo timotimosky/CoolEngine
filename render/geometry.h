@@ -405,30 +405,30 @@ matrix_t<R1, C2, T> operator*(const matrix_t<R1, C1, T>& lhs, const matrix_t<C1,
 	matrix_t<R1, C2, T> result;
 
 	for (size_t i = R1; i--;)
-		for (size_t j = C2; j--; result[i][j] = lhs[i] * rhs.col(j));
-		//for (size_t j = C2; j--;)
-		//{
-		//	for (int k = 0; k < C1; k++)
-		//	{
-		//			result[i][j] += lhs[i][k] * rhs[k][j];
-		//	}
-		//}
+		//for (size_t j = C2; j--; result[i][j] = lhs[i] * rhs.col(j)); //0.622	
+		for (size_t j = C2; j--;) //优化后：0.592
+		{
+			for (int k = 0; k < C1; k++)
+			{
+				result[i][j] += lhs[i][k] * rhs[k][j];
+			}
+		}
 	return result;
 }
-//void matrix_mul(Matrix44f*c, const Matrix44f*left , const Matrix44f*right) {
-//	int i, j;
-//	for (i = 0; i < 4; i++)
-//	{
-//		for (j = 0; j < 4; j++)
-//		{
-//			c[i][j] =
-//				(left[i][0] * right[0][j]) +
-//				(left[i][1] * right[1][j]) +
-//				(left[i][2] * right[2][j]) +
-//				(left[i][3] * right[3][j]);
-//		}
-//	}
-//}
+
+//0.581
+template<size_t R1, size_t C1, size_t C2, typename T>
+void multiply(matrix_t<R1, C2, T>& result, const matrix_t<R1, C1, T>& lhs, const matrix_t<C1, C2, T>& rhs) {
+	for (size_t i = R1; i--;)
+		for (size_t j = C2; j--;) //优化后：0.592
+		{
+			result[i][j] = lhs[i] * rhs[j];
+			//for (int k = 0; k < C1; k++)
+			//{
+			//	result[i][j] += lhs[i][k] * rhs[k][j];
+			//}
+		}
+}
 
 
 
@@ -455,6 +455,21 @@ typedef matrix_t<4, 4, float> Matrix44f;
 typedef Vec4f point_t;
 typedef Vec4f color_t;
 
+template<typename T>
+void matrix_mul(matrix_t<4, 4, T>& c, const matrix_t<4, 4, T>& left, const matrix_t<4, 4, T>& right) {
+	int i, j;
+	for (i = 0; i < 4; i++)
+	{
+		for (j = 0; j < 4; j++)
+		{
+			c[i][j] =
+				(left[i][0] * right[0][j]) +
+				(left[i][1] * right[1][j]) +
+				(left[i][2] * right[2][j]) +
+				(left[i][3] * right[3][j]);
+		}
+	}
+}
 
 
 
