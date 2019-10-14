@@ -108,7 +108,7 @@ public:
 	//vertex_t mesh[0]; //起始地址 可变数组   vertex_t data[0]，vertex_t *data, vertex_t data[]都可以 
 	vertex_t* mesh;
 
-	IUINT32 texture[256][256]; //纹理
+	//IUINT32 texture[256][256]; //纹理
 	Matrix44f model;         // 物体矩阵  由三个弧度计算出来
 
 
@@ -148,9 +148,9 @@ public:
 
 	//屏幕分辨率
 
-	int tex_width;              // 纹理宽度
-	int tex_height;             // 纹理高度
-	IUINT32** texture; //[256][256]; //纹理
+	//int tex_width;              // 纹理宽度
+	//int tex_height;             // 纹理高度
+	//IUINT32** texture; //[256][256]; //纹理
 
 	Vec2f _uv;  //UV  // 纹理最大宽度：tex_width - 1  // 纹理最大高度：tex_height - 1
 
