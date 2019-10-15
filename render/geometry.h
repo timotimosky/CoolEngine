@@ -176,7 +176,7 @@ T CMID(T x, T min, T max)
 template<size_t DIM, typename T> 
 T operator*(const vec<DIM, T>& lhs, const vec<DIM, T>& rhs) {
 	T ret = T();
-	for (size_t i = DIM; i--; ret += lhs[i] * rhs[i]);
+	for (size_t i = DIM; i--; ret += (lhs[i] * rhs[i]));
 	return ret;
 }
 
@@ -412,18 +412,73 @@ matrix_t<DimRows, DimCols, T> matrix_set_translate(const vec<DimRows, T>& rhs) {
 	return ret;
 }
 
-template<size_t R1, size_t C1, size_t C2, typename T>
-void matrix_mul(matrix_t<R1, C2, T>& result,const matrix_t<R1, C1, T>& lhs, const matrix_t<C1, C2, T>& rhs) {
-	for (size_t i = R1; i--;)
-		//模板嵌套可以再编译时计算,节约运行时间
-		//for (size_t j = C2; j--; result[i][j] = lhs[i] * rhs.col(j)); //0.622	
-		for (size_t j = C2; j--;) //优化后：0.592
+//template<size_t R1, size_t C1, size_t C2, typename T>
+//void matrix_mul(matrix_t<R1, C2, T>& result,const matrix_t<R1, C1, T>& lhs, const matrix_t<C1, C2, T>& rhs) {
+//	for (size_t i = R1; i--;)
+//		//模板嵌套可以再编译时计算,节约运行时间
+//		//for (size_t j = C2; j--; result[i][j] = lhs[i] * rhs.col(j)); //0.622	
+//		for (size_t j = C2; j--;) //优化后：0.592
+//		{
+//			for (int k = 0; k < C1; k++)
+//			{
+//				result[i][j] += lhs[i][k] * rhs[k][j];
+//			}
+//		}
+//}
+//template<size_t R1, size_t C1, size_t C2, typename T>
+//void matrix_mul2(matrix_t<R1, C2, T>& result, const matrix_t<R1, C1, T>& lhs, const matrix_t<C1, C2, T>& rhs) {
+//	for (size_t i = R1; i--;)
+//		//模板嵌套可以再编译时计算,节约运行时间
+//		for (size_t j = C2; j--; result[i][j] = lhs[i] * rhs.col(j)); //0.622	
+//		//for (size_t j = C2; j--;) //优化后：0.592
+//		//{
+//		//	for (int k = 0; k < C1; k++)
+//		//	{
+//		//		result[i][j] += lhs[i][k] * rhs[k][j];
+//		//	}
+//		//}
+//}
+//template<typename T>
+//void matrix_mul3(matrix_t<4, 4, T>& result, const matrix_t<4, 4, T>& lhs, const matrix_t<4, 4, T>& rhs) {
+//	for (size_t i = 4; i--;)
+//		//模板嵌套可以再编译时计算,节约运行时间
+//		for (size_t j = 4; j--; result[i][j] = lhs[i] * rhs.col(j)); //0.622	
+//		//for (size_t j = C2; j--;) //优化后：0.592
+//		//{
+//		//	for (int k = 0; k < C1; k++)
+//		//	{
+//		//		result[i][j] += lhs[i][k] * rhs[k][j];
+//		//	}
+//		//}
+//}
+//template<typename T>
+//void matrix_mul4(matrix_t<4, 4, T>& result, const matrix_t<4, 4, T>& lhs, const matrix_t<4, 4, T>& rhs) {
+//	for (size_t i = 4; i--;)
+//		//模板嵌套可以再编译时计算,节约运行时间
+//		//for (size_t j = 4; j--; result[i][j] = lhs[i] * rhs.col(j)); //0.622	
+//		for (size_t j = 4; j--;) //优化后：0.592
+//		{
+//			for (int k = 0; k < 4; k++)
+//			{
+//				result[i][j] += lhs[i][k] * rhs[k][j];
+//			}
+//		}
+//}
+// c = a * b
+template<typename T>
+void matrix_mul(matrix_t<4, 4, T>& result, const matrix_t<4, 4, T>& left, const matrix_t<4, 4, T>& right) {
+	int i, j;
+	for (i = 0; i < 4; i++)
+	{
+		for (j = 0; j < 4; j++)
 		{
-			for (int k = 0; k < C1; k++)
-			{
-				result[i][j] += lhs[i][k] * rhs[k][j];
-			}
+			result[i][j] =
+				(left[i][0] * right[0][j]) +
+				(left[i][1] * right[1][j]) +
+				(left[i][2] * right[2][j]) +
+				(left[i][3] * right[3][j]);
 		}
+	}
 }
 
 template<size_t DimRows, size_t DimCols, typename T>
