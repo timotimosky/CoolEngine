@@ -394,13 +394,12 @@ void  cross(vec<4, T>& ret,const vec<4, T>& left, const matrix_t<4, 4, T>& right
 }
 
 
-// TODO: 获得一个缩放矩阵 左乘
+//获得一个缩放矩阵 左乘
 template<size_t DimRows, typename T>
-matrix_t<DimRows, DimRows, T> matrix_set_scale(const vec<DimRows, T>& rhs) {
-	matrix_t<DimRows, DimRows, T> ret = matrix_t<DimRows, DimRows, T>().identity();
+void matrix_set_scale(matrix_t<DimRows, DimRows, T>& ret, const vec<DimRows, T>& rhs) {
+	ret = matrix_t<DimRows, DimRows, T>().identity();
 	for (size_t i = DimRows; i--; )
 		ret[i][i] = rhs[i];
-	return ret;
 }
 
 
@@ -413,11 +412,8 @@ matrix_t<DimRows, DimCols, T> matrix_set_translate(const vec<DimRows, T>& rhs) {
 	return ret;
 }
 
-//性能差，慎用
 template<size_t R1, size_t C1, size_t C2, typename T>
-matrix_t<R1, C2, T> operator*(const matrix_t<R1, C1, T>& lhs, const matrix_t<C1, C2, T>& rhs) {
-	matrix_t<R1, C2, T> result;
-
+void matrix_mul(matrix_t<R1, C2, T>& result,const matrix_t<R1, C1, T>& lhs, const matrix_t<C1, C2, T>& rhs) {
 	for (size_t i = R1; i--;)
 		//模板嵌套可以再编译时计算,节约运行时间
 		//for (size_t j = C2; j--; result[i][j] = lhs[i] * rhs.col(j)); //0.622	
@@ -428,24 +424,7 @@ matrix_t<R1, C2, T> operator*(const matrix_t<R1, C1, T>& lhs, const matrix_t<C1,
 				result[i][j] += lhs[i][k] * rhs[k][j];
 			}
 		}
-	return result;
 }
-
-//0.581
-template<size_t R1, size_t C1, size_t C2, typename T>
-void multiply(matrix_t<R1, C2, T>& result, const matrix_t<R1, C1, T>& lhs, const matrix_t<C1, C2, T>& rhs) {
-	for (size_t i = R1; i--;)
-		for (size_t j = C2; j--;) //优化后：0.592
-		{
-			//result[i][j] = lhs[i] * rhs[j];
-			for (int k = 0; k < C1; k++)
-			{
-				result[i][j] += lhs[i][k] * rhs[k][j];
-			}
-		}
-}
-
-
 
 template<size_t DimRows, size_t DimCols, typename T>
 matrix_t<DimCols, DimRows, T> operator/(matrix_t<DimRows, DimCols, T> lhs, const T& rhs) {
@@ -470,21 +449,6 @@ typedef matrix_t<4, 4, float> Matrix44f;
 typedef Vec4f point_t;
 typedef Vec4f color_t;
 
-template<typename T>
-void matrix_mul(matrix_t<4, 4, T>& c, const matrix_t<4, 4, T>& left, const matrix_t<4, 4, T>& right) {
-	int i, j;
-	for (i = 0; i < 4; i++)
-	{
-		for (j = 0; j < 4; j++)
-		{
-			c[i][j] =
-				(left[i][0] * right[0][j]) +
-				(left[i][1] * right[1][j]) +
-				(left[i][2] * right[2][j]) +
-				(left[i][3] * right[3][j]);
-		}
-	}
-}
 
 
 

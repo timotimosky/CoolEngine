@@ -41,11 +41,11 @@ transform_t;
 // 矩阵更新
 void transform_update(transform_t* ts);
 
-Matrix44f& Init_Model_matrix(point_t& pos, Vec4f& axis, Vec4f& scale);
+void Init_Model_matrix(Matrix44f& srt, const point_t& pos, const Vec4f& axis, const Vec4f& scale);
 
-void matrix_Obj2World(matrix_t<4,4,float> *m, Vec4f rot, Vec4f pos);
+void matrix_Obj2World(matrix_t<4,4,float> &m, Vec4f rot, Vec4f pos);
 
-void matrix_World2Obj(matrix_t<4, 4, float>*m, Vec4f rot, Vec4f pos, float scale);
+void matrix_World2Obj(matrix_t<4, 4, float> &m, Vec4f rot, Vec4f pos, float scale);
 
 //坐标系的变化 = 基坐标的位移+坐标系的旋转   坐标系的旋转 跟 这里坐标系内部向量的旋转是一样的
 //这个矩阵是基于指定向量旋转的旋转矩阵。 该指定向量为 (x,y,z)

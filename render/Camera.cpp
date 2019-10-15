@@ -35,8 +35,8 @@ void matrix_set_lookat_r(Matrix44f*m, const Vec4f *eye, const Vec4f *eyeTarget, 
 	transM[3][1] = -eye->y;
 	transM[3][2] = -eye->z;
 
-	*m = transM * rotationM;
-	//matrix_mul(m, &transM, &rotationM); //世界-》摄像机。 先平移，再旋转
+	//*m = transM * rotationM;
+	matrix_mul(*m, transM, rotationM); //世界-》摄像机。 先平移，再旋转
 }
 
 
@@ -76,8 +76,8 @@ void matrix_set_lookat(Matrix44f*m, const Vec4f *eye, const Vec4f *eyeTarget, co
 	transM[3][1] = -eye->y;
 	transM[3][2] = -eye->z;
 
-	*m = transM * rotationM;
-	//matrix_mul(m, &transM, &rotationM); //世界-》摄像机。 先平移，再旋转
+	//*m = transM * rotationM;
+	matrix_mul(*m, transM, rotationM); //世界-》摄像机。 先平移，再旋转
 }
 
 
