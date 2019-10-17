@@ -1,28 +1,22 @@
 # 3D渲染
 
-编辑注意
+参考
 ===
-需要先将项目设置为你电脑的WindowsSDK版本。
-项目->属性->配置属性->常规->windows SDK版本
-此外不需要任何其他配置
-===
-
-参考了大神韦易笑的开源项目
-===
-作者的博客 http://www.skywind.me
+1.韦易笑的博客 http://www.skywind.me
+2.国外一个开源的渲染器教程
+https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
 
 
+特性
 ===
-* 从C改为了C++
+* C++边写,没有任何第三方库依赖,使用模板编写数学库
+* 支持加载Obj、支持加载Png纹理
 * 尽量靠近Unity的设计，增加了object、transfrom、camera等、顶点排序顺序、X-Y-Z轴朝向
 * 支持多相机
 * 增加了多个物体同时渲染 :支持多个默认形状：平面/立方体/球形
 * 增加光照模式：平面着色和高氏着色 、顶点光照、面法线光照
 * 增加了摄像机的正面剔除/背面剔除
 * 增加了点光源阴影
-
-特性
-===
 * 没有任何第三方库依赖。
 * 简单 CVV 裁剪
 * 最大支持 1024 x 1024 的纹理
@@ -34,7 +28,7 @@
 ===
 色彩填充：RENDER_STATE_COLOR
 ![]
-(https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/render2.png)
+(https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/render1.png)
 
 
 后续计划
@@ -42,11 +36,7 @@
 * 提供更多渲染模式
 * 实现二次线性差值的纹理读取
 * 从jpg、bmp/TGA文件加载纹理
-* 加载Obj
 * 附带光线跟踪
-
-进阶作业
-=======
 * 优化顶点计算性能
 * 优化 draw_scanline 性能
 * 载入 BSP 场景并实现漫游
