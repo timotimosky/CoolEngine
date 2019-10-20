@@ -1,12 +1,15 @@
 #pragma once
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include "ShadingCalculate.h"
 #include "Camera.h"
 #include "Model.h"
 #include "Shader.h"
-
-#include <stdio.h>
-#include <stdlib.h>
- #include <time.h>
+#include "geometry.h"
+#include "Camera.h"
+using namespace std;
 //在渲染中，rhw 是摄像机空间转CVV空间的时候，摄像机空间坐标w的负数的倒数。
 //用于摄像机空间转cvv的时候，一个是从4维缩放到3维，另一个是同时恰好实现了近大远小的效果。
 
@@ -92,7 +95,7 @@ void device_draw_line(device_t *device, int x1, int y1, int x2, int y2, IUINT32 
 void device_render_trap_shadow(device_t *device, trapezoid_t *trap, float surfaceLight);
 
 // 根据坐标读取纹理
-IUINT32 device_texture_read(const Shader *mShader, float u, float v);
+//IUINT32 device_texture_read(const Shader *mShader, float u, float v);
 
 // 绘制扫描线
 void device_draw_scanline(device_t *device, Shader *mShader, scanline_t *scanline, float surfaceLight);
@@ -106,12 +109,13 @@ void device_draw_primitive(device_t *device, Shader *mShader,  vertex_t* v1, ver
 // 设置当前纹理
 void device_set_texture(Shader *mShader, void *bits, long pitch, int w, int h);
 
+
+Vec4f TriangleMaxMinXY(Vec4f& A, Vec4f& B, Vec4f& C);
+void PointinTriangleUV(Vec2f& A, Vec2f& B, Vec2f& C, const Vec2f& P, Vec3f& uv);
+void vertex_interpUV(vertex_t& ret, const vertex_t& A, const vertex_t& B, const vertex_t& C, Vec3f uv);
+
 //这里获取X轴的step
 void AllGetStep(int render_state, vertex_t* y, const vertex_t* x1, const vertex_t* x2, float t);
-
-//void vert_shader(device_t *device, a2v *av, v2f *vf);
-
-void frag_shader(device_t *device, v2f *vf, color_t *color);
 
 void device_init(device_t *device, int width, int height, void *fb);
 

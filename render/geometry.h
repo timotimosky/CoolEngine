@@ -45,8 +45,12 @@ struct vec<2, T> {
 	vec(T X, T Y) : x(X), y(Y) {}
 
 	//嵌套 方便传入类型跟返回类型T 不一致
-	template <class U> 
-	vec<2, T>(const vec<2, U>& v);
+	template <class U>
+	vec<2, T>(const vec<2, U>& v)
+	{
+		x = v.x;
+		y = v.y;
+	}	
 
 	T& operator[](const size_t i) { 
 		//assert(i < 2); 
@@ -170,9 +174,6 @@ T CMID(T x, T min, T max)
 	return (x < min) ? min : ((x > max) ? max : x);
 }
 
-
-/////////////////////////////////////////////////////////////////////////////////
-
 template<size_t DIM, typename T> 
 T operator*(const vec<DIM, T>& lhs, const vec<DIM, T>& rhs) {
 	T ret = T();
@@ -188,7 +189,7 @@ vec<DIM, T>& operator+=(vec<DIM, T>& lhs, const vec<DIM, T>& rhs)
 }
 
 template<size_t DIM, typename T>
-vec<DIM, T> operator+(vec<DIM, T> lhs, const vec<DIM, T>& rhs)
+vec<DIM, T> operator+(const vec<DIM, T> lhs, const vec<DIM, T>& rhs)
 {
 	vec<DIM, T> retVec;
 	for (size_t i = DIM; i--; retVec[i]= lhs[i] + rhs[i]);
@@ -196,29 +197,24 @@ vec<DIM, T> operator+(vec<DIM, T> lhs, const vec<DIM, T>& rhs)
 }
 
 template<size_t DIM, typename T>
-vec<DIM, T> operator-(vec<DIM, T> lhs, const vec<DIM, T>& rhs) {
-	for (size_t i = DIM; i--; lhs[i] -= rhs[i]);
-	return lhs;
+vec<DIM, T> operator-(const vec<DIM, T>& lhs, const vec<DIM, T>& rhs) {
+	vec<DIM, T> retVec;
+	for (size_t i = DIM; i--; retVec[i] = lhs[i] - rhs[i]);
+	return retVec;
 }
 
 template<size_t DIM, typename T> vec<DIM, T> 
-operator*(vec<DIM, T> lhs, const T& rhs) {
-	for (size_t i = DIM; i--; lhs[i] = lhs[i] * rhs);
-	return lhs;
+operator*(vec<DIM, T>& lhs, const T& rhs) {
+	vec<DIM, T> retVec;
+	for (size_t i = DIM; i--; retVec[i] = lhs[i] * rhs);
+	return retVec;
 }
-template<size_t DIM, typename T, typename U> vec<DIM, T>
-	operator*(vec<DIM, T> lhs, const U& rhs) {
-		for (size_t i = DIM; i--; lhs[i] = lhs[i] * rhs);
-		return lhs;
-	}
-
-//template<size_t DIM, typename T>
-//vec<DIM, T> operator*(const vec<DIM, T>& lhs, float f) {
-//	vec<DIM, T> ret = vec<DIM, T>();
-//	for (size_t i = DIM; i--; ret[i] = lhs[i] * f);
-//	return ret;
-//}
-
+template<size_t DIM, typename T> 
+vec<DIM, T> operator*(const vec<DIM, T>& lhs, float rhs) {
+	vec<DIM, T> retVec;
+	for (size_t i = DIM; i--; retVec[i] = (lhs[i])* rhs);
+	return retVec;
+}
 
 template<size_t DIM, typename T, typename U> vec<DIM, T> 
 operator/(vec<DIM, T> lhs, const U& rhs) {

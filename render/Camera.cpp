@@ -95,8 +95,8 @@ void matrix_set_perspective(Matrix44f* m, float fovy, float aspect, float zn, fl
 {
 	float fax = 1.0f / (float)tan(fovy * 0.5f);  //cot@
 	(*m).set_zero();
-	(*m)[0][0] = (float)(fax / aspect);
-	(*m)[1][1] = (float)(fax);
+	(*m)[0][0] = fax / aspect;
+	(*m)[1][1] = fax;
 	(*m)[2][2] = zf / (zf - zn);
 	(*m)[3][2] = -zn * zf / (zf - zn);
 	(*m)[2][3] = 1; //¡ÓW=1

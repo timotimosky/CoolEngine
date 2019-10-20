@@ -67,6 +67,7 @@ public:
 	float shadowPos_z; //投影摄像机的光栅化位置 这个在shader中才需要
 	Vec4f world_normal; 
 	point_t project_pos;
+	Vec4f raster_pos;
 } vertex_t; //顶点
 
 			//描述三角形的边缘
