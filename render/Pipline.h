@@ -75,7 +75,7 @@ void vertex_interp(int render_state, vertex_t *y, const vertex_t *x1, const vert
 
 // 根据三角形拆分为 0-2 个三角形，并且返回合法三角形的数量
 int trapezoid_init_triangle(trapezoid_t *trap, const vertex_t *p1, const vertex_t *p2, const vertex_t *p3);
-
+bool PointinTriangle(Vec3f& uv);
 //提前求出斜率，优化
 //按照Y坐标计算出左右两条边纵坐标等于Y的顶点
 void trapezoid_edge_interp(device_t *device, trapezoid_t *trap, float y);
