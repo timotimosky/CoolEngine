@@ -150,9 +150,11 @@ void trianglebarycentric(Vec2f v1, Vec2f v2, Vec2f v3, TGAImage& image, const TG
 	for (P.y = MaxBox.w; P.y <= MaxBox.z; P.y++) {
 		for (P.x = MaxBox.y; P.x <= MaxBox.x; P.x++)
 		{
-			//if (P.x == 400)
-				//printf("%i----- %i\n", P.x, P.y);
+			if (P.x == 179 && P.y == 151)
+				printf("%i----- %i\n", P.x, P.y);
+			
 			PointinTriangleUV(v1, v2, v3, P, uv);
+			//uv=	barycentric(v1, v2, v3, P);
 			if (!PointinTriangle(uv))
 				continue;
 			vertex_interpUV(ret, ver1, ver2, ver3, uv);
@@ -290,7 +292,7 @@ int TestTrianglemain() {
 	start = clock();
 	///for(int i=0; i<10000;i++)
 	TestTrianglebarycentric(image);
-	Testtriangle(image);
+	//Testtriangle(image);
 	//Testtriangle2(image);
 	//Testtriangle3(image);
 
