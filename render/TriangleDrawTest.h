@@ -7,13 +7,15 @@
 #include <iostream>
 #include <time.h>
 #include <windows.h>
+
+#include <map>
 using namespace std;
 #define maxA(a,b)            (((a) > (b)) ? (a) : (b))
 #define minA(a,b)            (((a) < (b)) ? (a) : (b))
 //const TGAColor white = TGAColor(255, 255, 255, 255);
 //const TGAColor red = TGAColor(255, 0, 0, 255);
 const TGAColor green = TGAColor(255, 255, 0, 255);
-
+map<int, int> Bdic;
 //渲染三角形的边
 void triangle(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, const TGAColor& color) {
 	// sort the vertices, t0, t1, t2 lower−to−upper (bubblesort yay!) 
@@ -25,7 +27,8 @@ void triangle(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, const TGAColor& col
 	line(t2.x, t2.y, t0.x, t0.y,  image, red);
 }
 int renderNum;
-
+int copyNum; //重复
+map<int, int> dic;
 //渲染半个三角形:它应该是对称的：图片不应取决于传递给绘图函数的顶点的顺序。
 void triangle1(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, const TGAColor& color) {
 	// sort the vertices, t0, t1, t2 lower−to−upper (bubblesort yay!) 
@@ -38,7 +41,8 @@ void triangle1(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, const TGAColor& co
 	Vec2i T1_T0 = t1 - t0;
 	Vec2i T2_T1 = (t2 - t1);
 	int segment_height = t1.y - t0.y + 1;
-
+	dic = map<int, int>();
+	copyNum = renderNum = 0;
 	for (int y = t0.y; y <= t1.y; y++) {
 
 		float alpha = (float)(y - t0.y) / total_height;
@@ -47,7 +51,18 @@ void triangle1(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, const TGAColor& co
 		Vec2i B = t0 + T1_T0 * beta;
 		if (A.x > B.x) std::swap(A, B);
 		for (int j = A.x; j <= B.x; j++) {
+
+			if (!Bdic[j * 400 + y])
+			{
+				printf("-triangle1--漏渲染--%i---%i-\n", j,y);
+			}
 			renderNum++;
+			if (dic[j * 400 + y])
+			{
+				copyNum++;
+			}
+			else 
+				dic[j * 400 + y] = 1;
 			image.set(j, y, color); // attention, due to int casts t0.y+i != A.y 
 		}
 	}
@@ -62,10 +77,17 @@ void triangle1(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, const TGAColor& co
 		if (A.x > B.x) std::swap(A, B);
 		for (int j = A.x; j <= B.x; j++) {
 			renderNum++;
+			if (dic[j * 400 + y])
+			{
+				copyNum++;
+			}
+			else
+				dic[j * 400 + y] = 1;
 			image.set(j, y, color); // attention, due to int casts t0.y+i != A.y 
 		}
 	}
-	printf("-总渲染数量-----%i---\n", renderNum);
+	printf("-triangle1--重复--%i--\n", copyNum);
+	printf("-triangle1-总渲染数量-----%i---\n", renderNum);
 }
 
 
@@ -80,7 +102,9 @@ void triangle2(Vec2f t0, Vec2f t1, Vec2f t2, TGAImage& image, const TGAColor& co
 	Vec2f T2_T0 = t2 - t0;
 	Vec2f T1_T0 = t1 - t0;
 	Vec2f T2_T1 = (t2 - t1);
-	renderNum = 0;
+
+	dic = map<int, int>();
+	copyNum = renderNum = 0;
 	for (int i = 0; i < total_height; i++) {
 		bool second_half = i > T1_T0.y || t1.y == t0.y; //是否属于上半三角形
 		int segment_height = second_half ? T2_T1.y : T1_T0.y;
@@ -91,11 +115,19 @@ void triangle2(Vec2f t0, Vec2f t1, Vec2f t2, TGAImage& image, const TGAColor& co
 		if (A.x > B.x) std::swap(A, B);
 		for (int j = A.x; j <= B.x; j++) {
 			renderNum++;
+			if (dic[j * 400 + i])
+			{
+				copyNum++;
+			}
+			else
+				dic[j * 400 + i] = 1;
 			image.set(j, t0.y + i, color); // attention, due to int casts t0.y+i != A.y 
 		}
 	}
-	printf("-总渲染数量-----%i---\n", renderNum);
+	printf("-triangle2-----重复--%i--\n", copyNum);
+	printf("-triangle2-总渲染数量-----%i---\n", renderNum);
 }
+
 
 void trianglebarycentric(Vec2f v1, Vec2f v2, Vec2f v3, TGAImage& image, const TGAColor& color) {
 	Vec4f MaxBox = TriangleMaxMinXY(embed<4>(v1), embed<4>(v2), embed<4>(v3));
@@ -112,6 +144,9 @@ void trianglebarycentric(Vec2f v1, Vec2f v2, Vec2f v3, TGAImage& image, const TG
 	ver2.pos = embed<4>(v2);
 	ver3.pos = embed<4>(v3);
 
+	Bdic = map<int, int>();
+	copyNum = renderNum = 0;
+
 	for (P.y = MaxBox.w; P.y <= MaxBox.z; P.y++) {
 		for (P.x = MaxBox.y; P.x <= MaxBox.x; P.x++)
 		{
@@ -126,12 +161,22 @@ void trianglebarycentric(Vec2f v1, Vec2f v2, Vec2f v3, TGAImage& image, const TG
 			TGAColor nTGAColor = TGAColor((int)(ret.pos.x), (int)(ret.pos.y),
 				(int)(ret.pos.z));
 			
+			renderNum++;
+			if (Bdic[P.x * 400 + P.y])
+			{
+				copyNum++;
+			}
+			else
+				Bdic[P.x * 400 + P.y] = 1;
 			image.set(P.x, P.y, nTGAColor);
 		}
 	}
 	//MaxBox = TriangleMaxMinXY(v1->raster_pos, v2->raster_pos, v3->raster_pos);
 	//MaxBox.x = MaxBox.x > MaxScreenWidth ? MaxScreenWidth : MaxBox.x;
 	//MaxBox.z = MaxBox.z > MaxScreenHeight ? MaxScreenHeight : MaxBox.z;
+
+	printf("trianglebarycentric-------重复--%i--\n", copyNum);
+	printf("trianglebarycentric----总渲染数量-----%i---\n", renderNum);
 }
 
 //重心坐标
@@ -153,7 +198,8 @@ void triangle3(Vec2i* pts, TGAImage& image, TGAColor color) {
 	Vec2i bboxmin(image.get_width() - 1, image.get_height() - 1);
 	Vec2i bboxmax(0, 0);
 	Vec2i clamp(image.get_width() - 1, image.get_height() - 1);
-	renderNum = 0;
+	dic = map<int, int>();
+	copyNum = renderNum = 0;
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 2; j++) {
 			bboxmin[j] = max(0, min(bboxmin[j], pts[i][j]));
@@ -165,11 +211,19 @@ void triangle3(Vec2i* pts, TGAImage& image, TGAColor color) {
 		for (P.y = bboxmin.y; P.y <= bboxmax.y; P.y++) {
 			Vec3f bc_screen = barycentric(pts, P);
 			if (bc_screen.x < 0 || bc_screen.y < 0 || bc_screen.z < 0) continue;
+
 			 renderNum++;
+			 if (dic[P.x * 400 + P.y])
+			 {
+				 copyNum++;
+			 }
+			 else
+				 dic[P.x * 400 + P.y] = 1;
 			image.set(P.x, P.y, color);
 		}
 	}
-	printf("-总渲染数量-----%i---\n", renderNum);
+	printf("triangle3---------重复--%i--\n", copyNum);
+	printf("-triangle3-总渲染数量-----%i---\n", renderNum);
 }
 
 void Testtriangle(TGAImage& image)
@@ -210,6 +264,20 @@ void Testtriangle3(TGAImage& image) {
 	triangle3(t2, image, green);
 }
 
+void TestTrianglebarycentric(TGAImage& image) {
+
+	Vec2f t0[3] = { Vec2f(10, 70),   Vec2f(50, 160),  Vec2f(70, 80) };
+	Vec2f t1[3] = { Vec2f(180, 50),  Vec2f(150, 1),   Vec2f(70, 180) };
+	Vec2f t2[3] = { Vec2f(180, 150), Vec2f(120, 160), Vec2f(130, 180) };
+	//triangle2(t0[0], t0[1], t0[2], image, red);
+	//triangle2(t1[0], t1[1], t1[2], image, white);
+	//triangle2(t2[0], t2[1], t2[2], image, green);
+
+	//trianglebarycentric(t0[0], t0[1], t0[2], image, red);
+	//trianglebarycentric(t1[0], t1[1], t1[2], image, white);
+	trianglebarycentric(t2[0], t2[1], t2[2], image, green);
+}
+
 clock_t  start;
 clock_t  finish;
 float duration;
@@ -221,9 +289,11 @@ int TestTrianglemain() {
 
 	start = clock();
 	///for(int i=0; i<10000;i++)
-		Testtriangle(image);
-	Testtriangle2(image);
-	Testtriangle3(image);
+	TestTrianglebarycentric(image);
+	Testtriangle(image);
+	//Testtriangle2(image);
+	//Testtriangle3(image);
+
 	finish = clock();
 	duration = (double)(finish - start) / CLOCKS_PER_SEC;
 
