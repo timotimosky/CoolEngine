@@ -124,7 +124,7 @@ public:
 }
 Object_t;
 
-
+//我们通过Cpu阶段的标签 来决定shader初始化时 要构造哪些list 用于shader阶段的通过索引读取
 //为了并发处理，需要分离为顶点和图元处理器，分别并发
 class Shader//:public IShader
 {
