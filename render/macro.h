@@ -1,5 +1,4 @@
-#ifndef MACRO_H
-#define MACRO_H
+#pragma once
 
 #define EPSILON 1e-5f
 #define PI 3.1415927f
@@ -13,4 +12,3 @@
 #define UNUSED_VAR(x) ((void)(x))
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
 
-#endif

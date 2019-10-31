@@ -1,5 +1,9 @@
-#ifndef MATHS_H
-#define MATHS_H
+#pragma once
+
+#include <assert.h>
+#include <math.h>
+#include <stdio.h>
+#include "macro.h"
 
 typedef struct {float x, y;} vec2_t;
 typedef struct {float x, y, z;} vec3_t;
@@ -133,5 +137,3 @@ mat4_t mat4_frustum(float left, float right, float bottom, float top,
                     float near, float far);
 mat4_t mat4_orthographic(float right, float top, float near, float far);
 mat4_t mat4_perspective(float fovy, float aspect, float near, float far);
-
-#endif

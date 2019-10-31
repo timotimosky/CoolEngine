@@ -89,12 +89,15 @@
     <ClCompile Include="render\CoolRenerMain.cpp" />
     <ClCompile Include="render\geometry.cpp" />
     <ClCompile Include="render\Lights.cpp" />
+    <ClCompile Include="render\maths.cpp" />
     <ClCompile Include="render\Model.cpp" />
+    <ClCompile Include="render\private.cpp" />
     <ClCompile Include="render\Scene.cpp" />
     <ClCompile Include="render\Pipline.cpp" />
     <ClCompile Include="render\renderMath.cpp" />
     <ClCompile Include="render\Shader.cpp" />
     <ClCompile Include="render\ShadingCalculate.cpp" />
+    <ClCompile Include="render\skeleton.cpp" />
     <ClCompile Include="render\tgaimage.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -103,13 +106,17 @@
     <ClInclude Include="render\geometry.h" />
     <ClInclude Include="render\Lights.h" />
     <ClInclude Include="render\LineDrawTest.h" />
+    <ClInclude Include="render\macro.h" />
+    <ClInclude Include="render\maths.h" />
     <ClInclude Include="render\mathTest.h" />
     <ClInclude Include="render\Model.h" />
+    <ClInclude Include="render\private.h" />
     <ClInclude Include="render\Scene.h" />
     <ClInclude Include="render\Pipline.h" />
     <ClInclude Include="render\renderMath.h" />
     <ClInclude Include="render\Shader.h" />
     <ClInclude Include="render\ShadingCalculate.h" />
+    <ClInclude Include="render\skeleton.h" />
     <ClInclude Include="render\tgaimage.h" />
     <ClInclude Include="render\TriangleDrawTest.h" />
   </ItemGroup>

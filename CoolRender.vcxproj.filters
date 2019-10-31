@@ -52,6 +52,9 @@
     <ClCompile Include="render\Shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="render\skeleton.cpp" />
+    <ClCompile Include="render\private.cpp" />
+    <ClCompile Include="render\maths.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\LineDrawTest.h">
@@ -96,5 +99,9 @@
     <ClInclude Include="render\mathTest.h">
       <Filter>Test</Filter>
     </ClInclude>
+    <ClInclude Include="render\macro.h" />
+    <ClInclude Include="render\maths.h" />
+    <ClInclude Include="render\skeleton.h" />
+    <ClInclude Include="render\private.h" />
   </ItemGroup>
 </Project>
