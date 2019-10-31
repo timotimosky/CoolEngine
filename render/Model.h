@@ -5,6 +5,7 @@
 #include "geometry.h"
 #include "renderMath.h"
 #include "tgaimage.h"
+#include "skeleton.h"
 
 
 //Vec3f
@@ -32,6 +33,9 @@ public:
 	TGAColor diffuse(Vec2f uv);
 	float specular(Vec2f uv);
 	std::vector<int> face(int idx);
+
+	/* animation */
+	skeleton_t* skeleton;
 };
 #endif //__MODEL_H__
 

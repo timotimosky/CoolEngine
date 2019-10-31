@@ -122,7 +122,8 @@ static void initialize_cache(skeleton_t *skeleton) {
 }
 
 static skeleton_t *load_ani(const char *filename) {
-
+	
+	//FILE* file = fopen(filename, "r");
 	FILE* file = fopen(filename, "rb");
     assert(file != NULL);
 
@@ -150,12 +151,12 @@ static skeleton_t *load_ani(const char *filename) {
 
 skeleton_t *skeleton_load(const char *filename) {
     const char *extension = private_get_extension(filename);
-    //if (strcmp(extension, "ani") == 0) {
+    if (strcmp(extension, "ani") == 0) {
         return load_ani(filename);
-   /* } else {
+		} else {
         assert(0);
         return NULL;
-    }*/
+    }
 }
 //
 //void skeleton_release(skeleton_t *skeleton) {

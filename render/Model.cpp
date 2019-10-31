@@ -79,8 +79,13 @@ Model::Model(const char* filename) : verts_(), faces_(), norms_(), uv_(), diffus
 	}
 	std::cerr << "# v# " << verts_.size() << " f# " << faces_.size() << " vt# " << uv_.size() << " vn# " << norms_.size() << std::endl;
 	load_texture(filename, "_diffuse.tga", diffusemap_);
-	load_texture(filename, "_nm_tangent.tga", normalmap_);
-	load_texture(filename, "_spec.tga", specularmap_);
+	//load_texture(filename, "_nm_tangent.tga", normalmap_);
+	//load_texture(filename, "_spec.tga", specularmap_);
+
+	load_texture(filename, "_normal.tga", normalmap_);
+	load_texture(filename, "_specular.tga", specularmap_);
+	//D:/github/CoolEngine/obj/crab/crab.ani
+	skeleton =skeleton_load(filename);
 }
 
 Model::~Model() {}
