@@ -90,7 +90,8 @@ void matrix_set_lookat(Matrix44f*m, const Vec4f *eye, const Vec4f *eyeTarget, co
 //透视矩阵  将摄像机坐标系的坐标转换为真正可用的屏幕坐标
 //zn 近平面Z
 //zf 远平面Z
-//	float aspect = (float)width / ((float)height); 分辨率比例
+//	float aspect = (float)width / ((float)height); 分辨率的宽长比
+///fovy = view frustum 与Z轴夹角弧度制
 void matrix_set_perspective(Matrix44f* m, float fovy, float aspect, float zn, float zf)
 {
 	float fax = 1.0f / (float)tan(fovy * 0.5f);  //cot@

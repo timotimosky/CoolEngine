@@ -85,7 +85,7 @@ Model::Model(const char* filename) : verts_(), faces_(), norms_(), uv_(), diffus
 	load_texture(filename, "_normal.tga", normalmap_);
 	load_texture(filename, "_specular.tga", specularmap_);
 	//D:/github/CoolEngine/obj/crab/crab.ani
-	skeleton =skeleton_load(filename);
+	//skeleton =skeleton_load(filename);
 }
 
 Model::~Model() {}
