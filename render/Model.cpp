@@ -45,6 +45,9 @@ Model::Model(const char* filename) : verts_(), faces_(), norms_(), uv_(), diffus
 	std::string line;
 	while (!in.eof()) {
 		std::getline(in, line);
+		if (line.empty())
+			continue;
+
 		std::istringstream iss(line.c_str());
 		char trash;
 		if (!line.compare(0, 2, "v ")) {
