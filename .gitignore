@@ -54,3 +54,5 @@ pch
 *.pdb
 *.idb
 *.pdb
+/Release
+/x64
