@@ -54,13 +54,11 @@ float CullCalcutate(const point_t *v1, const point_t *v2, const point_t *v3, con
 {
 	Vec4f cross21, cross31, surfaceNormal;
 
-
 	cross21 = *v2 - *v3;
 	cross31 = *v2 - *v1;
 	surfaceNormal = cross(cross21, cross31);
 	//叉乘方向  在右手坐标中判断叉乘结果的方向使用右手定律，左手坐标系中使用左手。我们的mesh顶点是顺时针
-		
-
+	
 	point_t center;
 	center= *v1+ *v2 + *v3;
 	center = center * 0.333f;
@@ -71,7 +69,6 @@ float CullCalcutate(const point_t *v1, const point_t *v2, const point_t *v3, con
 	float cull = ComputeCameraToVertor(center, surfaceNormal, *camera_pos); 
 
 	return cull;
-
 }
 
 

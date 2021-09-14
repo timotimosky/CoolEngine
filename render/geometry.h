@@ -272,6 +272,8 @@ struct dt<1, T> {
 	}
 };
 
+
+
 /////////////////////////////////////////////////////////////////////////////////
 //ÐÐ -ÁÐ
 template<size_t DimRows, size_t DimCols, typename T> 
@@ -291,6 +293,8 @@ public:
 		//assert(idx < DimRows);
 		return rows[idx];
 	}
+
+
 
 	 matrix_t<DimRows, DimCols, T>& set_zero(){
 		for (size_t i = DimRows; i--; )
@@ -407,6 +411,17 @@ matrix_t<DimRows, DimCols, T> matrix_set_translate(const vec<DimRows, T>& rhs) {
 		 ret[i][DimCols-1] = rhs[i];
 	return ret;
 }
+
+//matrix_t operator* (const matrix_t& rhs) const {
+//	matrix_t t;
+//	for (int i = 0; i < 4; i++) {
+//		for (int j = 0; j < 4; j++)
+//		{
+//			t[i][j] = rows[i][0] * rhs[0][j] + rows[i][1] * rhs[1][j] + rows[i][2] * rhs[2][j] + rows[i][3] * rhs[3][j];
+//		}
+//	}
+//	return t;
+//}
 
 //template<size_t R1, size_t C1, size_t C2, typename T>
 //void matrix_mul(matrix_t<R1, C2, T>& result,const matrix_t<R1, C1, T>& lhs, const matrix_t<C1, C2, T>& rhs) {

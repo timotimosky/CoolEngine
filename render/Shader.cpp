@@ -40,11 +40,11 @@ Vec3f Shader::vertex(Vec3f iface, int nthvert) {
 
 void Shader::vertex_shader(vertex_t* v1,int nfaces_index,int vertex_index)
 {
-	Vec3f v11 = mModel->vert(nfaces_index,vertex_index);
+	Vec3f v11 = mModel->vert(nfaces_index,vertex_index); //真实顶点
 
 	v1->pos = point_t(v11.x, v11.y, v11.z, 1);
 
-	v1->tc = mModel->uv(nfaces_index, vertex_index);
+	v1->tc = mModel->uv(nfaces_index, vertex_index); //真实UV
 
 	Vec3f vNormal = mModel->normal(nfaces_index, vertex_index);
 

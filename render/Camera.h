@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include "renderMath.h"
 
-extern void matrix_Obj2World(Matrix44f*m, Vec4f rot, Vec4f pos);
+//extern void matrix_Obj2World(Matrix44f*m, Vec4f rot, Vec4f pos);
 
 typedef enum {
 	perspective, //м╦йс

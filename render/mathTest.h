@@ -23,7 +23,8 @@ int TestMathmain() {
 	{
 		//C = A * B; // 0.613  0.622  //0.554
 		//multiply(C, A, B); //0.59   //0.33-0.31
-		//matrix_mul(C, A, B); //0.40
+		//
+		(C, A, B); //0.40
 		matrix_mul(C, A, B); //0.40
 	}
 
