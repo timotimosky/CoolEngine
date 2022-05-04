@@ -1,5 +1,28 @@
 # 3D渲染
 
+如何运行
+===
+1.使用VS打开CoolRender.sln即可运行。
+
+操作方式：
+===
+方向键左右键旋转，前后键前进后退。
+键盘F1-F3控制culling模式。空格键切换渲染模式。
+ESC退出。
+
+代码说明
+======
+1.CoolRenerMain类:windows窗口，引擎渲染的tick主入口
+2.Model类：加载模型
+3.maths类：数学库
+4.Camera：摄像机
+5.geometry：矩阵计算
+6.Scene：场景类
+7.Shader：shader类
+8.renderMath：渲染时的坐标系变换
+
+
+
 参考
 ===
 1.韦易笑的博客 http://www.skywind.me
@@ -9,7 +32,7 @@ https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-
 
 特性
 ===
-* C++边写,没有任何第三方库依赖,使用模板编写数学库
+* C++编写,没有任何第三方库依赖,使用模板编写数学库
 * 支持加载Obj、支持加载Png纹理
 * 尽量靠近Unity的设计，增加了object、transfrom、camera等、顶点排序顺序、X-Y-Z轴朝向
 * 支持多相机
@@ -17,12 +40,10 @@ https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-
 * 增加光照模式：平面着色和高氏着色 、顶点光照、面法线光照
 * 增加了摄像机的正面剔除/背面剔除
 * 增加了点光源阴影
-* 没有任何第三方库依赖。
 * 简单 CVV 裁剪
 * 最大支持 1024 x 1024 的纹理
 * 使用深度缓存判断图像前后
 * 透视纹理映射以及透视色彩填充
-* 操作方式：左右键旋转，前后键前进后退，空格键切换模式，ESC退出。
 
 演示
 ===
