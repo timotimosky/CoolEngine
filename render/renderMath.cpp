@@ -1,4 +1,4 @@
-#include "renderMath.h"
+#include "include\renderMath.h"
 
 
 //结论是“行向量左乘矩阵时，结果是行向量，列向量右乘矩阵时，结果是列向量，反过来是不行的”，在DirectX中使用的是行向量，在OpenGL中使用的是列向量。

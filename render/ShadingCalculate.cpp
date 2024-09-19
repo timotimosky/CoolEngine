@@ -1,4 +1,4 @@
-#include "ShadingCalculate.h"
+#include "include\ShadingCalculate.h"
 
 // 计算光向量和法线向量之间角度的余弦  
 // 返回0到1之间的值  

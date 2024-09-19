@@ -1,4 +1,4 @@
-#include "skeleton.h"
+#include "include\skeleton.h"
 ///*
 // * for skeletal animation, see
 // * https://people.rennes.inria.fr/Ludovic.Hoyet/teaching/IMO/05_IMO2016_Skinning.pdf

@@ -1,0 +1,3 @@
+D:/GitHub/CoolEngine/Build/CMakeFiles/CoolEngine.dir
+D:/GitHub/CoolEngine/Build/CMakeFiles/ALL_BUILD.dir
+D:/GitHub/CoolEngine/Build/CMakeFiles/ZERO_CHECK.dir

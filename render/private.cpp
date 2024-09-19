@@ -2,7 +2,7 @@
 //#include "image.h"
 //#include "macro.h"
 //#include "maths.h"
-#include "private.h"
+#include "include\private.h"
 //#include "texture.h"
 //
 ///* tga format */

@@ -297,7 +297,7 @@ int TestTrianglemain() {
 	//Testtriangle3(image);
 
 	finish = clock();
-	duration = (double)(finish - start) / CLOCKS_PER_SEC;
+	duration = (finish - start) / CLOCKS_PER_SEC;
 
 
 	image.flip_vertically(); // i want to have the origin at the left bottom corner of the image

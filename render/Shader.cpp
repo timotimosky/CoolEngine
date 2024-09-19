@@ -1,6 +1,6 @@
-#include "Shader.h"
-#include "ShadingCalculate.h"
-#include "Pipline.h"
+#include "include\Shader.h"
+#include "include\ShadingCalculate.h"
+#include "include\Pipline.h"
 
 Shader::Shader()
 {

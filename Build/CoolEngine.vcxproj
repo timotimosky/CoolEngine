@@ -1,0 +1,368 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{22125322-3F9B-3343-ACCB-470C7FF58A9E}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>CoolEngine</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\GitHub\CoolEngine\Build\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CoolEngine.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CoolEngine</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\GitHub\CoolEngine\Build\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CoolEngine.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CoolEngine</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\GitHub\CoolEngine\Build\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">CoolEngine.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">CoolEngine</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\GitHub\CoolEngine\Build\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">CoolEngine.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">CoolEngine</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/GitHub/CoolEngine/Build/Debug/CoolEngine.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/GitHub/CoolEngine/Build/Debug/CoolEngine.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/GitHub/CoolEngine/Build/Release/CoolEngine.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/GitHub/CoolEngine/Build/Release/CoolEngine.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/GitHub/CoolEngine/Build/MinSizeRel/CoolEngine.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/GitHub/CoolEngine/Build/MinSizeRel/CoolEngine.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/GitHub/CoolEngine/Build/RelWithDebInfo/CoolEngine.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/GitHub/CoolEngine/Build/RelWithDebInfo/CoolEngine.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\GitHub\CoolEngine\render\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/GitHub/CoolEngine/render/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+C:\CMake\bin\cmake.exe -SD:/GitHub/CoolEngine/render -BD:/GitHub/CoolEngine/Build --check-stamp-file D:/GitHub/CoolEngine/Build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\CMake\share\cmake-3.30\Modules\CMakeCInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeCXXInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeCommonLanguageInclude.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeGenericSystem.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeInitializeConfigs.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeLanguageInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeRCInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeSystemSpecificInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeSystemSpecificInitialize.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\MSVC-C.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\MSVC-CXX.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\MSVC.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-Initialize.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-MSVC-C.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-MSVC-CXX.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-MSVC.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\WindowsPaths.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeCCompiler.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeCXXCompiler.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeRCCompiler.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\GitHub\CoolEngine\Build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/GitHub/CoolEngine/render/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+C:\CMake\bin\cmake.exe -SD:/GitHub/CoolEngine/render -BD:/GitHub/CoolEngine/Build --check-stamp-file D:/GitHub/CoolEngine/Build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\CMake\share\cmake-3.30\Modules\CMakeCInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeCXXInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeCommonLanguageInclude.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeGenericSystem.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeInitializeConfigs.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeLanguageInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeRCInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeSystemSpecificInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeSystemSpecificInitialize.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\MSVC-C.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\MSVC-CXX.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\MSVC.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-Initialize.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-MSVC-C.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-MSVC-CXX.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-MSVC.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\WindowsPaths.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeCCompiler.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeCXXCompiler.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeRCCompiler.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\GitHub\CoolEngine\Build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/GitHub/CoolEngine/render/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+C:\CMake\bin\cmake.exe -SD:/GitHub/CoolEngine/render -BD:/GitHub/CoolEngine/Build --check-stamp-file D:/GitHub/CoolEngine/Build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\CMake\share\cmake-3.30\Modules\CMakeCInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeCXXInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeCommonLanguageInclude.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeGenericSystem.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeInitializeConfigs.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeLanguageInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeRCInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeSystemSpecificInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeSystemSpecificInitialize.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\MSVC-C.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\MSVC-CXX.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\MSVC.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-Initialize.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-MSVC-C.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-MSVC-CXX.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-MSVC.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\WindowsPaths.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeCCompiler.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeCXXCompiler.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeRCCompiler.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\GitHub\CoolEngine\Build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/GitHub/CoolEngine/render/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+C:\CMake\bin\cmake.exe -SD:/GitHub/CoolEngine/render -BD:/GitHub/CoolEngine/Build --check-stamp-file D:/GitHub/CoolEngine/Build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\CMake\share\cmake-3.30\Modules\CMakeCInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeCXXInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeCommonLanguageInclude.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeGenericSystem.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeInitializeConfigs.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeLanguageInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeRCInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeSystemSpecificInformation.cmake;C:\CMake\share\cmake-3.30\Modules\CMakeSystemSpecificInitialize.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\MSVC-C.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\MSVC-CXX.cmake;C:\CMake\share\cmake-3.30\Modules\Compiler\MSVC.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-Initialize.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-MSVC-C.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-MSVC-CXX.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows-MSVC.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\Windows.cmake;C:\CMake\share\cmake-3.30\Modules\Platform\WindowsPaths.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeCCompiler.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeCXXCompiler.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeRCCompiler.cmake;D:\GitHub\CoolEngine\Build\CMakeFiles\3.30.3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\GitHub\CoolEngine\Build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="D:\GitHub\CoolEngine\render\CMaterail.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\Camera.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\CoolRenerMain.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\Lights.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\Model.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\Pipline.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\Scene.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\Shader.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\ShadingCalculate.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\geometry.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\maths.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\private.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\renderMath.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\skeleton.cpp" />
+    <ClCompile Include="D:\GitHub\CoolEngine\render\tgaimage.cpp" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\CMaterail.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\Camera.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\Lights.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\LineDrawTest.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\Model.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\Pipline.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\Scene.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\Shader.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\ShadingCalculate.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\TriangleDrawTest.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\geometry.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\macro.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\mathTest.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\maths.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\private.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\renderMath.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\skeleton.h" />
+    <ClInclude Include="D:\GitHub\CoolEngine\render\include\tgaimage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:\GitHub\CoolEngine\Build\ZERO_CHECK.vcxproj">
+      <Project>{1C996AB2-55AA-31DB-8481-129C20FF9648}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
