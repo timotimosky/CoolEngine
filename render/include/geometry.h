@@ -405,8 +405,8 @@ void matrix_set_scale(matrix_t<DimRows, DimRows, T>& ret, const vec<DimRows, T>&
 
 // TODO: 获得一个平移变换矩阵 左乘
 template<size_t DimRows, size_t DimCols, typename T>
-matrix_t<DimRows, DimCols, T> matrix_set_translate(const vec<DimRows, T>& rhs) {
-	matrix_t<DimRows, DimCols, T> ret = identity();
+matrix_t<DimRows, DimCols, T>& matrix_set_translate(const vec<DimRows, T>& rhs) {
+	matrix_t<DimRows, DimCols, T>& ret = matrix_t<DimRows, DimRows, T>().identity();
 	for (size_t i = DimRows; i--; )
 		 ret[i][DimCols-1] = rhs[i];
 	return ret;
@@ -493,7 +493,7 @@ void matrix_mul(matrix_t<4, 4, T>& result, const matrix_t<4, 4, T>& left, const 
 }
 
 template<size_t DimRows, size_t DimCols, typename T>
-matrix_t<DimCols, DimRows, T> operator/(matrix_t<DimRows, DimCols, T> lhs, const T& rhs) {
+matrix_t<DimCols, DimRows, T>& operator/(matrix_t<DimRows, DimCols, T>& lhs, const T& rhs) {
 	for (size_t i = DimRows; i--; lhs[i] = lhs[i] / rhs);
 	return lhs;
 }

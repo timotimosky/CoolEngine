@@ -1,0 +1,41 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/CoolEngine.dir/CMaterail.obj"
+  "CMakeFiles/CoolEngine.dir/CMaterail.obj.d"
+  "CMakeFiles/CoolEngine.dir/Camera.obj"
+  "CMakeFiles/CoolEngine.dir/Camera.obj.d"
+  "CMakeFiles/CoolEngine.dir/CoolRenerMain.obj"
+  "CMakeFiles/CoolEngine.dir/CoolRenerMain.obj.d"
+  "CMakeFiles/CoolEngine.dir/Lights.obj"
+  "CMakeFiles/CoolEngine.dir/Lights.obj.d"
+  "CMakeFiles/CoolEngine.dir/Model.obj"
+  "CMakeFiles/CoolEngine.dir/Model.obj.d"
+  "CMakeFiles/CoolEngine.dir/Pipline.obj"
+  "CMakeFiles/CoolEngine.dir/Pipline.obj.d"
+  "CMakeFiles/CoolEngine.dir/Scene.obj"
+  "CMakeFiles/CoolEngine.dir/Scene.obj.d"
+  "CMakeFiles/CoolEngine.dir/Shader.obj"
+  "CMakeFiles/CoolEngine.dir/Shader.obj.d"
+  "CMakeFiles/CoolEngine.dir/ShadingCalculate.obj"
+  "CMakeFiles/CoolEngine.dir/ShadingCalculate.obj.d"
+  "CMakeFiles/CoolEngine.dir/geometry.obj"
+  "CMakeFiles/CoolEngine.dir/geometry.obj.d"
+  "CMakeFiles/CoolEngine.dir/maths.obj"
+  "CMakeFiles/CoolEngine.dir/maths.obj.d"
+  "CMakeFiles/CoolEngine.dir/private.obj"
+  "CMakeFiles/CoolEngine.dir/private.obj.d"
+  "CMakeFiles/CoolEngine.dir/renderMath.obj"
+  "CMakeFiles/CoolEngine.dir/renderMath.obj.d"
+  "CMakeFiles/CoolEngine.dir/skeleton.obj"
+  "CMakeFiles/CoolEngine.dir/skeleton.obj.d"
+  "CMakeFiles/CoolEngine.dir/tgaimage.obj"
+  "CMakeFiles/CoolEngine.dir/tgaimage.obj.d"
+  "CoolEngine.exe"
+  "CoolEngine.exe.manifest"
+  "CoolEngine.pdb"
+  "libCoolEngine.dll.a"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/CoolEngine.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
