@@ -1,20 +1,19 @@
-# CMake 最低版本号要求
-cmake_minimum_required (VERSION 3.0)
+# 指定CMake的最低版本
+cmake_minimum_required(VERSION 3.10)
 
-# 项目信息
-project (CoolEngine)
+# 定义项目名称
+# 这个名称通常会成为Visual Studio解决方案的名称
+project(CoolEngine CXX)
 
-# 查找指定目录下的所有源文件，然后将结果保存到 DIR_SRCS 变量
-aux_source_directory(. DIR_SRCS)
+# 设置C++标准
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# 设置使用C++标准版本
-#set(CMAKE_CXX_STANDARD 11)
-#set(CMAKE_CXX_STANDARD_REQUIRED True)
+# 添加 'scripts' 子目录
+# CMake 会进入 E:/github/CoolEngine/render/scripts 目录，
+# 并在其中寻找并处理 CMakeLists.txt 文件。
+add_subdirectory(scripts)
 
-# 指定头文件
-file(GLOB_RECURSE pipe_header_files  ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h )
-
-# 指定生成目标
-#add_executable(${PROJECT_NAME} ${C_FILES} ${CPP_FILES} ${H_FILES})
-#add_executable(CoolEngine ${DIR_SRCS})
-add_executable(CoolEngine  ${DIR_SRCS} ${pipe_header_files})
+# 如果你的可执行文件最终需要安装，可以在这里添加安装规则
+# install(TARGETS CoolEngineExecutable DESTINATION bin)

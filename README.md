@@ -1,17 +1,22 @@
 # 3D渲染
 
 如何运行
-===
-1.使用VS打开CoolRender.sln即可运行。
+========
+
+1.双击根目录下的cmakeDo.bat，CoolEngine\render下会生成build文件夹。
+
+2.使用VS打开 build文件夹下 ALL_BUILD.vcxproj即可运行。
 
 操作方式：
-===
+==========
+
 方向键左右键旋转，前后键前进后退。
 键盘F1-F3控制culling模式。空格键切换渲染模式。
 ESC退出。
 
 代码说明
-======
+========
+
 1.CoolRenerMain类:windows窗口，引擎渲染的tick主入口
 2.Model类：加载模型
 3.maths类：数学库
@@ -21,17 +26,16 @@ ESC退出。
 7.Shader：shader类
 8.renderMath：渲染时的坐标系变换
 
-
-
 参考
-===
+====
+
 1.韦易笑的博客 http://www.skywind.me
 2.国外一个开源的渲染器教程
 https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
 
-
 特性
-===
+====
+
 * C++编写,没有任何第三方库依赖,使用模板编写数学库
 * 支持加载Obj、支持加载Png纹理
 * 尽量靠近Unity的设计，增加了object、transfrom、camera等、顶点排序顺序、X-Y-Z轴朝向
@@ -46,14 +50,15 @@ https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-
 * 透视纹理映射以及透视色彩填充
 
 演示
-===
+====
+
 色彩填充：RENDER_STATE_COLOR
 ![]
 (https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/render1.png)
 
-
 后续计划
-=======
+========
+
 * 提供更多渲染模式
 * 实现二次线性差值的纹理读取
 * 从jpg、bmp/TGA文件加载纹理
