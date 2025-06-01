@@ -9,14 +9,11 @@
 
 3.设置启动项目
 
-![]
-(https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/2.png)
+![image](https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/2.png)
 
  设置项目编码为UTF-8
 
-![]
-(https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/Snip.png)
-
+![image](https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/Snip.png)
 
 操作方式：
 ==========
@@ -64,8 +61,7 @@ https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-
 ====
 
 色彩填充：RENDER_STATE_COLOR
-![]
-(https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/render1.png)
+![image](https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/render1.png)
 
 后续计划
 ========
