@@ -5,7 +5,18 @@
 
 1.双击根目录下的cmakeDo.bat，CoolEngine\render下会生成build文件夹。
 
-2.使用VS打开 build文件夹下 ALL_BUILD.vcxproj即可运行。
+2.使用VS打开 build文件夹下 ALL_BUILD.vcxproj运行。
+
+3.设置启动项目
+
+![]
+(https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/2.png)
+
+ 设置项目编码为UTF-8
+
+![]
+(https://raw.githubusercontent.com/timotimosky/CoolEngine/master/images/Snip.png)
+
 
 操作方式：
 ==========
