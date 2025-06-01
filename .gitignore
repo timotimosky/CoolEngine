@@ -56,3 +56,4 @@ pch
 *.pdb
 /Release
 /x64
+/render/build
