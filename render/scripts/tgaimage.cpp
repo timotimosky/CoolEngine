@@ -64,7 +64,7 @@ bool TGAImage::read_tga_file(const char *filename) {
     unsigned long nbytes = bytespp*width*height;
     data = new unsigned char[nbytes];
 
-	//1:// ÓÐÑÕÉ«Ó³ÉäµÄÍ¼Ïñ  2:// ÎÞÑÕÉ«Ó³Éä£¬RGBÍ¼Ïñ
+	//1:// ï¿½ï¿½ï¿½ï¿½É«Ó³ï¿½ï¿½ï¿½Í¼ï¿½ï¿½  2:// ï¿½ï¿½ï¿½ï¿½É«Ó³ï¿½ä£¬RGBÍ¼ï¿½ï¿½
     if (3==header.datatypecode || 2==header.datatypecode) {
         in.read((char *)data, nbytes);
         if (!in.good()) {
@@ -73,7 +73,7 @@ bool TGAImage::read_tga_file(const char *filename) {
             return false;
         }
     } 
-	// 9:ÓÎ³Ì³¤¶È±àÂëµÄ½âÂë£¨RLE£©£¬´øÑÕÉ«Ó³Éä   10:// ÓÎ³Ì³¤¶È±àÂëµÄ½âÂë£¨RLE£©
+	// 9:ï¿½Î³Ì³ï¿½ï¿½È±ï¿½ï¿½ï¿½Ä½ï¿½ï¿½ë£¨RLEï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«Ó³ï¿½ï¿½   10:// ï¿½Î³Ì³ï¿½ï¿½È±ï¿½ï¿½ï¿½Ä½ï¿½ï¿½ë£¨RLEï¿½ï¿½
 	else if (10==header.datatypecode||11==header.datatypecode) {
         if (!load_rle_data(in)) {
             in.close();

@@ -2,7 +2,7 @@
 #include <windows.h>
 #include "renderMath.h"
 
-//µã¹âÔ´
+//ç‚¹å…‰æº
 struct PointLight
 {
 	PointLight() { ZeroMemory(this, sizeof(this)); }
@@ -11,21 +11,21 @@ struct PointLight
 	Vec4f diffuse;
 	Vec4f specular;
 
-	Vec4f position;//¹âÔ´Î»ÖÃ
+	Vec4f position;//å…‰æºä½ç½®
 
-	Vec4f att;     //Ë¥¼õÏµÊı
+	Vec4f att;     //è¡°å‡ç³»æ•°
 
-	float range;      //¹âÕÕ·¶Î§
+	float range;      //å…‰ç…§èŒƒå›´
 };
 
-//rgb   ºÍ Ç¿¶È ÓÃÓÚ»·¾³¹â
+//rgb   å’Œ å¼ºåº¦ ç”¨äºç¯å¢ƒå…‰
 typedef struct {
 	float r, g, b, intension;
-	bool shadow;   //ÊÇ·ñ²úÉúÒõÓ°
+	bool shadow;   //æ˜¯å¦äº§ç”Ÿé˜´å½±
 } Light_t;
 
 
-//·½Ïò¹â Î»ÖÃÎŞËùÎ½
+//æ–¹å‘å…‰ ä½ç½®æ— æ‰€è°“
 typedef struct {
 	Vec4f dir;
 	Vec4f ambi;

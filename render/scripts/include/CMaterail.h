@@ -5,13 +5,13 @@
 typedef struct {
 	char *name;
 
-	color_t ambient;  //»·¾³¹â½ÓÊÜ¶È
-	color_t diffuse; //Âş·´Éä
-	color_t specular; //¾µÃæ·´Éä
-	color_t transmittance; //Í¸Ã÷¶È
-	color_t emission; //É¢Éä
+	color_t ambient;  //ç¯å¢ƒå…‰æ¥å—åº¦
+	color_t diffuse; //æ¼«åå°„
+	color_t specular; //é•œé¢åå°„
+	color_t transmittance; //é€æ˜åº¦
+	color_t emission; //æ•£å°„
 
-	float shininess; //¹â»¬¶È
+	float shininess; //å…‰æ»‘åº¦
 
 	char *ambient_texname;            /* map_Ka */
 	int ambient_tex_id;

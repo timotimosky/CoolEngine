@@ -98,17 +98,22 @@ void Shader::frag_shader(vertex_t& frag_Vertex_t, IUINT32& color)
 
 	else if (render_state & RENDER_STATE_TEXTURE)
 	{
+		//加上高光
+		float specularColor = mModel->specular(frag_Vertex_t.tc);
+
 		//if (mShader->mModel != nullptr)
 		{
 			TGAColor mTgacolor = mModel->diffuse(frag_Vertex_t.tc);
-			int R = mTgacolor.bgra[2] - '0' + 48;
-			int G = mTgacolor.bgra[1] - '0' + 48;
-			int B = mTgacolor.bgra[0] - '0' + 48;
+			int R = mTgacolor.bgra[2] - '0' + 48 + specularColor;
+			int G = mTgacolor.bgra[1] - '0' + 48+ specularColor;
+			int B = mTgacolor.bgra[0] - '0' + 48+ specularColor;
 			//R *= surfaceLight;
 			//G *= surfaceLight;
 			//B *= surfaceLight;
 			color = (R << 16) | (G << 8) | (B);
 		}
+
+
 
 		//在像素阶段 根据深度图，计算深度，是否要产生阴影
 		//if (device->shadowbuffer != NULL)

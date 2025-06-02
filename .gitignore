@@ -57,3 +57,4 @@ pch
 /Release
 /x64
 /render/build
+/render/.vscode

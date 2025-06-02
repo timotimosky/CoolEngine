@@ -5,50 +5,50 @@
 //extern void matrix_Obj2World(Matrix44f*m, Vec4f rot, Vec4f pos);
 
 typedef enum {
-	perspective, //Í¸ÊÓ
-	orthographic //ÕýÊÓ
+	perspective, //é€è§†
+	orthographic //æ­£è§†
 } PROJECTION;
 
  struct  camera
 {
-	Vec4f eye; //µ±Ç°×ø±ê   //CµÄ½á¹¹ÌåÀïµÄ»ù±¾ÔªËØ¿ÉÒÔ ÓÃ =¸³Öµ¡£µ«¸´ºÏ½á¹¹²»ÐÐ
-	Vec4f eyeTarget; //¿´ÏòµÄ½¹µã
+	Vec4f eye; //å½“å‰åæ ‡   //Cçš„ç»“æž„ä½“é‡Œçš„åŸºæœ¬å…ƒç´ å¯ä»¥ ç”¨ =èµ‹å€¼ã€‚ä½†å¤åˆç»“æž„ä¸è¡Œ
+	Vec4f eyeTarget; //çœ‹å‘çš„ç„¦ç‚¹
 
 	Matrix44f view_matrix_r;
 
-	Matrix44f view;          // ÉãÓ°»ú×ø±ê±ä»» ÊÀ½çµ½ÉãÏñ»ú×ø±ê±ä»»¾ØÕó  TODO:ÒÔºó·ÖÀëµ½Ã¿¸öÉãÏñ»ú¹ÜÀí
-	Matrix44f projection_trans;    // Í¶Ó°±ä»» £¬¾ÍÊÇ±ä»»µ½ÉãÏñ»úµÄÔ¶Æ½Ãæ-½üÆ½Ãæ¿Õ¼äÄÚ  TODO:ÒÔºó·ÖÀëµ½Ã¿¸öÉãÏñ»ú¹ÜÀí
-	//ÎïÌåÓëÏà»úµÄ¾àÀë£¨z£©Ò²ÊÇÈç´Ë£¡¶ÔÓÚ¾ßÓÐÏàËÆxºÍy×ø±êµÄÁ½¸ö¶¥µã£¬¾ßÓÐ×î´óz×ø±êµÄ¶¥µã½«±ÈÆÁÄ»µÄÖÐÐÄ¸ü¶àµØÎ»ÓÚÆÁÄ»µÄÖÐÐÄ¡£     
-	// ÁíÍâ£¬Èç¹ûÊÇÍ¸ÊÓÊÓÍ¼£¬W¸ºÔðËõ·ÅÎïÌå´óÐ¡£¬À´Ä£ÄâÊÓ¾õ¡£Ô¶´¦µÄÎïÌå¸üÐ¡
+	Matrix44f view;          // æ‘„å½±æœºåæ ‡å˜æ¢ ä¸–ç•Œåˆ°æ‘„åƒæœºåæ ‡å˜æ¢çŸ©é˜µ  TODO:ä»¥åŽåˆ†ç¦»åˆ°æ¯ä¸ªæ‘„åƒæœºç®¡ç†
+	Matrix44f projection_trans;    // æŠ•å½±å˜æ¢ ï¼Œå°±æ˜¯å˜æ¢åˆ°æ‘„åƒæœºçš„è¿œå¹³é¢-è¿‘å¹³é¢ç©ºé—´å†…  TODO:ä»¥åŽåˆ†ç¦»åˆ°æ¯ä¸ªæ‘„åƒæœºç®¡ç†
+	//ç‰©ä½“ä¸Žç›¸æœºçš„è·ç¦»ï¼ˆzï¼‰ä¹Ÿæ˜¯å¦‚æ­¤ï¼å¯¹äºŽå…·æœ‰ç›¸ä¼¼xå’Œyåæ ‡çš„ä¸¤ä¸ªé¡¶ç‚¹ï¼Œå…·æœ‰æœ€å¤§zåæ ‡çš„é¡¶ç‚¹å°†æ¯”å±å¹•çš„ä¸­å¿ƒæ›´å¤šåœ°ä½äºŽå±å¹•çš„ä¸­å¿ƒã€‚     
+	// å¦å¤–ï¼Œå¦‚æžœæ˜¯é€è§†è§†å›¾ï¼ŒWè´Ÿè´£ç¼©æ”¾ç‰©ä½“å¤§å°ï¼Œæ¥æ¨¡æ‹Ÿè§†è§‰ã€‚è¿œå¤„çš„ç‰©ä½“æ›´å°
 
-	//·ÂUnity£¬»¹ÊÇÊ¹ÓÃTransform×é¼þµÄRotation
+	//ä»¿Unityï¼Œè¿˜æ˜¯ä½¿ç”¨Transformç»„ä»¶çš„Rotation
 	Vec4f rotation;
 
-	Vec4f front; //³¯Ç°ÏòÁ¿
-	Vec4f worldup;  //³¯ÉÏ
+	Vec4f front; //æœå‰å‘é‡
+	Vec4f worldup;  //æœä¸Š
 
-	//¿í¸ß
+	//å®½é«˜
 	int width;
 	int height;
 
-	//Maya CameraµÄAngle of ViewÊÇHorizontal FOVµÄ½Ç¶È
-	//Unity CameraµÄFOVÊÇVertical FOVµÄ½Ç¶È
-	float fov;  //fovËõ·ÅÊ±£¬·Ö±æÂÊËõ·Å£¬µ«±ÈÀý²»±ä
-	float zn; //½ü½ØÃæ
-	float zf; //Ô¶½ØÃæ
+	//Maya Cameraçš„Angle of Viewæ˜¯Horizontal FOVçš„è§’åº¦
+	//Unity Cameraçš„FOVæ˜¯Vertical FOVçš„è§’åº¦
+	float fov;  //fovç¼©æ”¾æ—¶ï¼Œåˆ†è¾¨çŽ‡ç¼©æ”¾ï¼Œä½†æ¯”ä¾‹ä¸å˜
+	float zn; //è¿‘æˆªé¢
+	float zf; //è¿œæˆªé¢
 
-	//ÉÏÏÂ×óÓÒ
+	//ä¸Šä¸‹å·¦å³
 	float left;
 	float right;
 	float bottom;
 	float top;
 
-	bool dirty; //ÊÇ·ñÇå³ý
-	PROJECTION projection;  //ÉãÏñ»úÈ¡¾°ÀàÐÍ
-	bool main;  //ÊÇ·ñÊÇÖ÷ÉãÏñ»ú
+	bool dirty; //æ˜¯å¦æ¸…é™¤
+	PROJECTION projection;  //æ‘„åƒæœºå–æ™¯ç±»åž‹
+	bool main;  //æ˜¯å¦æ˜¯ä¸»æ‘„åƒæœº
 
 	// private
-	float aspect; //×Ýºá±È£»Èç¹ûÊÇÖ÷ÉãÏñÍ·£¬ÔòÈ«ÆÁ = ÆÁÄ»¸ß¿í±È
+	float aspect; //çºµæ¨ªæ¯”ï¼›å¦‚æžœæ˜¯ä¸»æ‘„åƒå¤´ï¼Œåˆ™å…¨å± = å±å¹•é«˜å®½æ¯”
 };
 
 

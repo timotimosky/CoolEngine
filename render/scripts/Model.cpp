@@ -74,7 +74,8 @@ Model::Model(const char* filename) : verts_(), faces_(), norms_(), uv_(), diffus
 			iss >> trash;
 			//istringstream  通过>>操作符 按顺序 读取字符串  以空格为分类
 			while (iss >> tmp[0] >> trash >> tmp[1] >> trash >> tmp[2]) {
-				for (int i = 0; i < 3; i++) tmp[i]--; // in wavefront obj all indices start at 1, not zero
+				for (int i = 0; i < 3;
+					i++) tmp[i]--; // in wavefront obj all indices start at 1, not zero
 				f.push_back(tmp);
 			}
 			faces_.push_back(f);
@@ -83,10 +84,10 @@ Model::Model(const char* filename) : verts_(), faces_(), norms_(), uv_(), diffus
 	std::cerr << "# v# " << verts_.size() << " f# " << faces_.size() << " vt# " << uv_.size() << " vn# " << norms_.size() << std::endl;
 	load_texture(filename, "_diffuse.tga", diffusemap_);
 	//load_texture(filename, "_nm_tangent.tga", normalmap_);
-	//load_texture(filename, "_spec.tga", specularmap_);
+	//load_texture(filename, "_glow.tga", specularmap_);
 
-	load_texture(filename, "_normal.tga", normalmap_);
-	load_texture(filename, "_specular.tga", specularmap_);
+	load_texture(filename, "_nm.tga", normalmap_);
+	load_texture(filename, "_spec.tga", specularmap_);
 	//D:/github/CoolEngine/obj/crab/crab.ani
 	//skeleton =skeleton_load(filename);
 }
