@@ -12,11 +12,23 @@
 
 
 #include <filesystem> // C++17 推荐使用
+// #ifdef _WIN32
+// 	#include <direct.h> // For _getcwd on Windows
+// #else
+// 	#include <unistd.h> // For getcwd on Linux/macOS
+// #endif
+
 #ifdef _WIN32
-	#include <direct.h> // For _getcwd on Windows
-#else
-	#include <unistd.h> // For getcwd on Linux/macOS
+#include <windows.h>
+#elif defined(__linux__)
+#include <unistd.h>
+#include <limits.h> // For PATH_MAX
+#elif defined(__APPLE__)
+#include <mach-o/dyld.h> // For _NSGetExecutablePath
 #endif
+
+
+
 //#include "../raytracer1/common.h"
 //#include "../raytracer1/raytracer.h"
 //#include "../raytracer1/scene.h"
@@ -514,6 +526,50 @@ Shader* InitShader(Shader* tShader, device_t& device, Model* lModel)
 }
 
 
+
+std::filesystem::path getExecutablePath() {
+    std::vector<char> buffer;
+    size_t path_len = 0;
+
+#ifdef _WIN32
+    buffer.resize(MAX_PATH);
+    path_len = GetModuleFileNameA(NULL, buffer.data(), buffer.size());
+    while (path_len == buffer.size()) { // Buffer too small, resize and try again
+        buffer.resize(buffer.size() * 2);
+        path_len = GetModuleFileNameA(NULL, buffer.data(), buffer.size());
+    }
+#elif defined(__linux__)
+    buffer.resize(PATH_MAX);
+    ssize_t len = readlink("/proc/self/exe", buffer.data(), buffer.size());
+    if (len != -1) {
+        path_len = static_cast<size_t>(len);
+    }
+#elif defined(__APPLE__)
+    buffer.resize(PATH_MAX); // PATH_MAX is usually sufficient
+    uint32_t buf_size = buffer.size();
+    if (_NSGetExecutablePath(buffer.data(), &buf_size) == 0) {
+        path_len = static_cast<size_t>(buf_size);
+    } else {
+        // Buffer too small, _NSGetExecutablePath will return -1 and set buf_size to required size
+        buffer.resize(buf_size);
+        if (_NSGetExecutablePath(buffer.data(), &buf_size) == 0) {
+            path_len = static_cast<size_t>(buf_size);
+        }
+    }
+#else
+    // Fallback or error for other platforms
+    return {}; // Or throw an exception
+#endif
+
+    if (path_len > 0) {
+        return std::filesystem::path(std::string(buffer.data(), path_len));
+    }
+    return {};
+}
+
+
+
+
 int main(void)
 {
 
@@ -555,18 +611,16 @@ int main(void)
 
 	std::filesystem::path target_path;
 	try {
-		std::filesystem::path current_path = std::filesystem::current_path();
-		std::cout << "Current working directory (std::filesystem): " << current_path << std::endl;
+		std::filesystem::path exe_path = getExecutablePath();
+        if (exe_path.empty()) {
+            std::cerr << "Could not determine executable path." << std::endl;
+            return 1;
+        }
 
-		// 构建目标路径 E:\render\obj
-		// 假设你的当前工作目录是 E:\render\build\Debug 或 E:\render\build\Release
-		// 那么你需要先回到 E:\render，再进入 obj
-		target_path = current_path.parent_path().parent_path() / "obj";
-		std::cout << "Calculated target path (std::filesystem): " << target_path << std::endl;
+        std::cout << "Executable path: " << exe_path << std::endl;
 
-		// 如果需要，你也可以改变当前工作目录
-		// std::filesystem::current_path(target_path);
-		// std::cout << "New current working directory (std::filesystem): " << std::filesystem::current_path() << std::endl;
+		target_path = exe_path.parent_path().parent_path().parent_path().parent_path()/ "obj";
+        std::cout << "Calculated target path (using exe path): " << target_path << std::endl;
 
 	}
 	catch (const std::filesystem::filesystem_error& e) {
@@ -605,7 +659,7 @@ int main(void)
 
 		strcat(buffer2, src);
 		//getcwd是C的标准库API，内部用的malloc而不是new
-		free(rootPath);
+		//free(rootPath);
 	}
 
 
