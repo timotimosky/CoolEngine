@@ -22,24 +22,48 @@
 键盘F1-F3控制culling模式。空格键切换渲染模式。
 ESC退出。
 
-代码说明
-========
 
-1.CoolRenerMain类:windows窗口，引擎渲染的tick主入口
-2.Model类：加载模型
-3.maths类：数学库
-4.Camera：摄像机
-5.geometry：矩阵计算
-6.Scene：场景类
-7.Shader：shader类
-8.renderMath：渲染时的坐标系变换
+# 分层的CMakeLists.txt 结构
+
+为了清晰地组织项目，并允许未来添加更多模块。项目结构设置如下：
+
+```
+github/CoolEngine/render/
+├── build/
+│   └── (这里存放 CMake 生成的构建文件和 Visual Studio 工程)
+│
+├── obj/
+│   └── (这里存放美术资源，例如：.obj 模型，纹理等)
+│
+├── scripts/
+│   ├── include/
+│   │   └── pipe_header.h
+│   ├── main.cpp
+│   ├── some_other_file.cpp
+│   └── CMakeLists.txt  <-- scripts 模块的 CMakeLists 文件
+│
+├── CMakeLists.txt      <-- 主 CMakeLists 文件
+└── cmakeDo.bat         <--  CMake 构建脚本放在这里
+```
+
+
+scripts文件夹下代码说明
+=======================
+
+1. CoolRenerMain类:windows窗口，引擎渲染的tick主入口
+2. Model类：加载模型
+3. maths类：数学库
+4. Camera：摄像机
+5. geometry：矩阵计算
+6. Scene：场景类
+7. Shader：shader类
+8. renderMath：渲染时的坐标系变换
 
 参考
 ====
 
-1.韦易笑的博客 http://www.skywind.me
-2.国外一个开源的渲染器教程
-https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
+1. 韦易笑的博客 http://www.skywind.me,以及他的C语言实现的渲染器
+2. 国外一个开源的渲染器教程 https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
 
 特性
 ====
